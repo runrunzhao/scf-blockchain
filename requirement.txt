@@ -1,0 +1,182 @@
+ 这是一个简单的供应链模型，一个核心企业，两个上级供应商，两个下级经销商。请你用英文，简单描述一下这个模型，我要把这个描述作为系统实现的需求，提及给 github Codespace 进行编程实现。
+要求用 JAVA+ MySQL 实现。
+数据库SCFDB，其中的表有：core(coreID,coreName,issueCTT(true,false)) ; bank(bankID,bankName,limit) ; supplier(suppID,suppName,tier);  contract(contractID,realNo, part1,part2,amout,date); invoice(invoiceID,contractID,amout,date) ; CTT(total,invalidDate,burn);
+
+首先是一个 index.jsp页面，
+上面是这个简单的 供应链模型，核心企业居中，上下游各两个；
+
+点击核心企业，页面下部分显示 企业的详细信息：
+企业编号：      企业名称：  
+联系电话：      
+
+
+ 首页面上方，有菜单：用户管理， 企业查询，合同查询，票据查询；
+
+
+点击用户管理，是用户登录；
+企业查询，根据企业名称，企业编号进行查询，
+
+合同查询，根据 contractID, realNo（真实合同编号），企业编号（coreID,suppID），date等进行查询；
+
+票据查询，根据 invoiceID,contractID， date等进行查询；
+
+
+Supply Chain Finance Prototype: System Requirements (Java + MySQL)
+
+Overview:
+
+This system represents a basic supply chain finance model featuring a core enterprise, two upstream suppliers, and two downstream distributors. The system will help demonstrate the functionality of supply chain finance, displaying enterprise information, contracts, and invoices in a user-friendly interface. The focus will be on ensuring a simple but functional prototype that works and is visually appealing.
+The backend will be implemented in Java, with MySQL as the database. The frontend will use JSP for rendering dynamic content.
+
+Core Entities:
+
+Core Enterprise: This is the central company that interacts with suppliers and distributors.
+Suppliers (Tier 1 and Tier 2): Upstream companies providing goods or services to the core enterprise.
+Distributors (Tier 1 and Tier 2): Downstream companies purchasing products or services from the core enterprise.
+
+
+Database Structure (SCFDB):
+
+core table:
+coreID (Primary Key): Unique ID of the core enterprise.
+coreName: Name of the core enterprise.
+issueCTT (Boolean): Flag indicating if the core enterprise issues contracts.
+bank table:
+bankID (Primary Key): Unique ID for the bank.
+bankName: Name of the bank.
+limit: Financial limit associated with the bank.
+supplier table:
+suppID (Primary Key): Unique ID for the supplier.
+suppName: Name of the supplier.
+tier: Supplier’s tier (e.g., Tier 1 or Tier 2).
+contract table:
+contractID (Primary Key): Unique ID for the contract.
+realNo: Real contract number.
+part1: First part of the contract description.
+part2: Second part of the contract description.
+amount: Amount of the contract.
+date: Contract creation date.
+invoice table:
+invoiceID (Primary Key): Unique ID for the invoice.
+contractID (Foreign Key): Reference to the associated contract.
+amount: Amount of the invoice.
+date: Invoice creation date.
+CTT (Contract Tracking Table):
+total: Total number of contracts issued.
+invalidDate: Date when the contract becomes invalid.
+burn: Indicates whether the contract has been canceled or fulfilled (True/False).
+
+
+Key System Features and Requirements:
+
+1. User Interface (Frontend) - index.jsp Page:
+
+Display Supply Chain Model:
+A simple diagram showing:
+Core Enterprise in the center.
+Upstream Suppliers on top of the core enterprise.
+Downstream Distributors below the core enterprise.
+Each entity (Core Enterprise, Suppliers, Distributors) will be clickable.
+Core Enterprise Information:
+When the Core Enterprise is clicked, display detailed information in the lower section of the page:
+Enterprise ID: The unique identifier for the core enterprise.
+Enterprise Name: Name of the core enterprise.
+Phone Number: Contact phone number for the core enterprise.
+Menu Bar:
+Located at the top of the page:
+User Management (For login functionality).
+Enterprise Search (Search by name or core ID).
+Contract Search (Search by contract ID, real contract number, enterprise ID/supplier ID, contract date).
+Invoice Search (Search by invoice ID, contract ID, invoice date).
+
+2. User Management:
+
+Login Page:
+A simple login page allowing users to access the system.
+Credentials (e.g., Username and Password) to authenticate the user.
+For now, just a basic authentication system without roles.
+
+3. Enterprise Search:
+
+Search Functionality:
+The user can search for Core Enterprises by:
+Enterprise Name (coreName).
+Enterprise ID (coreID).
+Display a list of results showing:
+Enterprise ID
+Enterprise Name
+Phone Number (optional)
+Result Display:
+Clicking on a listed enterprise will show the details of that enterprise and the associated suppliers and distributors.
+
+4. Contract Search:
+
+Search Functionality:
+The user can search for Contracts by:
+Contract ID (contractID).
+Real Contract Number (realNo).
+Core Enterprise ID (coreID).
+Supplier ID (suppID).
+Contract Date (date).
+Display contract details such as:
+Contract ID
+Real Contract Number
+Amount
+Date of Creation
+Supplier (linked to the suppID)
+Core Enterprise (linked to coreID)
+
+5. Invoice Search:
+
+Search Functionality:
+The user can search for Invoices by:
+Invoice ID (invoiceID).
+Contract ID (contractID).
+Invoice Date (date).
+Display invoice details such as:
+Invoice ID
+Associated Contract ID
+Invoice Amount
+Date of Creation
+
+
+System Design Considerations:
+
+Backend:
+Java: Implement using Java Servlet or Spring Boot (lightweight approach).
+MySQL Database: Set up MySQL locally or through a cloud service (e.g., AWS RDS) to manage data storage.
+Database Queries: Basic CRUD operations for all entities (Core Enterprise, Suppliers, Contracts, Invoices).
+Frontend:
+JSP: The user interface will be built with JSP for dynamic content rendering, using simple HTML/CSS for styling.
+Use Bootstrap or similar CSS frameworks for basic, responsive design to make the page visually appealing.
+Basic JavaScript can be used for dynamic form validation or data handling.
+
+
+System Flow:
+
+Startup:
+When the user visits the index.jsp page, they will see the supply chain diagram.
+The user can click on any entity (Core Enterprise, Suppliers, Distributors) to view more details.
+User Management (Login):
+A login page allows users to access the system. For now, use a simple form-based login.
+Enterprise Search:
+Users can search for Core Enterprises by name or ID.
+The list of enterprises will be displayed. Clicking on an enterprise shows the detailed info.
+Contract Search:
+Users can search for contracts using contract ID, real contract number, supplier ID, or other parameters.
+Results will show contract details.
+Invoice Search:
+Users can search for invoices by invoice ID, contract ID, or date.
+Results will display relevant invoice details.
+
+
+Scalability and Future Improvements:
+
+User Role Management: Although not required now, future improvements could introduce different user roles (Admin, Manager, etc.) with access control.
+Advanced Search: As the system grows, add more advanced filters, like multi-condition queries.
+Data Visualization: For future versions, include reports, charts, and graphs to visualize contract amounts, supplier performance, etc.
+
+
+Conclusion:
+
+This simplified Supply Chain Finance Prototype will enable you to demonstrate key functionality while focusing on usability and basic features. The design is straightforward and can be implemented quickly with Java, MySQL, and JSP. The system will be functional enough for initial demos, and future improvements can be made as needed based on feedback and additional requirements.
