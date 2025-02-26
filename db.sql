@@ -1,3 +1,4 @@
+docker run --name scf-mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=SCFDB -p 3306:3306 -d mysql:5.7
 -- Step 1: Create the database
 CREATE DATABASE SCFDB;
 
