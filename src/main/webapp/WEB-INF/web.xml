@@ -13,4 +13,43 @@
         <servlet-name>MainController</servlet-name>
         <url-pattern>/</url-pattern>
     </servlet-mapping>
+
+    <!-- Update your web.xml to add these servlet mappings -->
+<servlet>
+    <servlet-name>GetEnterpriseServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.GetEnterpriseServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>GetEnterpriseServlet</servlet-name>
+    <url-pattern>/getEnterprise</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>UpdateEnterpriseServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.UpdateEnterpriseServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UpdateEnterpriseServlet</servlet-name>
+    <url-pattern>/updateEnterprise</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>CreateEnterpriseServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.CreateEnterpriseServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>CreateEnterpriseServlet</servlet-name>
+    <url-pattern>/createEnterprise</url-pattern>
+</servlet-mapping>
+<!-- Add this to your web.xml file -->
+<servlet>
+    <servlet-name>SearchEnterprisesServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.SearchEnterprisesServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SearchEnterprisesServlet</servlet-name>
+    <url-pattern>/searchEnterprises</url-pattern>
+</servlet-mapping>
+
+
 </web-app>

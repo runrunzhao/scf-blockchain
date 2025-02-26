@@ -1,4 +1,4 @@
-/webapp/enterprise.jsp -->
+/main/webapp/enterprise.jsp -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -75,6 +75,12 @@
         .results-table table tbody tr:hover {
             background-color: #f1f1f1;
         }
+        
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
     </style>
 </head>
 
@@ -85,10 +91,10 @@
         <h1>Supply Chain Finance Platform</h1>
         <div class="menu">
             <a href="index.jsp">Home</a>
-            <a href="#user-management">User Management</a>
-            <a href="enterprise.jsp">Enterprise Query</a>
-            <a href="contract.jsp">Contract Query</a>
-            <a href="invoice.jsp">Invoice Query</a>
+            <a href="#user-management">User</a>
+            <a href="enterprise.jsp">Enterprise</a>
+            <a href="contract.jsp">Contract</a>
+            <a href="invoice.jsp">Invoice</a>
         </div>
     </div>
 
@@ -109,8 +115,29 @@
                                 <input type="text" class="form-control" id="enterpriseName" placeholder="Enter Enterprise Name">
                             </div>
                         </div>
-                        <button type="button" class="btn btn-primary" onclick="searchEnterprises()">Search</button>
-                        <button type="button" class="btn btn-secondary" onclick="resetForm()">Reset</button>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="enterpriseType">Enterprise Type</label>
+                                <select class="form-control" id="enterpriseType">
+                                    <option value="">All Types</option>
+                                    <option value="Core">Core Enterprise</option>
+                                    <option value="Bank">Bank</option>
+                                    <option value="Supplier">Supplier</option>
+                                    <option value="Distributor">Distributor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-2">
+                                <button type="button" class="btn btn-primary btn-block" onclick="searchEnterprises()">Search</button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button type="button" class="btn btn-secondary btn-block" onclick="resetForm()">Reset</button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button type="button" class="btn btn-success btn-block" onclick="addNewEnterprise()">Add New</button>
+                            </div>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -121,6 +148,12 @@
             <div class="col-12">
                 <div class="results-table">
                     <h3 class="mb-4">Search Results</h3>
+                    <div id="loading">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading enterprises...</p>
+                    </div>
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
                             <thead>
@@ -129,30 +162,16 @@
                                     <th>Name</th>
                                     <th>Type</th>
                                     <th>Phone</th>
+                                    <th>Address</th>
                                 </tr>
                             </thead>
                             <tbody id="resultsBody">
-                                <!-- Sample data, would be populated dynamically -->
-                                <tr ondblclick="showEnterpriseDetail('001')">
-                                    <td>001</td>
-                                    <td>XYZ Corporation</td>
-                                    <td>Core Enterprise</td>
-                                    <td>+123-456-7890</td>
-                                </tr>
-                                <tr ondblclick="showEnterpriseDetail('S001')">
-                                    <td>S001</td>
-                                    <td>Acme Suppliers</td>
-                                    <td>Supplier (Tier 1)</td>
-                                    <td>+123-567-8901</td>
-                                </tr>
-                                <tr ondblclick="showEnterpriseDetail('D001')">
-                                    <td>D001</td>
-                                    <td>Global Distribution Inc.</td>
-                                    <td>Distributor (Tier 1)</td>
-                                    <td>+123-678-9012</td>
-                                </tr>
+                                <!-- Data will be populated dynamically -->
                             </tbody>
                         </table>
+                    </div>
+                    <div id="noResults" style="display: none;">
+                        <p class="text-center">No enterprises found matching your search criteria.</p>
                     </div>
                 </div>
             </div>
@@ -165,19 +184,121 @@
     </div>
 
     <!-- Bootstrap and jQuery JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
     <script>
-        // Function to search enterprises (would connect to backend in a real implementation)
-        function searchEnterprises() {
-            const enterpriseId = document.getElementById('enterpriseId').value;
-            const enterpriseName = document.getElementById('enterpriseName').value;
+        // Function to search enterprises
+      // Update the searchEnterprises function error handler:
+
+function searchEnterprises() {
+    const enterpriseId = document.getElementById('enterpriseId').value;
+    const enterpriseName = document.getElementById('enterpriseName').value;
+    const enterpriseType = document.getElementById('enterpriseType').value;
+    
+    // Show loading indicator
+    document.getElementById('loading').style.display = 'block';
+    document.getElementById('noResults').style.display = 'none';
+    document.getElementById('resultsBody').innerHTML = '';
+    
+    // Prepare search parameters
+    const searchParams = new URLSearchParams();
+    if (enterpriseId) searchParams.append('id', enterpriseId);
+    if (enterpriseName) searchParams.append('name', enterpriseName);
+    if (enterpriseType) searchParams.append('type', enterpriseType);
+    
+    // Log the search URL for debugging
+    console.log('Search URL: searchEnterprises?' + searchParams.toString());
+    
+    // Send AJAX request to get enterprises
+    $.ajax({
+        url: 'searchEnterprises?' + searchParams.toString(),
+        type: 'GET',
+        dataType: 'json',
+        success: function(data) {
+            // Hide loading indicator
+            document.getElementById('loading').style.display = 'none';
             
-            // For demo, just show an alert
-            alert(`Searching for enterprises with ID: ${enterpriseId} and Name: ${enterpriseName}`);
-            // In a real implementation, this would make an AJAX call and update the table
+            // Log the response for debugging
+            console.log('Search response:', data);
+            
+            // Update results table
+            if (data && data.length > 0) {
+                renderEnterpriseTable(data);
+            } else {
+                document.getElementById('noResults').style.display = 'block';
+            }
+        },
+        error: function(xhr, status, error) {
+            // Hide loading indicator
+            document.getElementById('loading').style.display = 'none';
+            
+            // Show error message with more details
+            console.error('Search error:', error);
+            console.error('Response text:', xhr.responseText);
+            
+            // Update the UI to show the error
+            document.getElementById('resultsBody').innerHTML = '';
+            document.getElementById('noResults').style.display = 'block';
+            document.getElementById('noResults').innerHTML = 
+                '<p class="text-danger">Error searching enterprises. Please check console for details.</p>';
+            
+            // Alert with simplified error message
+            alert('Error searching enterprises. Please try again later.');
+        }
+    });
+}
+        
+        // Function to render enterprise table
+        function renderEnterpriseTable(enterprises) {
+            const tbody = document.getElementById('resultsBody');
+            tbody.innerHTML = '';
+            
+            enterprises.forEach(function(enterprise) {
+                const row = document.createElement('tr');
+                row.ondblclick = function() {
+                    showEnterpriseDetail(enterprise.enterpriseID);
+                };
+                
+                // Enterprise ID column
+                const idCell = document.createElement('td');
+                idCell.textContent = enterprise.enterpriseID;
+                row.appendChild(idCell);
+                
+                // Name column
+                const nameCell = document.createElement('td');
+                nameCell.textContent = enterprise.enterpriseName;
+                row.appendChild(nameCell);
+                
+                // Type column
+                const typeCell = document.createElement('td');
+                typeCell.textContent = getTypeDisplayText(enterprise.role);
+                row.appendChild(typeCell);
+                
+                // Phone column
+                const phoneCell = document.createElement('td');
+                phoneCell.textContent = enterprise.telephone;
+                row.appendChild(phoneCell);
+                
+                // Address column
+                const addressCell = document.createElement('td');
+                addressCell.textContent = enterprise.address;
+                row.appendChild(addressCell);
+                
+                tbody.appendChild(row);
+            });
+        }
+        
+        // Helper function to get display text for enterprise type
+        function getTypeDisplayText(type) {
+            switch(type) {
+                case 'Core': return 'Core Enterprise';
+                case 'Bank': return 'Bank';
+                case 'Supplier': return 'Supplier';
+                case 'Distributor': return 'Distributor';
+                default: return type;
+            }
         }
 
         // Function to reset the search form
@@ -189,6 +310,16 @@
         function showEnterpriseDetail(id) {
             window.location.href = `enterpriseDetail.jsp?id=${id}`;
         }
+        
+        // Function to add new enterprise
+        function addNewEnterprise() {
+            window.location.href = "enterpriseDetail.jsp?mode=add";
+        }
+        
+        // Load all enterprises when the page loads
+        $(document).ready(function() {
+            searchEnterprises();
+        });
     </script>
 </body>
 

@@ -1,4 +1,4 @@
-jsp -->
+/enterpriseDetail.jsp -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -67,6 +67,10 @@ jsp -->
         .card {
             margin-bottom: 15px;
         }
+        
+        .edit-mode {
+            display: none;
+        }
     </style>
 </head>
 
@@ -77,10 +81,10 @@ jsp -->
         <h1>Supply Chain Finance Platform</h1>
         <div class="menu">
             <a href="index.jsp">Home</a>
-            <a href="#user-management">User Management</a>
-            <a href="enterprise.jsp">Enterprise Query</a>
-            <a href="contract.jsp">Contract Query</a>
-            <a href="invoice.jsp">Invoice Query</a>
+            <a href="#user-management">User</a>
+            <a href="enterprise.jsp">Enterprise</a>
+            <a href="contract.jsp">Contract</a>
+            <a href="invoice.jsp">Invoice</a>
         </div>
     </div>
 
@@ -90,46 +94,95 @@ jsp -->
             <div class="col-12">
                 <div class="detail-panel">
                     <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3>Enterprise Details</h3>
-                        <button class="btn btn-secondary" onclick="goBack()">Back to Search</button>
+                        <h3 id="pageTitle">Enterprise Details</h3>
+                        <div>
+                            <!-- Add Edit and Save buttons -->
+                            <button class="btn btn-primary" id="editBtn" onclick="toggleEditMode()">Edit</button>
+                            <button class="btn btn-success edit-mode" id="saveBtn" onclick="saveEnterprise()">Save</button>
+                            <button class="btn btn-secondary" onclick="goBack()">Back</button>
+                        </div>
                     </div>
 
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><strong>Enterprise ID:</strong></label>
-                                <p id="detailId">001</p>
+                    <!-- Display-only view -->
+                    <div id="viewMode">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Enterprise ID:</strong></label>
+                                    <p id="detailId">001</p>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Enterprise Name:</strong></label>
+                                    <p id="detailName">XYZ Corporation</p>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Type:</strong></label>
+                                    <p id="detailType">Core Enterprise</p>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label><strong>Enterprise Name:</strong></label>
-                                <p id="detailName">XYZ Corporation</p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Type:</strong></label>
-                                <p id="detailType">Core Enterprise</p>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label><strong>Contact Number:</strong></label>
+                                    <p id="detailContact">+123-456-7890</p>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Address:</strong></label>
+                                    <p id="detailAddress">123 Business Park, Finance District, 10001</p>
+                                </div>
+                                <div class="form-group">
+                                    <label><strong>Memo:</strong></label>
+                                    <p id="detailMemo">-</p>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><strong>Contact Number:</strong></label>
-                                <p id="detailContact">+123-456-7890</p>
+                    </div>
+                    
+                    <!-- Edit mode view -->
+                    <div id="editMode" class="edit-mode">
+                        <form id="enterpriseForm">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="editId">Enterprise ID:</label>
+                                        <input type="text" class="form-control" id="editId" readonly>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editName">Enterprise Name:</label>
+                                        <input type="text" class="form-control" id="editName">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editType">Type:</label>
+                                        <select class="form-control" id="editType">
+                                            <option value="Core">Core Enterprise</option>
+                                            <option value="Bank">Bank</option>
+                                            <option value="Supplier">Supplier</option>
+                                            <option value="Distributor">Distributor</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="editContact">Contact Number:</label>
+                                        <input type="text" class="form-control" id="editContact">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editAddress">Address:</label>
+                                        <textarea class="form-control" id="editAddress" rows="2"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="editMemo">Memo:</label>
+                                        <textarea class="form-control" id="editMemo" rows="2"></textarea>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label><strong>Email:</strong></label>
-                                <p id="detailEmail">info@xyzcorp.com</p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Address:</strong></label>
-                                <p id="detailAddress">123 Business Park, Finance District, 10001</p>
-                            </div>
-                        </div>
+                        </form>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Related Entities Section -->
-        <div class="row">
+        <div class="row" id="relatedEntitiesSection">
             <div class="col-12">
                 <div class="related-entities">
                     <h4 class="mb-4">Related Entities</h4>
@@ -221,32 +274,218 @@ jsp -->
     </div>
 
     <!-- Bootstrap and jQuery JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
     <script>
+        // Variable to track if we're in add mode
+        let isAddMode = false;
+        
         // Function to go back to search page
         function goBack() {
             window.location.href = "enterprise.jsp";
         }
+        
+        // Function to toggle between view mode and edit mode
+        function toggleEditMode() {
+            const viewMode = document.getElementById('viewMode');
+            const editMode = document.getElementById('editMode');
+            const editBtn = document.getElementById('editBtn');
+            const saveBtn = document.getElementById('saveBtn');
+            
+            if (editMode.style.display === 'block') {
+                // Switch to view mode
+                viewMode.style.display = 'block';
+                editMode.style.display = 'none';
+                editBtn.style.display = 'inline-block';
+                saveBtn.style.display = 'none';
+            } else {
+                // Switch to edit mode
+                viewMode.style.display = 'none';
+                editMode.style.display = 'block';
+                editBtn.style.display = 'none';
+                saveBtn.style.display = 'inline-block';
+            }
+        }
+        
+        // Function to save enterprise data
+        function saveEnterprise() {
+            const enterpriseData = {
+                id: document.getElementById('editId').value,
+                name: document.getElementById('editName').value,
+                type: document.getElementById('editType').value,
+                contact: document.getElementById('editContact').value,
+                address: document.getElementById('editAddress').value,
+                memo: document.getElementById('editMemo').value
+            };
+            
+            // Perform validation
+            if (!enterpriseData.name.trim()) {
+                alert('Enterprise name cannot be empty');
+                return;
+            }
+            
+            if (!enterpriseData.contact.trim()) {
+                alert('Contact number cannot be empty');
+                return;
+            }
+            
+            if (!enterpriseData.address.trim()) {
+                alert('Address cannot be empty');
+                return;
+            }
+            
+            // Send data to server
+            const endpoint = isAddMode ? 'createEnterprise' : 'updateEnterprise';
+            
+            $.ajax({
+                url: endpoint,
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify(enterpriseData),
+                success: function(response) {
+                    console.log("Response from server:", response); // Debug
+
+                    if (response.success) {
+                        alert(isAddMode ? 'Enterprise created successfully' : 'Enterprise updated successfully');
+                        
+                        if (isAddMode) {
+                            // For new enterprise, redirect to the detail page with the new ID
+                            var newUrl = "enterpriseDetail.jsp?id=" + response.enterpriseID;
+                            console.log("Redirecting to: " + newUrl); // Debug
+                            window.location.href = newUrl;
+                        } else {
+                            // For existing enterprise, update the view with new data
+                            document.getElementById('detailName').textContent = enterpriseData.name;
+                            document.getElementById('detailType').textContent = getTypeDisplayText(enterpriseData.type);
+                            document.getElementById('detailContact').textContent = enterpriseData.contact;
+                            document.getElementById('detailAddress').textContent = enterpriseData.address;
+                            document.getElementById('detailMemo').textContent = enterpriseData.memo || '-';
+                            
+                            // Switch back to view mode
+                            toggleEditMode();
+                        }
+                    } else {
+                        alert('Error: ' + response.message);
+                    }
+                },
+                error: function(xhr, status, error) {
+                    console.error("AJAX Error:", xhr.responseText); // Debug
+                    alert('Error connecting to server: ' + error);
+                }
+            });
+        }
+        
+        // Helper function to get display text for enterprise type
+        function getTypeDisplayText(type) {
+            switch(type) {
+                case 'Core': return 'Core Enterprise';
+                case 'Bank': return 'Bank';
+                case 'Supplier': return 'Supplier';
+                case 'Distributor': return 'Distributor';
+                default: return type;
+            }
+        }
+        
+        // Function to generate a new enterprise ID based on role
+        function generateEnterpriseID(role) {
+            const prefix = role.charAt(0); // C, B, S, or D
+            const randomNum = Math.floor(Math.random() * 900) + 100; // Random 3-digit number
+            return prefix + randomNum;
+        }
 
         // Function to load enterprise details based on the ID from query parameter
         function loadEnterpriseDetails() {
-            // Get ID from URL
+            // Get parameters from URL
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
+            const mode = urlParams.get('mode');
             
-            // In a real implementation, this would make an AJAX call to fetch data
-            // For demo purposes, just show the ID in the console
-            console.log("Loading details for enterprise ID:", id);
+            // Check if we're in add mode
+            if (mode === 'add') {
+                isAddMode = true;
+                
+                // Set page title
+                document.getElementById('pageTitle').textContent = 'Add New Enterprise';
+                document.title = 'Add New Enterprise - Supply Chain Finance';
+                
+                // Hide view mode, show edit mode
+                document.getElementById('viewMode').style.display = 'none';
+                document.getElementById('editMode').style.display = 'block';
+                
+                // Hide edit button, show save button
+                document.getElementById('editBtn').style.display = 'none';
+                document.getElementById('saveBtn').style.display = 'inline-block';
+                
+                // Hide related entities section
+                document.getElementById('relatedEntitiesSection').style.display = 'none';
+                
+                // Initialize form with empty values
+                document.getElementById('editName').value = '';
+                document.getElementById('editType').value = 'Core';
+                document.getElementById('editContact').value = '';
+                document.getElementById('editAddress').value = '';
+                document.getElementById('editMemo').value = '';
+                
+                // Generate an enterprise ID based on selected role
+                document.getElementById('editType').addEventListener('change', function() {
+                    document.getElementById('editId').value = generateEnterpriseID(this.value);
+                });
+                
+                // Generate an initial ID
+                document.getElementById('editId').value = generateEnterpriseID('Core');
+                
+                return;
+            }
             
-            // We could update the page elements with actual data here
-            document.title = `Enterprise Details: ${id} - Supply Chain Finance`;
+            // If not in add mode, proceed with loading existing enterprise
+            if (!id) {
+                alert('No enterprise ID provided');
+                goBack();
+                return;
+            }
+            
+            // Fetch enterprise data from server
+            $.ajax({
+                url: 'getEnterprise?id=' + id,
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                    if (data) {
+                        // Update view mode
+                        document.getElementById('detailId').textContent = data.enterpriseID;
+                        document.getElementById('detailName').textContent = data.enterpriseName;
+                        document.getElementById('detailType').textContent = getTypeDisplayText(data.role);
+                        document.getElementById('detailContact').textContent = data.telephone;
+                        document.getElementById('detailAddress').textContent = data.address;
+                        document.getElementById('detailMemo').textContent = data.memo || '-';
+                        
+                        // Update edit mode
+                        document.getElementById('editId').value = data.enterpriseID;
+                        document.getElementById('editName').value = data.enterpriseName;
+                        document.getElementById('editType').value = data.role;
+                        document.getElementById('editContact').value = data.telephone;
+                        document.getElementById('editAddress').value = data.address;
+                        document.getElementById('editMemo').value = data.memo || '';
+                        
+                        // Set page title
+                        document.title = `Enterprise Details: ${data.enterpriseName} - Supply Chain Finance`;
+                    } else {
+                        alert('Enterprise not found');
+                        goBack();
+                    }
+                },
+                error: function() {
+                    alert('Error loading enterprise details');
+                }
+            });
         }
 
         // Call the function when the page loads
-        window.onload = loadEnterpriseDetails;
+        $(document).ready(function() {
+            loadEnterpriseDetails();
+        });
     </script>
 </body>
 
