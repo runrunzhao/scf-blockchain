@@ -5,6 +5,31 @@ CREATE DATABASE SCFDB;
 -- Step 2: Switch to the SCFDB database
 USE SCFDB;
 
+
+git add .                         # 添加所有修改的文件到暂存区
+git commit -m "02261824"     # 提交代码并添加备注
+git push origin main              # 推送到远程仓库的 main 分支
+
+
+docker ps -a | grep scf-mysql
+docker start scf-mysql
+
+docker exec -it scf-mysql bash
+mysql -u root -p
+
+
+CREATE TABLE enterprise(
+    enterpriseID char(8) PRIMARY KEY,      -- enterID
+    enterpriseName VARCHAR(255) NOT NULL,              --  name
+    address VARCHAR(255) NOT NULL,
+    telephone CHAR(12) NOT NULL,
+    role ENUM('Core', 'Bank','Supplier','Distributor') NOT NULL     
+);
+
+
+mvn package
+mvn jetty:run
+
 -- Step 3: Create 'core' table
 CREATE TABLE core (
     coreID INT AUTO_INCREMENT PRIMARY KEY,       -- Core enterprise ID
