@@ -1,3 +1,4 @@
+/webapp/index.jsp -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -20,6 +21,13 @@
 
         .card {
             margin: 20px 0;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         .core-enterprise {
@@ -28,6 +36,13 @@
             background-color: #ffffff;
             border-radius: 10px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .core-enterprise:hover {
+            transform: translateY(-5px);
+            box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
         }
 
         .menu {
@@ -68,10 +83,10 @@
     <div class="header">
         <h1>Supply Chain Finance Platform</h1>
         <div class="menu">
-            <a href="#user-management">User Management</a>
-            <a href="#enterprise-query">Enterprise Query</a>
-            <a href="#contract-query">Contract Query</a>
-            <a href="#invoice-query">Invoice Query</a>
+            <a href="#user-management">User</a>
+            <a href="enterprise.jsp">Enterprise</a>
+            <a href="contract.jsp">Contract</a>
+            <a href="invoice.jsp">Invoice</a>
         </div>
     </div>
 
@@ -79,12 +94,12 @@
         <!-- Core Enterprise Section -->
         <div class="row justify-content-center">
             <div class="col-md-6">
-                <div class="core-enterprise">
+                <div class="core-enterprise" onclick="navigateToEnterpriseDetail('001')">
                     <h3>Core Enterprise</h3>
                     <p><strong>Core Enterprise Name:</strong> XYZ Corporation</p>
                     <p><strong>Core Enterprise ID:</strong> 001</p>
                     <p><strong>Contact:</strong> +123-456-7890</p>
-                    <button class="btn btn-primary" onclick="showDetails()">Show Details</button>
+                    <button class="btn btn-primary">Details</button>
                 </div>
             </div>
         </div>
@@ -92,31 +107,35 @@
         <!-- Upstream and Downstream Suppliers Section -->
         <div class="row">
             <div class="col-md-6">
-                <div class="card">
+                <div class="card" onclick="navigateToEnterpriseDetail('S001')">
                     <div class="card-body">
                         <h5 class="card-title">Upstream Supplier 1</h5>
                         <p class="card-text">Tier: Tier 1</p>
+                        <p class="card-text"><small class="text-muted">ID: S001</small></p>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card" onclick="navigateToEnterpriseDetail('S002')">
                     <div class="card-body">
                         <h5 class="card-title">Upstream Supplier 2</h5>
                         <p class="card-text">Tier: Tier 2</p>
+                        <p class="card-text"><small class="text-muted">ID: S002</small></p>
                     </div>
                 </div>
             </div>
 
             <div class="col-md-6">
-                <div class="card">
+                <div class="card" onclick="navigateToEnterpriseDetail('D001')">
                     <div class="card-body">
                         <h5 class="card-title">Downstream Distributor 1</h5>
                         <p class="card-text">Tier: Tier 1</p>
+                        <p class="card-text"><small class="text-muted">ID: D001</small></p>
                     </div>
                 </div>
-                <div class="card">
+                <div class="card" onclick="navigateToEnterpriseDetail('D002')">
                     <div class="card-body">
                         <h5 class="card-title">Downstream Distributor 2</h5>
                         <p class="card-text">Tier: Tier 2</p>
+                        <p class="card-text"><small class="text-muted">ID: D002</small></p>
                     </div>
                 </div>
             </div>
@@ -134,9 +153,9 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
     <script>
-        // JavaScript function to show more details about the core enterprise
-        function showDetails() {
-            alert('Displaying more details about Core Enterprise...');
+        // Function to navigate to enterprise detail page
+        function navigateToEnterpriseDetail(id) {
+            window.location.href = `enterpriseDetail.jsp?id=${id}`;
         }
     </script>
 </body>
