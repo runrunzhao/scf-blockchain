@@ -135,7 +135,17 @@
                 </div>
             </div>
             
-            <a href="invoice.jsp">Invoice</a>
+           <!-- Invoice dropdown menu -->
+<div class="dropdown d-inline-block">
+    <a class="dropdown-toggle" href="#" role="button" id="invoiceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Invoice
+    </a>
+    <div class="dropdown-menu" aria-labelledby="invoiceDropdown">
+        <a class="dropdown-item" href="invoice.jsp">Search Invoices</a>
+        <a class="dropdown-item" href="invoiceDetail.jsp?mode=add">Add New Invoice</a>
+    </div>
+</div>
+
         </div>
     </div>
 
@@ -381,6 +391,53 @@
                 }
             );
         });
+        // Function to load contract details (for edit mode)
+function loadContractDetails(id) {
+    // Make AJAX call to get contract details
+    $.ajax({
+        url: "getContract", // You'll need to create this servlet
+        type: "GET",
+        data: {
+            contractId: id
+        },
+        dataType: "json",
+        success: function(contract) {
+            if (contract) {
+                document.getElementById('contractId').value = contract.contractId;
+                document.getElementById('contractName').value = contract.contractName;
+                document.getElementById('contractType').value = contract.contractType;
+                document.getElementById('contractStatus').value = contract.status;
+                document.getElementById('fromEnterpriseId').value = contract.fromEnterpriseId;
+                document.getElementById('fromEnterpriseName').value = contract.fromEnterpriseName;
+                document.getElementById('toEnterpriseId').value = contract.toEnterpriseId;
+                document.getElementById('toEnterpriseName').value = contract.toEnterpriseName;
+                document.getElementById('amount').value = contract.amount;
+                
+                // Set dates if available
+                if (contract.signDate) {
+                    document.getElementById('signDate').value = contract.signDate;
+                }
+                if (contract.effectiveDate) {
+                    document.getElementById('effectiveDate').value = contract.effectiveDate;
+                }
+                if (contract.expiryDate) {
+                    document.getElementById('expiryDate').value = contract.expiryDate;
+                }
+                
+                document.getElementById('paymentTerms').value = contract.paymentTerms || '';
+                document.getElementById('description').value = contract.description || '';
+                document.getElementById('remarks').value = contract.remarks || '';
+            } else {
+                alert('Contract not found');
+                window.location.href = 'contract.jsp';
+            }
+        },
+        error: function(xhr, status, error) {
+            alert("Error loading contract: " + error);
+            window.location.href = 'contract.jsp';
+        }
+    });
+}
     </script>
 </body>
 

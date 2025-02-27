@@ -1,4 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="com.supplychainfinance.model.Contract" %>
+<%@ page import="java.util.List" %>
+<!DOCTYPE html>
+<html lang="en">
+<!-- Rest of your contract.jsp file -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -227,21 +232,22 @@
                         <p class="mt-2">Loading contracts...</p>
                     </div>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
-                            <thead>
-                                <tr>
-                                    <th>Contract ID</th>
-                                    <th>Enterprise</th>
-                                    <th>Type</th>
-                                    <th>Status</th>
-                                    <th>Amount</th>
-                                    <th>Create Date</th>
-                                </tr>
-                            </thead>
-                            <tbody id="resultsBody">
-                                <!-- Data will be populated dynamically -->
-                            </tbody>
-                        </table>
+                       <!-- Update the table headers in contract.jsp -->
+<table class="table table-striped table-hover">
+    <thead>
+        <tr>
+            <th>Contract ID</th>
+            <th>Parties</th>
+            <th>Contract Name</th>
+            <th>Status</th>
+            <th>Amount</th>
+            <th>Signing Date</th>
+        </tr>
+    </thead>
+    <tbody id="resultsBody">
+        <!-- Data will be populated dynamically -->
+    </tbody>
+</table>
                     </div>
                     <div id="noResults" style="display: none;">
                         <p class="text-center">No contracts found matching your search criteria.</p>
@@ -261,56 +267,78 @@
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
-    <script>
-        // Function to search contracts
-        function searchContracts() {
-            const contractId = document.getElementById('contractId').value;
-            const enterpriseName = document.getElementById('enterpriseName').value;
-            const contractStatus = document.getElementById('contractStatus').value;
-            const contractType = document.getElementById('contractType').value;
-            
-            console.log("Searching contracts with params - ID:", contractId, "Enterprise:", enterpriseName, 
-                      "Status:", contractStatus, "Type:", contractType);
-            
-            // Show loading indicator
-            document.getElementById('loading').style.display = 'block';
-            document.getElementById('noResults').style.display = 'none';
-            document.getElementById('resultsBody').innerHTML = '';
-            
-            // This is where you would implement the AJAX call to search contracts
-            // For now, just show "no results" after a short delay
-            setTimeout(function() {
+     <script>
+    // Function to search contracts
+    function searchContracts() {
+        const contractId = document.getElementById('contractId').value;
+        const enterpriseName = document.getElementById('enterpriseName').value;
+        const contractStatus = document.getElementById('contractStatus').value;
+        
+        console.log("Searching contracts with params - ID:", contractId, "Enterprise:", enterpriseName, 
+                  "Status:", contractStatus);
+        
+        // Show loading indicator
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('noResults').style.display = 'none';
+        document.getElementById('resultsBody').innerHTML = '';
+        
+        // Perform AJAX call to search contracts
+        $.ajax({
+            url: "searchContract",
+            type: "GET",
+            data: {
+                contractId: contractId,
+                enterpriseName: enterpriseName,
+                contractStatus: contractStatus
+            },
+            dataType: "json",
+            success: function(contracts) {
                 document.getElementById('loading').style.display = 'none';
-                document.getElementById('noResults').style.display = 'block';
-            }, 1000);
-        }
-        
-        // Function to reset the search form
-        function resetForm() {
-            document.getElementById('contractSearchForm').reset();
-        }
-        
-        // Function to add new contract
-        function addNewContract() {
-            window.location.href = "contractDetail.jsp?mode=add";
-        }
-        
-        // Initialize when document is ready
-        $(document).ready(function() {
-            // Initialize dropdown menu
-            $('.dropdown-toggle').dropdown();
-            
-            // Add event listener to make dropdown work on hover too
-            $('.dropdown').hover(
-                function() {
-                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
-                },
-                function() {
-                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
+                
+                if (!contracts || contracts.length === 0) {
+                    document.getElementById('noResults').style.display = 'block';
+                } else {
+                    let html = '';
+                    
+                    contracts.forEach(function(contract) {
+                        html += '<tr onclick="viewContract(\'' + contract.contractId + '\')">';
+                        html += '<td>' + (contract.contractId || '') + '</td>';
+                        html += '<td>' + (contract.fromEnterpriseName || '') + ' → ' + (contract.toEnterpriseName || '') + '</td>';
+                        html += '<td>' + (contract.contractName || '') + '</td>';
+                        html += '<td>' + (contract.status || '') + '</td>';
+                        html += '<td>$' + (contract.amount ? contract.amount.toFixed(2) : '0.00') + '</td>';
+                        html += '<td>' + (contract.signDate || '') + '</td>';
+                        html += '</tr>';
+                    });
+                    
+                    document.getElementById('resultsBody').innerHTML = html;
                 }
-            );
+            },
+            error: function(xhr, status, error) {
+                document.getElementById('loading').style.display = 'none';
+                console.error("AJAX Error:", status, error);
+                console.error("Response Text:", xhr.responseText);
+                
+                try {
+                    // Try to parse as JSON error message
+                    const errorData = JSON.parse(xhr.responseText);
+                    if (errorData && errorData.error) {
+                        alert("Error searching contracts: " + errorData.error);
+                    } else {
+                        alert("Error searching contracts. See console for details.");
+                    }
+                } catch (e) {
+                    alert("Error searching contracts. Server returned an invalid response.");
+                }
+                
+                // Show error in the results area
+                document.getElementById('resultsBody').innerHTML = '<tr><td colspan="6" class="text-danger">Error occurred while searching. Please try again.</td></tr>';
+            }
         });
-    </script>
+    }
+     
+     </script>
+
 </body>
 
 </html>

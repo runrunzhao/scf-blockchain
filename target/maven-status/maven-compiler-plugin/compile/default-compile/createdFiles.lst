@@ -1,8 +1,12 @@
+com/supplychainfinance/servlet/UpdateEnterpriseServlet.class
+com/supplychainfinance/servlet/SearchContractServlet.class
+com/supplychainfinance/servlet/GetContractServlet.class
+com/supplychainfinance/dao/ContractDAO.class
 com/supplychainfinance/servlet/GetEnterpriseServlet.class
 com/supplychainfinance/servlet/CoreEnterpriseServlet.class
 com/supplychainfinance/dao/EnterpriseDAO.class
-com/supplychainfinance/servlet/UpdateEnterpriseServlet.class
 com/supplychainfinance/servlet/CreateEnterpriseServlet.class
 com/supplychainfinance/model/Enterprise.class
+com/supplychainfinance/model/Contract.class
 com/supplychainfinance/servlet/SearchEnterprisesServlet.class
 com/supplychainfinance/controller/MainController.class

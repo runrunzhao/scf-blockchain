@@ -65,4 +65,23 @@
     <welcome-file>getCoreEnterprise</welcome-file>
 </welcome-file-list>
 
+<!-- Servlet mappings if you're not using annotations -->
+    <servlet>
+        <servlet-name>SearchContractServlet</servlet-name>
+        <servlet-class>com.supplychainfinance.servlet.SearchContractServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>SearchContractServlet</servlet-name>
+        <url-pattern>/searchContract</url-pattern>
+    </servlet-mapping>
+    
+    <servlet>
+        <servlet-name>GetContractServlet</servlet-name>
+        <servlet-class>com.supplychainfinance.servlet.GetContractServlet</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GetContractServlet</servlet-name>
+        <url-pattern>/getContract</url-pattern>
+    </servlet-mapping>
+  
 </web-app>

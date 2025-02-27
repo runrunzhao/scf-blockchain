@@ -9,7 +9,7 @@ ALTER TABLE enterprise  ADD COLUMN tier INT;
 
 
 CREATE TABLE contract (
-    contractID INT AUTO_INCREMENT PRIMARY KEY,  -- Contract ID
+    contractID char(8) PRIMARY KEY,  -- Contract ID
     realNo VARCHAR(100) NOT NULL,               -- Real contract number
     part1 VARCHAR(255),                                 -- Part 1 of the contract 
     part2 VARCHAR(255),                                 -- Part 2 of the contract 
@@ -17,14 +17,13 @@ CREATE TABLE contract (
     signingDate DATE NOT NULL ,
     effectiveDate  DATE NOT NULL ,
     invalidDate DATE NOT NULL  ,
-    status ENUM('Active', 'Pending','End') NOT NULL                      
-    
-);
+    status ENUM('Active', 'Pending','End','drfting') NOT NULL                      
+    );
 
 -- Step 7: Create 'invoice' table
 CREATE TABLE invoice (
-    invoiceID INT AUTO_INCREMENT PRIMARY KEY,   -- Invoice ID
-    contractID INT,                             -- Contract ID 
+    invoiceID char(8) PRIMARY KEY,   -- Invoice ID
+    contractID char(8),                             -- Contract ID 
     amount DECIMAL(15, 2) NOT NULL,             -- Invoice amount
     date DATE NOT NULL,                         -- Invoice creation date
     FOREIGN KEY (contractID) REFERENCES contract(contractID) -- Foreign key to contract table
@@ -121,8 +120,8 @@ INSERT INTO bank (bankName, limit) VALUES ('Bank A', 1000000), ('Bank B', 500000
 INSERT INTO supplier (suppName, tier) VALUES ('Supplier 1', 'Tier 1'), ('Supplier 2', 'Tier 2');
 
 -- Insert data into 'contract' table
-INSERT INTO contract (realNo, part1, part2, amount, date) VALUES 
-('CONTRACT001', 'Contract part 1 description', 'Contract part 2 description', 50000.00, '2023-01-01'),
+INSERT INTO contract (contractID,realNo, part1, part2, amount, date) VALUES 
+('CRT001', 'realCrt001', 'C001','S427', 50000.00, '2025-02-01',),
 ('CONTRACT002', 'Contract part 1 description', 'Contract part 2 description', 75000.00, '2023-02-01');
 
 -- Insert data into 'invoice' table
@@ -132,3 +131,46 @@ INSERT INTO invoice (contractID, amount, date) VALUES
 
 -- Insert data into 'CTT' table
 INSERT INTO CTT (total, invalidDate, burn) VALUES (2, '2023-12-31', FALSE);
+
+mvn jetty:run
+
+
+docker exec -it scf-mysql bash ;
+
+INSERT INTO enterprise VALUES ('001', 'XYZ Corp', 'London', '123-456-7890','Core');
+
+ALTER TABLE enterprise  ADD COLUMN tier INT;
+
+
+CREATE TABLE contract (
+    contractID char(8) PRIMARY KEY,  -- Contract ID
+    realNo VARCHAR(100) NOT NULL,               -- Real contract number
+    part1 CHAR(8),                                 -- Part 1 of the contract 
+    part2 CHAR(8),                                 -- Part 2 of the contract 
+    amount DECIMAL(15, 2) NOT NULL,             -- Contract amount
+    signingDate DATE NOT NULL ,
+    effectiveDate  DATE NOT NULL ,
+    invalidDate DATE NOT NULL  ,
+    status ENUM('Active', 'Pending','End','drfting') NOT NULL                      
+    );
+
+-- Step 7: Create 'invoice' table
+CREATE TABLE invoice (
+    invoiceID char(8) PRIMARY KEY,   -- Invoice ID
+    contractID char(8),                             -- Contract ID 
+    amount DECIMAL(15, 2) NOT NULL,             -- Invoice amount
+    createdate DATE NOT NULL,                         -- Invoice creation date
+    FOREIGN KEY (contractID) REFERENCES contract(contractID) -- Foreign key to contract table
+);
+
+C001         | rewtew         | dfdsaf        | 66666     | Core        | 22222222     | NULL |
+D419         | gsgfgd         | rewrite       | 32313     | Distributor | fdasfdsa     |    1 |
+S427         | rwre           | 32132         | 32313     | Supplier    | FDSA         |    1 |
+S947         | bbagag         | dsafsdafdsafs | 123444    | Supplier    | fdasfsafdsaf | 
+
+
+
+INSERT INTO contract (contractID,realNo, part1, part2, amount, signingDate,effectiveDate,invalidDate,status) VALUES ('CRT001', 'realCrt001', 'C001','S427', 50000.00, '2025-02-01','2025-02-01','2026-02-01','Active');
+
+
+SELECT c.*, e1.enterpriseName as fromEnterpriseName, e2.enterpriseName as toEnterpriseName FROM contract c LEFT JOIN enterprise e1 ON c.fromEnterpriseId = e1.enterpriseID LEFT JOIN enterprise e2 ON c.toEnterpriseId = e2.enterpriseID WHERE 1=1
