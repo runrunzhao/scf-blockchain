@@ -91,6 +91,46 @@ webapp/contractDetail.jsp -->
             border-top: 1px solid #eaeaea;
             margin: 25px 0;
         }
+        /* Updated dropdown menu styling */
+        .dropdown-menu {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 10px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            z-index: 1021;
+        }
+
+        .dropdown-item {
+            color: #333333 !important;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #007bff;
+            color: white !important;
+        }
+
+        /* Make the dropdown visible */
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .dropdown-toggle::after {
+            display: inline-block;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            content: "";
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+        }
+
+        /* Fix inline display */
+        .dropdown.d-inline-block {
+            vertical-align: middle;
+        }
     </style>
 </head>
 
@@ -102,9 +142,39 @@ webapp/contractDetail.jsp -->
         <div class="menu">
             <a href="index.jsp">Home</a>
             <a href="#user-management">User</a>
-            <a href="enterprise.jsp">Enterprise</a>
-            <a href="contract.jsp">Contract</a>
-            <a href="invoice.jsp">Invoice</a>
+            
+            <!-- Enterprise dropdown menu -->
+            <div class="dropdown d-inline-block">
+                <a class="dropdown-toggle" href="#" role="button" id="enterpriseDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Enterprise
+                </a>
+                <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
+                    <a class="dropdown-item" href="enterprise.jsp">Search Enterprises</a>
+                    <a class="dropdown-item" href="enterpriseDetail.jsp?mode=add">Add New Enterprise</a>
+                </div>
+            </div>
+            
+            <!-- Contract dropdown menu -->
+            <div class="dropdown d-inline-block">
+                <a class="dropdown-toggle" href="#" role="button" id="contractDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Contract
+                </a>
+                <div class="dropdown-menu" aria-labelledby="contractDropdown">
+                    <a class="dropdown-item" href="contract.jsp">Search Contracts</a>
+                    <a class="dropdown-item" href="contractDetail.jsp?mode=add">Add New Contract</a>
+                </div>
+            </div>
+            
+            <!-- Invoice dropdown menu -->
+            <div class="dropdown d-inline-block">
+                <a class="dropdown-toggle" href="#" role="button" id="invoiceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Invoice
+                </a>
+                <div class="dropdown-menu" aria-labelledby="invoiceDropdown">
+                    <a class="dropdown-item" href="invoice.jsp">Search Invoices</a>
+                    <a class="dropdown-item" href="invoiceDetail.jsp?mode=add">Add New Invoice</a>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -264,40 +334,128 @@ webapp/contractDetail.jsp -->
         <p>&copy; 2025 Supply Chain Finance Platform | All rights reserved.</p>
     </div>
 
-    <!-- Bootstrap and jQuery JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+  <!-- Make sure your script tags at the bottom of invoiceDetail.jsp look like this -->
 
-    <script>
-        // Function to go back to search page
-        function goBack() {
-            window.location.href = "contract.jsp";
+<!-- Bootstrap and jQuery JS -->
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+<script>
+    // Variable to track the current mode (add or view/edit)
+    let isAddMode = true;
+    
+    // Function to initialize the page based on parameters
+    function initPage() {
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = urlParams.get('id');
+        const mode = urlParams.get('mode');
+        
+        if (mode === 'add') {
+            isAddMode = true;
+            document.getElementById('panelTitle').innerText = 'Add New Invoice';
+            // Set today's date as the default invoice date
+            document.getElementById('invoiceDate').valueAsDate = new Date();
+            // Set due date as 30 days from today by default
+            const dueDate = new Date();
+            dueDate.setDate(dueDate.getDate() + 30);
+            document.getElementById('dueDate').valueAsDate = dueDate;
+        } else if (id) {
+            isAddMode = false;
+            document.getElementById('panelTitle').innerText = 'Invoice Details';
+            loadInvoiceDetails(id);
+        } else {
+            alert('Invalid parameters. Redirecting to invoice search.');
+            window.location.href = 'invoice.jsp';
         }
-
-        // Function to load contract details based on the ID from query parameter
-        function loadContractDetails() {
-            // Get ID from URL
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-            
-            // In a real implementation, this would make an AJAX call to fetch data
-            // For demo purposes, just show the ID in the console
-            console.log("Loading details for contract ID:", id);
-            
-            // We could update the page elements with actual data here
-            document.title = `Contract Details: ${id} - Supply Chain Finance`;
-            
-            // Example of updating status badge based on contract ID
-            if (id === 'C003') {
-                document.getElementById('detailStatus').textContent = 'Pending';
-                document.getElementById('detailStatus').className = 'status-badge status-pending';
+    }
+    
+    // Function to load invoice details (for edit mode)
+    function loadInvoiceDetails(id) {
+        // This would be an AJAX call to get invoice details from the server
+        // For now, just show an alert
+        alert('Loading invoice with ID: ' + id);
+        
+        // Simulate loading data after a delay
+        setTimeout(() => {
+            document.getElementById('invoiceId').value = id;
+            // Set other fields...
+        }, 500);
+    }
+    
+    // Function to select a contract
+    function selectContract() {
+        // Open a modal or navigate to a selection page
+        alert('Contract selection feature will be implemented here');
+        // For now, simulate selection
+        document.getElementById('contractId').value = 'CONT001';
+        document.getElementById('contractName').value = 'Supply Agreement - Central Manufacturing';
+    }
+    
+    // Function to save the invoice
+    function saveInvoice() {
+        // Validate form fields
+        if (!validateForm()) {
+            return;
+        }
+        
+        // This would be an AJAX call to save the invoice to the server
+        alert('Invoice saved successfully');
+        
+        // Redirect to invoice search page
+        window.location.href = 'invoice.jsp';
+    }
+    
+    // Function to validate the form
+    function validateForm() {
+        // Add your validation logic here
+        const amount = document.getElementById('amount').value;
+        if (!amount || amount <= 0) {
+            alert('Please enter a valid invoice amount');
+            return false;
+        }
+        
+        return true;
+    }
+    
+    // Function to go back to the previous page
+    function goBack() {
+        window.location.href = 'invoice.jsp';
+    }
+    
+    // Initialize dropdown menu function
+    function initDropdowns() {
+        console.log('Initializing dropdowns...');
+        $('.dropdown-toggle').dropdown();
+        
+        // Add event listener to make dropdown work on hover too
+        $('.dropdown').hover(
+            function() {
+                console.log('Dropdown hover in');
+                $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
+            },
+            function() {
+                console.log('Dropdown hover out');
+                $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
             }
+        );
+    }
+    
+    // Initialize when document is ready
+    $(document).ready(function() {
+        console.log('Document ready');
+        try {
+            // Initialize page
+            initPage();
+            
+            // Initialize dropdowns
+            initDropdowns();
+        } catch (error) {
+            console.error('Error in document ready:', error);
         }
+    });
+</script>
 
-        // Call the function when the page loads
-        window.onload = loadContractDetails;
-    </script>
 </body>
 
 </html>

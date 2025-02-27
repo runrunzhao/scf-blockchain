@@ -1,6 +1,7 @@
 webapp/index.jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="com.supplychainfinance.model.Enterprise" %>
+<%@ page import="com.supplychainfinance.model.Enterprise, java.util.List" %>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -131,9 +132,9 @@ webapp/index.jsp -->
         <h1>Supply Chain Finance Platform</h1>
         <div class="menu">
             <a href="index.jsp">Home</a>
-            <a href="#user-management">User</a>
+           
             
-            <!-- Simple dropdown menu -->
+              <!-- Enterprise dropdown menu -->
             <div class="dropdown d-inline-block">
                 <a class="dropdown-toggle" href="#" role="button" id="enterpriseDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     Enterprise
@@ -143,9 +144,29 @@ webapp/index.jsp -->
                     <a class="dropdown-item" href="enterpriseDetail.jsp?mode=add">Add New Enterprise</a>
                 </div>
             </div>
-            
-            <a href="contract.jsp">Contract</a>
-            <a href="invoice.jsp">Invoice</a>
+             
+        <!-- Contract dropdown menu -->
+        <div class="dropdown d-inline-block">
+            <a class="dropdown-toggle" href="#" role="button" id="contractDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Contract
+            </a>
+            <div class="dropdown-menu" aria-labelledby="contractDropdown">
+                <a class="dropdown-item" href="contract.jsp">Search Contracts</a>
+                <a class="dropdown-item" href="contractDetail.jsp?mode=add">Add New Contract</a>
+            </div>
+        </div>
+        <!-- Invoice dropdown menu -->
+        <div class="dropdown d-inline-block">
+            <a class="dropdown-toggle" href="#" role="button" id="invoiceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                Invoice
+            </a>
+            <div class="dropdown-menu" aria-labelledby="invoiceDropdown">
+                <a class="dropdown-item" href="invoice.jsp">Search Invoices</a>
+                <a class="dropdown-item" href="invoiceDetail.jsp?mode=add">Add New Invoice</a>
+            </div>
+        </div>
+
+
         </div>
     </div>
 
@@ -191,43 +212,69 @@ webapp/index.jsp -->
         <!-- Keep the rest of the content unchanged -->
     </div>
 
-        <!-- Upstream and Downstream Suppliers Section -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="card" onclick="navigateToEnterpriseDetail('S001')">
-                    <div class="card-body">
-                        <h5 class="card-title">Upstream Supplier 1</h5>
-                        <p class="card-text">Tier: Tier 1</p>
-                        <p class="card-text"><small class="text-muted">ID: S001</small></p>
-                    </div>
-                </div>
-                <div class="card" onclick="navigateToEnterpriseDetail('S002')">
-                    <div class="card-body">
-                        <h5 class="card-title">Upstream Supplier 2</h5>
-                        <p class="card-text">Tier: Tier 2</p>
-                        <p class="card-text"><small class="text-muted">ID: S002</small></p>
-                    </div>
-                </div>
+<!-- Replace the Upstream and Downstream Suppliers Section with this updated version -->
+<div class="container">
+    <!-- Upstream and Downstream Suppliers Section -->
+    <div class="row">
+        <div class="col-md-6">
+            <h4 class="text-center mb-3">Upstream Suppliers (Tier 1)</h4>
+            <% 
+                // Get tier 1 suppliers from database
+                List<Enterprise> suppliers = new com.supplychainfinance.dao.EnterpriseDAO().getTier1Suppliers();
+                
+                if (suppliers != null && !suppliers.isEmpty()) {
+                    for (Enterprise supplier : suppliers) {
+            %>
+            <div class="core-enterprise mb-3" onclick="navigateToEnterpriseDetail('<%= supplier.getEnterpriseID() %>')">
+                <h5><%= supplier.getEnterpriseName() %></h5>
+                <p><strong>Enterprise ID:</strong> <%= supplier.getEnterpriseID() %></p>
+                <p><strong>Type:</strong> Supplier (Tier 1)</p>
+                <p><strong>Contact:</strong> <%= supplier.getTelephone() != null ? supplier.getTelephone() : "N/A" %></p>
+                <button class="btn btn-primary" onclick="event.stopPropagation(); navigateToEnterpriseDetail('<%= supplier.getEnterpriseID() %>');">Details</button>
             </div>
+            <% 
+                    }
+                } else {
+            %>
+            <div class="core-enterprise mb-3">
+                <h5>No Tier 1 Suppliers</h5>
+                <p>No tier 1 suppliers found in the database.</p>
+                <p>Please add a supplier through the Enterprise menu.</p>
+                <a href="enterpriseDetail.jsp?mode=add" class="btn btn-primary">Add Supplier</a>
+            </div>
+            <% } %>
+        </div>
 
-            <div class="col-md-6">
-                <div class="card" onclick="navigateToEnterpriseDetail('D001')">
-                    <div class="card-body">
-                        <h5 class="card-title">Downstream Distributor 1</h5>
-                        <p class="card-text">Tier: Tier 1</p>
-                        <p class="card-text"><small class="text-muted">ID: D001</small></p>
-                    </div>
-                </div>
-                <div class="card" onclick="navigateToEnterpriseDetail('D002')">
-                    <div class="card-body">
-                        <h5 class="card-title">Downstream Distributor 2</h5>
-                        <p class="card-text">Tier: Tier 2</p>
-                        <p class="card-text"><small class="text-muted">ID: D002</small></p>
-                    </div>
-                </div>
+        <div class="col-md-6">
+            <h4 class="text-center mb-3">Downstream Distributors (Tier 1)</h4>
+            <% 
+                // Get tier 1 distributors from database
+                List<Enterprise> distributors = new com.supplychainfinance.dao.EnterpriseDAO().getTier1Distributors();
+                
+                if (distributors != null && !distributors.isEmpty()) {
+                    for (Enterprise distributor : distributors) {
+            %>
+            <div class="core-enterprise mb-3" onclick="navigateToEnterpriseDetail('<%= distributor.getEnterpriseID() %>')">
+                <h5><%= distributor.getEnterpriseName() %></h5>
+                <p><strong>Enterprise ID:</strong> <%= distributor.getEnterpriseID() %></p>
+                <p><strong>Type:</strong> Distributor (Tier 1)</p>
+                <p><strong>Contact:</strong> <%= distributor.getTelephone() != null ? distributor.getTelephone() : "N/A" %></p>
+                <button class="btn btn-primary" onclick="event.stopPropagation(); navigateToEnterpriseDetail('<%= distributor.getEnterpriseID() %>');">Details</button>
             </div>
+            <% 
+                    }
+                } else {
+            %>
+            <div class="core-enterprise mb-3">
+                <h5>No Tier 1 Distributors</h5>
+                <p>No tier 1 distributors found in the database.</p>
+                <p>Please add a distributor through the Enterprise menu.</p>
+                <a href="enterpriseDetail.jsp?mode=add" class="btn btn-primary">Add Distributor</a>
+            </div>
+            <% } %>
         </div>
     </div>
+</div>
 
     <!-- Footer -->
     <div class="footer">

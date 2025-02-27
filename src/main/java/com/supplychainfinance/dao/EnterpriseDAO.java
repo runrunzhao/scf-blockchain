@@ -236,4 +236,66 @@ public Enterprise getCoreEnterprise() {
     return enterprise;
 }
 
+/**
+ * Get Tier 1 suppliers
+ * @return List of Tier 1 supplier enterprises
+ */
+public List<Enterprise> getTier1Suppliers() {
+    List<Enterprise> suppliers = new ArrayList<>();
+    
+    try (Connection conn = DBUtil.getConnection()) {
+        String sql = "SELECT * FROM enterprise WHERE role = 'Supplier' AND tier = '1'";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+        
+        while (rs.next()) {
+            Enterprise enterprise = new Enterprise();
+            enterprise.setEnterpriseID(rs.getString("enterpriseID"));
+            enterprise.setEnterpriseName(rs.getString("enterpriseName"));
+            enterprise.setAddress(rs.getString("address"));
+            enterprise.setTelephone(rs.getString("telephone"));
+            enterprise.setRole(rs.getString("role"));
+            enterprise.setTier(rs.getString("tier"));
+            enterprise.setMemo(rs.getString("memo"));
+            suppliers.add(enterprise);
+        }
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+    return suppliers;
+}
+
+/**
+ * Get Tier 1 distributors
+ * @return List of Tier 1 distributor enterprises
+ */
+public List<Enterprise> getTier1Distributors() {
+    List<Enterprise> distributors = new ArrayList<>();
+    
+    try (Connection conn = DBUtil.getConnection()) {
+        String sql = "SELECT * FROM enterprise WHERE role = 'Distributor' AND tier = '1'";
+        PreparedStatement stmt = conn.prepareStatement(sql);
+        ResultSet rs = stmt.executeQuery();
+        
+        while (rs.next()) {
+            Enterprise enterprise = new Enterprise();
+            enterprise.setEnterpriseID(rs.getString("enterpriseID"));
+            enterprise.setEnterpriseName(rs.getString("enterpriseName"));
+            enterprise.setAddress(rs.getString("address"));
+            enterprise.setTelephone(rs.getString("telephone"));
+            enterprise.setRole(rs.getString("role"));
+            enterprise.setTier(rs.getString("tier"));
+            enterprise.setMemo(rs.getString("memo"));
+            distributors.add(enterprise);
+        }
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+    return distributors;
+}
+
 }

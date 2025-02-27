@@ -1,12 +1,12 @@
-contract.jsp-->
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contract Query - Supply Chain Finance</title>
-    <!-- Bootstrap CSS -->
+    <title>Contract Search - Supply Chain Finance</title>
+    <!-- Bootstrap CSS for responsive layout and styling -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Custom styles */
@@ -17,6 +17,10 @@ contract.jsp-->
 
         .container {
             margin-top: 30px;
+        }
+
+        .card {
+            margin: 20px 0;
         }
 
         .menu {
@@ -49,24 +53,74 @@ contract.jsp-->
             color: #aaa;
         }
 
-        .search-panel {
+        .search-form {
             background-color: #ffffff;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
-        .results-panel {
+        .results-table {
             background-color: #ffffff;
-            padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
         }
 
-        .table tbody tr:hover {
-            background-color: #f1f1f1;
+        .results-table table tbody tr {
             cursor: pointer;
+        }
+
+        .results-table table tbody tr:hover {
+            background-color: #f1f1f1;
+        }
+        
+        #loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        /* Updated dropdown menu styling */
+        .dropdown-menu {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 10px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            z-index: 1021;
+        }
+
+        .dropdown-item {
+            color: #333333 !important;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #007bff;
+            color: white !important;
+        }
+
+        /* Make the dropdown visible */
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .dropdown-toggle::after {
+            display: inline-block;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            content: "";
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+        }
+
+        /* Fix inline display */
+        .dropdown.d-inline-block {
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -77,47 +131,83 @@ contract.jsp-->
     <div class="header">
         <h1>Supply Chain Finance Platform</h1>
         <div class="menu">
+            <a href="index.jsp">Home</a>
             <a href="#user-management">User</a>
-            <a href="enterprise.jsp">Enterprise</a>
-            <a href="contract.jsp">Contract</a>
+            
+            <!-- Enterprise dropdown menu -->
+            <div class="dropdown d-inline-block">
+                <a class="dropdown-toggle" href="#" role="button" id="enterpriseDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Enterprise
+                </a>
+                <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
+                    <a class="dropdown-item" href="enterprise.jsp">Search Enterprises</a>
+                    <a class="dropdown-item" href="enterpriseDetail.jsp?mode=add">Add New Enterprise</a>
+                </div>
+            </div>
+            
+            <!-- Contract dropdown menu -->
+            <div class="dropdown d-inline-block">
+                <a class="dropdown-toggle" href="#" role="button" id="contractDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Contract
+                </a>
+                <div class="dropdown-menu" aria-labelledby="contractDropdown">
+                    <a class="dropdown-item" href="contract.jsp">Search Contracts</a>
+                    <a class="dropdown-item" href="contractDetail.jsp?mode=add">Add New Contract</a>
+                </div>
+            </div>
+            
             <a href="invoice.jsp">Invoice</a>
         </div>
     </div>
 
     <div class="container">
-        <!-- Contract Search Section -->
+        <!-- Search Form Section -->
         <div class="row">
             <div class="col-12">
-                <div class="search-panel">
+                <div class="search-form">
                     <h3 class="mb-4">Contract Search</h3>
                     <form id="contractSearchForm">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="contractId">Contract ID</label>
-                                    <input type="text" class="form-control" id="contractId" placeholder="Enter Contract ID">
-                                </div>
-                                <div class="form-group">
-                                    <label for="realContractNumber">Real Contract Number</label>
-                                    <input type="text" class="form-control" id="realContractNumber" placeholder="Enter Real Contract Number">
-                                </div>
-                                <div class="form-group">
-                                    <label for="contractDate">Contract Date</label>
-                                    <input type="date" class="form-control" id="contractDate">
-                                </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="contractId">Contract ID</label>
+                                <input type="text" class="form-control" id="contractId" placeholder="Enter Contract ID">
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="enterpriseId">Core Enterprise ID</label>
-                                    <input type="text" class="form-control" id="enterpriseId" placeholder="Enter Enterprise ID">
-                                </div>
-                                <div class="form-group">
-                                    <label for="supplierId">Supplier ID</label>
-                                    <input type="text" class="form-control" id="supplierId" placeholder="Enter Supplier ID">
-                                </div>
-                                <div class="form-group mt-4">
-                                    <button type="button" class="btn btn-primary btn-block" onclick="searchContracts()">Search</button>
-                                </div>
+                            <div class="form-group col-md-6">
+                                <label for="enterpriseName">Enterprise Name</label>
+                                <input type="text" class="form-control" id="enterpriseName" placeholder="Enter Enterprise Name">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="contractStatus">Contract Status</label>
+                                <select class="form-control" id="contractStatus">
+                                    <option value="">All Statuses</option>
+                                    <option value="Draft">Draft</option>
+                                    <option value="Pending">Pending</option>
+                                    <option value="Active">Active</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="contractType">Contract Type</label>
+                                <select class="form-control" id="contractType">
+                                    <option value="">All Types</option>
+                                    <option value="Purchase">Purchase Contract</option>
+                                    <option value="Sales">Sales Contract</option>
+                                    <option value="Service">Service Contract</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-2">
+                                <button type="button" class="btn btn-primary btn-block" onclick="searchContracts()">Search</button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button type="button" class="btn btn-secondary btn-block" onclick="resetForm()">Reset</button>
+                            </div>
+                            <div class="col-md-3 mb-2">
+                                <button type="button" class="btn btn-success btn-block" onclick="addNewContract()">Add New</button>
                             </div>
                         </div>
                     </form>
@@ -125,58 +215,36 @@ contract.jsp-->
             </div>
         </div>
 
-        <!-- Search Results Section -->
+        <!-- Results Table Section -->
         <div class="row">
             <div class="col-12">
-                <div class="results-panel">
-                    <h4 class="mb-4">Search Results</h4>
+                <div class="results-table">
+                    <h3 class="mb-4">Search Results</h3>
+                    <div id="loading">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="sr-only">Loading...</span>
+                        </div>
+                        <p class="mt-2">Loading contracts...</p>
+                    </div>
                     <div class="table-responsive">
-                        <table class="table table-striped" id="resultsTable">
+                        <table class="table table-striped table-hover">
                             <thead>
                                 <tr>
                                     <th>Contract ID</th>
-                                    <th>Real Contract No.</th>
-                                    <th>Core Enterprise</th>
-                                    <th>Supplier</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
+                                    <th>Enterprise</th>
+                                    <th>Type</th>
                                     <th>Status</th>
+                                    <th>Amount</th>
+                                    <th>Create Date</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <!-- Sample data for demonstration -->
-                                <tr ondblclick="viewContractDetails('C001')">
-                                    <td>C001</td>
-                                    <td>XYZ-2025-001</td>
-                                    <td>XYZ Corporation</td>
-                                    <td>Acme Suppliers</td>
-                                    <td>$250,000</td>
-                                    <td>01/15/2025</td>
-                                    <td><span class="badge badge-success">Active</span></td>
-                                </tr>
-                                <tr ondblclick="viewContractDetails('C002')">
-                                    <td>C002</td>
-                                    <td>XYZ-2025-002</td>
-                                    <td>XYZ Corporation</td>
-                                    <td>Component Manufacturing Ltd</td>
-                                    <td>$175,000</td>
-                                    <td>01/28/2025</td>
-                                    <td><span class="badge badge-success">Active</span></td>
-                                </tr>
-                                <tr ondblclick="viewContractDetails('C003')">
-                                    <td>C003</td>
-                                    <td>ABC-2025-001</td>
-                                    <td>ABC Industries</td>
-                                    <td>Global Supply Co.</td>
-                                    <td>$320,000</td>
-                                    <td>02/05/2025</td>
-                                    <td><span class="badge badge-warning">Pending</span></td>
-                                </tr>
+                            <tbody id="resultsBody">
+                                <!-- Data will be populated dynamically -->
                             </tbody>
                         </table>
                     </div>
-                    <div class="text-muted mt-3">
-                        <small>Double-click on a row to view contract details</small>
+                    <div id="noResults" style="display: none;">
+                        <p class="text-center">No contracts found matching your search criteria.</p>
                     </div>
                 </div>
             </div>
@@ -189,38 +257,59 @@ contract.jsp-->
     </div>
 
     <!-- Bootstrap and jQuery JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
     <script>
-        // Function to search contracts based on form inputs
+        // Function to search contracts
         function searchContracts() {
             const contractId = document.getElementById('contractId').value;
-            const realContractNumber = document.getElementById('realContractNumber').value;
-            const contractDate = document.getElementById('contractDate').value;
-            const enterpriseId = document.getElementById('enterpriseId').value;
-            const supplierId = document.getElementById('supplierId').value;
+            const enterpriseName = document.getElementById('enterpriseName').value;
+            const contractStatus = document.getElementById('contractStatus').value;
+            const contractType = document.getElementById('contractType').value;
             
-            // In a real implementation, this would make an AJAX call to fetch data
-            console.log("Searching contracts with criteria:", {
-                contractId,
-                realContractNumber,
-                contractDate,
-                enterpriseId,
-                supplierId
-            });
+            console.log("Searching contracts with params - ID:", contractId, "Enterprise:", enterpriseName, 
+                      "Status:", contractStatus, "Type:", contractType);
             
-            // For demo purposes, just show a success message
-            alert("Search completed! Results displayed below.");
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('noResults').style.display = 'none';
+            document.getElementById('resultsBody').innerHTML = '';
             
-            // In a real implementation, the table would be populated with actual results
+            // This is where you would implement the AJAX call to search contracts
+            // For now, just show "no results" after a short delay
+            setTimeout(function() {
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('noResults').style.display = 'block';
+            }, 1000);
         }
         
-        // Function to redirect to contract detail page
-        function viewContractDetails(contractId) {
-            window.location.href = `contractDetail.jsp?id=${contractId}`;
+        // Function to reset the search form
+        function resetForm() {
+            document.getElementById('contractSearchForm').reset();
         }
+        
+        // Function to add new contract
+        function addNewContract() {
+            window.location.href = "contractDetail.jsp?mode=add";
+        }
+        
+        // Initialize when document is ready
+        $(document).ready(function() {
+            // Initialize dropdown menu
+            $('.dropdown-toggle').dropdown();
+            
+            // Add event listener to make dropdown work on hover too
+            $('.dropdown').hover(
+                function() {
+                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
+                },
+                function() {
+                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
+                }
+            );
+        });
     </script>
 </body>
 

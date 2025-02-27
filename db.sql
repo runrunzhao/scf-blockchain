@@ -1,3 +1,35 @@
+mvn jetty:run
+
+
+docker exec -it scf-mysql bash ;
+
+INSERT INTO enterprise VALUES ('001', 'XYZ Corp', 'London', '123-456-7890','Core');
+
+ALTER TABLE enterprise  ADD COLUMN tier INT;
+
+
+CREATE TABLE contract (
+    contractID INT AUTO_INCREMENT PRIMARY KEY,  -- Contract ID
+    realNo VARCHAR(100) NOT NULL,               -- Real contract number
+    part1 VARCHAR(255),                                 -- Part 1 of the contract 
+    part2 VARCHAR(255),                                 -- Part 2 of the contract 
+    amount DECIMAL(15, 2) NOT NULL,             -- Contract amount
+    signingDate DATE NOT NULL ,
+    effectiveDate  DATE NOT NULL ,
+    invalidDate DATE NOT NULL  ,
+    status ENUM('Active', 'Pending','End') NOT NULL                      
+    
+);
+
+-- Step 7: Create 'invoice' table
+CREATE TABLE invoice (
+    invoiceID INT AUTO_INCREMENT PRIMARY KEY,   -- Invoice ID
+    contractID INT,                             -- Contract ID 
+    amount DECIMAL(15, 2) NOT NULL,             -- Invoice amount
+    date DATE NOT NULL,                         -- Invoice creation date
+    FOREIGN KEY (contractID) REFERENCES contract(contractID) -- Foreign key to contract table
+);
+
 docker run --name scf-mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=SCFDB -p 3306:3306 -d mysql:5.7
 -- Step 1: Create the database
 CREATE DATABASE SCFDB;
@@ -6,9 +38,9 @@ CREATE DATABASE SCFDB;
 USE SCFDB;
 
 
-git add .                         # 添加所有修改的文件到暂存区
-git commit -m "02261824"     # 提交代码并添加备注
-git push origin main              # 推送到远程仓库的 main 分支
+git add .                        
+git commit -m "02261824"     
+git push origin main             
 
 
 docker ps -a | grep scf-mysql
@@ -23,7 +55,8 @@ CREATE TABLE enterprise(
     enterpriseName VARCHAR(255) NOT NULL,              --  name
     address VARCHAR(255) NOT NULL,
     telephone CHAR(12) NOT NULL,
-    role ENUM('Core', 'Bank','Supplier','Distributor') NOT NULL     
+    role ENUM('Core', 'Bank','Supplier','Distributor') NOT NULL ，
+    tier INT
 );
 
 

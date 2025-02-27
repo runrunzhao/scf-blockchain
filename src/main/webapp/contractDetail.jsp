@@ -1,4 +1,4 @@
-webapp/contractDetail.jsp -->
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -6,7 +6,7 @@ webapp/contractDetail.jsp -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Contract Details - Supply Chain Finance</title>
-    <!-- Bootstrap CSS -->
+    <!-- Bootstrap CSS for responsive layout and styling -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
         /* Custom styles */
@@ -54,42 +54,52 @@ webapp/contractDetail.jsp -->
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
-        .related-entities {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        .form-section {
+            margin-bottom: 30px;
+        }
+        
+        /* Updated dropdown menu styling */
+        .dropdown-menu {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 10px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            z-index: 1021;
         }
 
-        .status-badge {
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
+        .dropdown-item {
+            color: #333333 !important;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+        }
+
+        .dropdown-item:hover {
+            background-color: #007bff;
+            color: white !important;
+        }
+
+        /* Make the dropdown visible */
+        .dropdown-toggle {
+            cursor: pointer;
+        }
+
+        .dropdown-toggle::after {
             display: inline-block;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            content: "";
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
         }
 
-        .status-active {
-            background-color: #d4edda;
-            color: #155724;
-        }
-
-        .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
-        }
-
-        .status-completed {
-            background-color: #cce5ff;
-            color: #004085;
-        }
-
-        hr.section-divider {
-            border-top: 1px solid #eaeaea;
-            margin: 25px 0;
+        /* Fix inline display */
+        .dropdown.d-inline-block {
+            vertical-align: middle;
         }
     </style>
 </head>
@@ -101,159 +111,155 @@ webapp/contractDetail.jsp -->
         <h1>Supply Chain Finance Platform</h1>
         <div class="menu">
             <a href="index.jsp">Home</a>
-            <a href="#user-management">User </a>
-            <a href="enterprise.jsp">Enterprise</a>
-            <a href="contract.jsp">Contract</a>
+            <a href="#user-management">User</a>
+            
+            <!-- Enterprise dropdown menu -->
+            <div class="dropdown d-inline-block">
+                <a class="dropdown-toggle" href="#" role="button" id="enterpriseDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Enterprise
+                </a>
+                <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
+                    <a class="dropdown-item" href="enterprise.jsp">Search Enterprises</a>
+                    <a class="dropdown-item" href="enterpriseDetail.jsp?mode=add">Add New Enterprise</a>
+                </div>
+            </div>
+            
+            <!-- Contract dropdown menu -->
+            <div class="dropdown d-inline-block">
+                <a class="dropdown-toggle" href="#" role="button" id="contractDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Contract
+                </a>
+                <div class="dropdown-menu" aria-labelledby="contractDropdown">
+                    <a class="dropdown-item" href="contract.jsp">Search Contracts</a>
+                    <a class="dropdown-item" href="contractDetail.jsp?mode=add">Add New Contract</a>
+                </div>
+            </div>
+            
             <a href="invoice.jsp">Invoice</a>
         </div>
     </div>
 
     <div class="container">
-        <!-- Contract Detail Section -->
+        <!-- Contract Details Panel -->
         <div class="row">
             <div class="col-12">
                 <div class="detail-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3>Contract Details</h3>
-                        <button class="btn btn-secondary" onclick="goBack()">Back to Search</button>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><strong>Contract ID:</strong></label>
-                                <p id="detailId">C001</p>
+                    <h3 class="mb-4" id="panelTitle">Add New Contract</h3>
+                    
+                    <!-- Form for adding or editing a contract -->
+                    <form id="contractForm">
+                        <div class="form-section">
+                            <h4>Basic Information</h4>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="contractId">Contract ID</label>
+                                    <input type="text" class="form-control" id="contractId" placeholder="Auto-generated" readonly>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="contractName">Contract Name</label>
+                                    <input type="text" class="form-control" id="contractName" placeholder="Enter Contract Name">
+                                </div>
                             </div>
-                            <div class="form-group">
-                                <label><strong>Real Contract Number:</strong></label>
-                                <p id="detailRealNo">XYZ-2025-001</p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Amount:</strong></label>
-                                <p id="detailAmount">$250,000</p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Date:</strong></label>
-                                <p id="detailDate">January 15, 2025</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><strong>Status:</strong></label>
-                                <p><span class="status-badge status-active" id="detailStatus">Active</span></p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Core Enterprise:</strong></label>
-                                <p id="detailCoreEnterprise">XYZ Corporation (001)</p>
-                                <a href="enterpriseDetail.jsp?id=001" class="btn btn-sm btn-info">View Enterprise</a>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Supplier:</strong></label>
-                                <p id="detailSupplier">Acme Suppliers (S001)</p>
-                                <a href="enterpriseDetail.jsp?id=S001" class="btn btn-sm btn-info">View Supplier</a>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="contractType">Contract Type</label>
+                                    <select class="form-control" id="contractType">
+                                        <option value="Purchase">Purchase Contract</option>
+                                        <option value="Sales">Sales Contract</option>
+                                        <option value="Service">Service Contract</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="contractStatus">Status</label>
+                                    <select class="form-control" id="contractStatus">
+                                        <option value="Draft">Draft</option>
+                                        <option value="Pending">Pending</option>
+                                        <option value="Active">Active</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
-                    </div>
 
-                    <hr class="section-divider">
-
-                    <div class="row">
-                        <div class="col-12">
-                            <h5>Contract Description</h5>
-                            <div class="form-group">
-                                <label><strong>Part 1:</strong></label>
-                                <p id="detailPart1">This contract covers the supply of raw materials for Q1 2025 production requirements for XYZ Corporation. The agreement includes all delivery schedules and quality requirements as per attached specifications.</p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Part 2:</strong></label>
-                                <p id="detailPart2">Payment terms are Net 60 from the date of delivery, with 2% discount if paid within 15 days. All deliveries must be accompanied by quality certificates and must meet ISO 9001 standards.</p>
+                        <div class="form-section">
+                            <h4>Enterprise Information</h4>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label for="fromEnterpriseId">From Enterprise</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="fromEnterpriseId" placeholder="Enterprise ID" readonly>
+                                        <input type="text" class="form-control" id="fromEnterpriseName" placeholder="Enterprise Name" readonly>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="selectFromEnterprise()">Select</button>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label for="toEnterpriseId">To Enterprise</label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="toEnterpriseId" placeholder="Enterprise ID" readonly>
+                                        <input type="text" class="form-control" id="toEnterpriseName" placeholder="Enterprise Name" readonly>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-secondary" type="button" onclick="selectToEnterprise()">Select</button>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Related Invoices Section -->
-        <div class="row">
-            <div class="col-12">
-                <div class="related-entities">
-                    <h4 class="mb-4">Related Invoices</h4>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Invoice ID</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>INV001</td>
-                                    <td>$85,000</td>
-                                    <td>01/30/2025</td>
-                                    <td><span class="badge badge-success">Paid</span></td>
-                                    <td><a href="invoiceDetail.jsp?id=INV001" class="btn btn-sm btn-info">View</a></td>
-                                </tr>
-                                <tr>
-                                    <td>INV002</td>
-                                    <td>$75,000</td>
-                                    <td>02/15/2025</td>
-                                    <td><span class="badge badge-warning">Pending</span></td>
-                                    <td><a href="invoiceDetail.jsp?id=INV002" class="btn btn-sm btn-info">View</a></td>
-                                </tr>
-                                <tr>
-                                    <td>INV003</td>
-                                    <td>$90,000</td>
-                                    <td>03/01/2025</td>
-                                    <td><span class="badge badge-secondary">Draft</span></td>
-                                    <td><a href="invoiceDetail.jsp?id=INV003" class="btn btn-sm btn-info">View</a></td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+                        <div class="form-section">
+                            <h4>Financial Information</h4>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="amount">Total Amount</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">$</span>
+                                        </div>
+                                        <input type="number" class="form-control" id="amount" placeholder="0.00" step="0.01">
+                                    </div>
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="signDate">Sign Date</label>
+                                    <input type="date" class="form-control" id="signDate">
+                                </div>
+                                <div class="form-group col-md-4">
+                                    <label for="effectiveDate">Effective Date</label>
+                                    <input type="date" class="form-control" id="effectiveDate">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label for="expiryDate">Expiry Date</label>
+                                    <input type="date" class="form-control" id="expiryDate">
+                                </div>
+                                <div class="form-group col-md-8">
+                                    <label for="paymentTerms">Payment Terms</label>
+                                    <input type="text" class="form-control" id="paymentTerms" placeholder="e.g., Net 30 days">
+                                </div>
+                            </div>
+                        </div>
 
-        <!-- Contract Timeline Section -->
-        <div class="row mt-4">
-            <div class="col-12">
-                <div class="related-entities">
-                    <h4 class="mb-4">Contract Timeline</h4>
-                    <ul class="list-group">
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>Contract Created</strong>
-                                <p class="mb-0 text-muted">Initial draft created by John Smith</p>
+                        <div class="form-section">
+                            <h4>Additional Information</h4>
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea class="form-control" id="description" rows="3" placeholder="Enter contract description"></textarea>
                             </div>
-                            <span class="badge badge-primary badge-pill">Jan 10, 2025</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>Contract Approved</strong>
-                                <p class="mb-0 text-muted">Approved by financial department</p>
+                            <div class="form-group">
+                                <label for="remarks">Remarks</label>
+                                <textarea class="form-control" id="remarks" rows="2" placeholder="Any additional notes"></textarea>
                             </div>
-                            <span class="badge badge-primary badge-pill">Jan 12, 2025</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>Contract Signed</strong>
-                                <p class="mb-0 text-muted">Signed by both parties</p>
+                        </div>
+
+                        <div class="form-row mt-4">
+                            <div class="col-md-6 mb-2">
+                                <button type="button" class="btn btn-primary btn-block" onclick="saveContract()">Save Contract</button>
                             </div>
-                            <span class="badge badge-primary badge-pill">Jan 15, 2025</span>
-                        </li>
-                        <li class="list-group-item d-flex justify-content-between align-items-center">
-                            <div>
-                                <strong>First Delivery</strong>
-                                <p class="mb-0 text-muted">Initial batch delivered to XYZ Corporation</p>
+                            <div class="col-md-6 mb-2">
+                                <button type="button" class="btn btn-secondary btn-block" onclick="goBack()">Cancel</button>
                             </div>
-                            <span class="badge badge-primary badge-pill">Jan 25, 2025</span>
-                        </li>
-                    </ul>
+                        </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -265,38 +271,116 @@ webapp/contractDetail.jsp -->
     </div>
 
     <!-- Bootstrap and jQuery JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
     <script>
-        // Function to go back to search page
-        function goBack() {
-            window.location.href = "contract.jsp";
-        }
-
-        // Function to load contract details based on the ID from query parameter
-        function loadContractDetails() {
-            // Get ID from URL
+        // Variable to track the current mode (add or view/edit)
+        let isAddMode = true;
+        
+        // Function to initialize the page based on parameters
+        function initPage() {
             const urlParams = new URLSearchParams(window.location.search);
             const id = urlParams.get('id');
+            const mode = urlParams.get('mode');
             
-            // In a real implementation, this would make an AJAX call to fetch data
-            // For demo purposes, just show the ID in the console
-            console.log("Loading details for contract ID:", id);
-            
-            // We could update the page elements with actual data here
-            document.title = `Contract Details: ${id} - Supply Chain Finance`;
-            
-            // Example of updating status badge based on contract ID
-            if (id === 'C003') {
-                document.getElementById('detailStatus').textContent = 'Pending';
-                document.getElementById('detailStatus').className = 'status-badge status-pending';
+            if (mode === 'add') {
+                isAddMode = true;
+                document.getElementById('panelTitle').innerText = 'Add New Contract';
+                // Set today's date as the default sign date
+                document.getElementById('signDate').valueAsDate = new Date();
+            } else if (id) {
+                isAddMode = false;
+                document.getElementById('panelTitle').innerText = 'Contract Details';
+                loadContractDetails(id);
+            } else {
+                alert('Invalid parameters. Redirecting to contract search.');
+                window.location.href = 'contract.jsp';
             }
         }
-
-        // Call the function when the page loads
-        window.onload = loadContractDetails;
+        
+        // Function to load contract details (for edit mode)
+        function loadContractDetails(id) {
+            // This would be an AJAX call to get contract details from the server
+            // For now, just show an alert
+            alert('Loading contract with ID: ' + id);
+            
+            // Simulate loading data after a delay
+            setTimeout(() => {
+                document.getElementById('contractId').value = id;
+                document.getElementById('contractName').value = 'Sample Contract ' + id;
+                // Set other fields...
+            }, 500);
+        }
+        
+        // Function to select from enterprise
+        function selectFromEnterprise() {
+            // Open a modal or navigate to a selection page
+            alert('Enterprise selection feature will be implemented here');
+            // For now, simulate selection
+            document.getElementById('fromEnterpriseId').value = 'CORE001';
+            document.getElementById('fromEnterpriseName').value = 'Central Manufacturing Inc.';
+        }
+        
+        // Function to select to enterprise
+        function selectToEnterprise() {
+            // Open a modal or navigate to a selection page
+            alert('Enterprise selection feature will be implemented here');
+            // For now, simulate selection
+            document.getElementById('toEnterpriseId').value = 'S001';
+            document.getElementById('toEnterpriseName').value = 'FastSupply Materials Co.';
+        }
+        
+        // Function to save the contract
+        function saveContract() {
+            // Validate form fields
+            if (!validateForm()) {
+                return;
+            }
+            
+            // This would be an AJAX call to save the contract to the server
+            alert('Contract saved successfully');
+            
+            // Redirect to contract search page
+            window.location.href = 'contract.jsp';
+        }
+        
+        // Function to validate the form
+        function validateForm() {
+            // Add your validation logic here
+            const contractName = document.getElementById('contractName').value;
+            if (!contractName) {
+                alert('Please enter a contract name');
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Function to go back to the previous page
+        function goBack() {
+            window.location.href = 'contract.jsp';
+        }
+        
+        // Initialize when document is ready
+        $(document).ready(function() {
+            // Initialize page
+            initPage();
+            
+            // Initialize dropdown menu
+            $('.dropdown-toggle').dropdown();
+            
+            // Add event listener to make dropdown work on hover too
+            $('.dropdown').hover(
+                function() {
+                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
+                },
+                function() {
+                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
+                }
+            );
+        });
     </script>
 </body>
 

@@ -8,7 +8,8 @@ public class Enterprise {
     private String role;  // Core, Bank, Supplier, or Distributor
     private String email;  // Not in DB schema, but useful for UI
     private String memo;
-    
+    private String tier;
+
     // Constructors
     public Enterprise() {
     }
@@ -78,4 +79,14 @@ public class Enterprise {
     public void setMemo(String memo) {
         this.memo = memo;
     }
+
+    // Add getter/setter
+public String getTier() {
+    return tier;
+}
+
+public void setTier(String tier) {
+    this.tier = tier;
+}
+
 }
