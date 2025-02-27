@@ -51,5 +51,18 @@
     <url-pattern>/searchEnterprises</url-pattern>
 </servlet-mapping>
 
+<!-- Add this to your web.xml file -->
+<servlet>
+    <servlet-name>CoreEnterpriseServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.CoreEnterpriseServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>CoreEnterpriseServlet</servlet-name>
+    <url-pattern>/getCoreEnterprise</url-pattern>
+</servlet-mapping>
+
+<welcome-file-list>
+    <welcome-file>getCoreEnterprise</welcome-file>
+</welcome-file-list>
 
 </web-app>

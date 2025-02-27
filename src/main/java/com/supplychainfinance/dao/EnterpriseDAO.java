@@ -208,5 +208,32 @@ public List<Enterprise> searchEnterprises(String id, String name, String type) {
     return enterprises;
 }
 
+/**
+ * Get the core enterprise information
+ */
+public Enterprise getCoreEnterprise() {
+    Enterprise enterprise = null;
+    
+    try (Connection conn = DBUtil.getConnection();
+         PreparedStatement stmt = conn.prepareStatement("SELECT * FROM enterprise WHERE role = 'Core' LIMIT 1")) {
+        
+        ResultSet rs = stmt.executeQuery();
+        
+        if (rs.next()) {
+            enterprise = new Enterprise();
+            enterprise.setEnterpriseID(rs.getString("enterpriseID"));
+            enterprise.setEnterpriseName(rs.getString("enterpriseName"));
+            enterprise.setAddress(rs.getString("address"));
+            enterprise.setTelephone(rs.getString("telephone"));
+            enterprise.setRole(rs.getString("role"));
+            enterprise.setMemo(rs.getString("memo"));
+        }
+        
+    } catch (SQLException e) {
+        e.printStackTrace();
+    }
+    
+    return enterprise;
+}
 
 }

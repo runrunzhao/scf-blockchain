@@ -71,6 +71,47 @@
         .edit-mode {
             display: none;
         }
+
+        /* Updated dropdown menu styling */
+.dropdown-menu {
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    margin-top: 10px;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    z-index: 1021;
+}
+
+.dropdown-item {
+    color: #333333 !important;
+    font-weight: 500;
+    padding: 0.5rem 1.5rem;
+}
+
+.dropdown-item:hover {
+    background-color: #007bff;
+    color: white !important;
+}
+
+/* Make the dropdown visible */
+.dropdown-toggle {
+    cursor: pointer;
+}
+
+.dropdown-toggle::after {
+    display: inline-block;
+    margin-left: 0.255em;
+    vertical-align: 0.255em;
+    content: "";
+    border-top: 0.3em solid;
+    border-right: 0.3em solid transparent;
+    border-bottom: 0;
+    border-left: 0.3em solid transparent;
+}
+
+/* Fix inline display */
+.dropdown.d-inline-block {
+    vertical-align: middle;
+}
     </style>
 </head>
 
@@ -82,7 +123,16 @@
         <div class="menu">
             <a href="index.jsp">Home</a>
             <a href="#user-management">User</a>
-            <a href="enterprise.jsp">Enterprise</a>
+            <div class="dropdown d-inline-block">
+                <a href="#" class="dropdown-toggle" id="enterpriseDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Enterprise
+                </a>
+                <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
+                    <a class="dropdown-item" href="enterprise.jsp">Search Enterprises</a>
+                    <a class="dropdown-item" href="enterpriseDetail.jsp?mode=add">Add New Enterprise</a>
+                </div>
+            </div>
+            
             <a href="contract.jsp">Contract</a>
             <a href="invoice.jsp">Invoice</a>
         </div>
@@ -486,6 +536,32 @@
         $(document).ready(function() {
             loadEnterpriseDetails();
         });
+        
+        $(document).ready(function() {
+        // Make sure dropdown works properly
+        $('.dropdown-toggle').dropdown();
+    });
+
+   
+    // Initialization when document is ready
+    $(document).ready(function() {
+        // Load enterprise details
+        loadEnterpriseDetails();
+        
+        // Initialize dropdown menu
+        $('.dropdown-toggle').dropdown();
+        
+        // Add event listener for hover effect
+        $('.dropdown').hover(
+            function() {
+                $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
+            },
+            function() {
+                $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
+            }
+        );
+    });
+
     </script>
 </body>
 

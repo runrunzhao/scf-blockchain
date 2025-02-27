@@ -1,4 +1,5 @@
 com/supplychainfinance/servlet/GetEnterpriseServlet.class
+com/supplychainfinance/servlet/CoreEnterpriseServlet.class
 com/supplychainfinance/dao/EnterpriseDAO.class
 com/supplychainfinance/servlet/UpdateEnterpriseServlet.class
 com/supplychainfinance/servlet/CreateEnterpriseServlet.class

@@ -1,6 +1,8 @@
+/workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/CoreEnterpriseServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/UpdateEnterpriseServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/dao/EnterpriseDAO.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/model/Enterprise.java
+/workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/SearchEnterprisesServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/GetEnterpriseServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/controller/MainController.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/util/DBTest.java
