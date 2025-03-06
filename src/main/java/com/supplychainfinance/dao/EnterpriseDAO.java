@@ -255,7 +255,7 @@ public List<Enterprise> getTier1Suppliers() {
             enterprise.setAddress(rs.getString("address"));
             enterprise.setTelephone(rs.getString("telephone"));
             enterprise.setRole(rs.getString("role"));
-            enterprise.setTier(rs.getString("tier"));
+            enterprise.setTier(rs.getInt("tier"));
             enterprise.setMemo(rs.getString("memo"));
             suppliers.add(enterprise);
         }
@@ -286,7 +286,7 @@ public List<Enterprise> getTier1Distributors() {
             enterprise.setAddress(rs.getString("address"));
             enterprise.setTelephone(rs.getString("telephone"));
             enterprise.setRole(rs.getString("role"));
-            enterprise.setTier(rs.getString("tier"));
+            enterprise.setTier(rs.getInt("tier"));
             enterprise.setMemo(rs.getString("memo"));
             distributors.add(enterprise);
         }

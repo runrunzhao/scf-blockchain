@@ -83,5 +83,20 @@
         <servlet-name>GetContractServlet</servlet-name>
         <url-pattern>/getContract</url-pattern>
     </servlet-mapping>
+
+    <!-- Add this servlet declaration and mapping inside the <web-app> tags -->
+
+<!-- Servlet Declaration -->
+<servlet>
+    <servlet-name>EnterpriseRelationController</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.EnterpriseRelationController</servlet-class>
+</servlet>
+
+<!-- Servlet Mapping -->
+<servlet-mapping>
+    <servlet-name>EnterpriseRelationController</servlet-name>
+    <url-pattern>/getRelatedEntities</url-pattern>
+</servlet-mapping>
+
   
 </web-app>

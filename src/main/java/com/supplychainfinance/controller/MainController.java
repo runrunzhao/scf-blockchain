@@ -11,7 +11,7 @@ import javax.servlet.http.HttpServletResponse;
 public class MainController extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
        // Forward to the JSP page
-        System.out.println("MainController doGet method called!");
+      //  System.out.println("MainController doGet method called!");
         request.getRequestDispatcher("/index.jsp").forward(request, response);
     }
 

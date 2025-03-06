@@ -1,5 +1,7 @@
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/GetContractServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/model/Contract.java
+/workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/EnterpriseRelationController.java
+/workspaces/scf-java/src/main/java/com/supplychainfinance/dao/DBConnectionManager.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/dao/EnterpriseDAO.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/dao/ContractDAO.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/GetEnterpriseServlet.java

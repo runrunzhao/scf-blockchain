@@ -1,29 +1,23 @@
 package com.supplychainfinance.model;
 
 public class Enterprise {
+    // 企业基本信息
     private String enterpriseID;
     private String enterpriseName;
-    private String address;
+    private String role;
     private String telephone;
-    private String role;  // Core, Bank, Supplier, or Distributor
-    private String email;  // Not in DB schema, but useful for UI
+    private String address;
+    private int tier;
     private String memo;
-    private String tier;
-
-    // Constructors
-    public Enterprise() {
-    }
     
-    public Enterprise(String enterpriseID, String enterpriseName, String address, String telephone, String role, String memo) {
-        this.enterpriseID = enterpriseID;
-        this.enterpriseName = enterpriseName;
-        this.address = address;
-        this.telephone = telephone;
-        this.role = role;
-        this.memo = memo;
-    }
+    // 额外属性
+    private String email;
+    private String contactPerson;
+    private String registrationNumber;
+    private String establishDate;
+    private String businessScope;
     
-    // Getters and setters
+    // 基本 getter 和 setter 方法
     public String getEnterpriseID() {
         return enterpriseID;
     }
@@ -40,12 +34,12 @@ public class Enterprise {
         this.enterpriseName = enterpriseName;
     }
     
-    public String getAddress() {
-        return address;
+    public String getRole() {
+        return role;
     }
     
-    public void setAddress(String address) {
-        this.address = address;
+    public void setRole(String role) {
+        this.role = role;
     }
     
     public String getTelephone() {
@@ -56,20 +50,20 @@ public class Enterprise {
         this.telephone = telephone;
     }
     
-    public String getRole() {
-        return role;
+    public String getAddress() {
+        return address;
     }
     
-    public void setRole(String role) {
-        this.role = role;
+    public void setAddress(String address) {
+        this.address = address;
     }
     
-    public String getEmail() {
-        return email;
+    public int getTier() {
+        return tier;
     }
     
-    public void setEmail(String email) {
-        this.email = email;
+    public void setTier(int tier) {
+        this.tier = tier;
     }
     
     public String getMemo() {
@@ -79,14 +73,57 @@ public class Enterprise {
     public void setMemo(String memo) {
         this.memo = memo;
     }
+    
+    // 额外属性的 getter 和 setter
+    public String getEmail() {
+        return email;
+    }
+    
+    public void setEmail(String email) {
+        this.email = email;
+    }
+    
+    public String getContactPerson() {
+        return contactPerson;
+    }
+    
+    public void setContactPerson(String contactPerson) {
+        this.contactPerson = contactPerson;
+    }
+    
+    public String getRegistrationNumber() {
+        return registrationNumber;
+    }
+    
+    public void setRegistrationNumber(String registrationNumber) {
+        this.registrationNumber = registrationNumber;
+    }
+    
+    public String getEstablishDate() {
+        return establishDate;
+    }
+    
+    public void setEstablishDate(String establishDate) {
+        this.establishDate = establishDate;
+    }
+    
+    public String getBusinessScope() {
+        return businessScope;
+    }
+    
+    public void setBusinessScope(String businessScope) {
+        this.businessScope = businessScope;
+    }
 
-    // Add getter/setter
-public String getTier() {
-    return tier;
-}
 
-public void setTier(String tier) {
-    this.tier = tier;
-}
-
+    
+    @Override
+    public String toString() {
+        return "Enterprise{" +
+                "enterpriseID='" + enterpriseID + '\'' +
+                ", enterpriseName='" + enterpriseName + '\'' +
+                ", role='" + role + '\'' +
+                ", tier=" + tier +
+                '}';
+    }
 }

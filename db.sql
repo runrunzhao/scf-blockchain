@@ -36,6 +36,7 @@ CREATE DATABASE SCFDB;
 -- Step 2: Switch to the SCFDB database
 USE SCFDB;
 
+--git pull origin 
 
 git add .                        
 git commit -m "02261824"     

@@ -1,6 +1,10 @@
 package com.supplychainfinance.model;
 
+import java.math.BigDecimal;
+import java.util.Date;
+
 public class Contract {
+    // 基本字段
     private String contractId;
     private String contractName;
     private String fromEnterpriseId;
@@ -18,13 +22,25 @@ public class Contract {
     private String description;
     private String remarks;
     
-    // Getters and setters
+    // 兼容字段 - 用于与不同命名约定的代码配合使用
+    private String contractID;
+    private String contractNumber;
+    private BigDecimal contractAmount;
+    private Date contractDate;
+    private Date startDate;
+    private Date endDate;
+    private String partyAID;
+    private String partyBID;
+
+    // 原有字段的 Getters 和 Setters
     public String getContractId() {
         return contractId;
     }
     
     public void setContractId(String contractId) {
         this.contractId = contractId;
+        // 同时设置兼容字段
+        this.contractID = contractId;
     }
     
     public String getContractName() {
@@ -33,6 +49,8 @@ public class Contract {
     
     public void setContractName(String contractName) {
         this.contractName = contractName;
+        // 同时设置兼容字段
+        this.contractNumber = contractName;
     }
     
     public String getFromEnterpriseId() {
@@ -41,6 +59,8 @@ public class Contract {
     
     public void setFromEnterpriseId(String fromEnterpriseId) {
         this.fromEnterpriseId = fromEnterpriseId;
+        // 同时设置兼容字段
+        this.partyAID = fromEnterpriseId;
     }
     
     public String getFromEnterpriseName() {
@@ -57,6 +77,8 @@ public class Contract {
     
     public void setToEnterpriseId(String toEnterpriseId) {
         this.toEnterpriseId = toEnterpriseId;
+        // 同时设置兼容字段
+        this.partyBID = toEnterpriseId;
     }
     
     public String getToEnterpriseName() {
@@ -89,6 +111,8 @@ public class Contract {
     
     public void setAmount(double amount) {
         this.amount = amount;
+        // 同时设置兼容字段
+        this.contractAmount = BigDecimal.valueOf(amount);
     }
     
     public String getCreateDate() {
@@ -145,5 +169,77 @@ public class Contract {
     
     public void setRemarks(String remarks) {
         this.remarks = remarks;
+    }
+    
+    // 兼容字段的 Getters 和 Setters
+    public String getContractID() {
+        return contractId; // 返回原字段值
+    }
+    
+    public void setContractID(String contractID) {
+        this.contractID = contractID;
+        this.contractId = contractID; // 同步设置原字段
+    }
+    
+    public String getContractNumber() {
+        return contractName; // 返回原字段值
+    }
+    
+    public void setContractNumber(String contractNumber) {
+        this.contractNumber = contractNumber;
+        this.contractName = contractNumber; // 同步设置原字段
+    }
+    
+    public BigDecimal getContractAmount() {
+        return BigDecimal.valueOf(amount); // 返回原字段转换值
+    }
+    
+    public void setContractAmount(BigDecimal contractAmount) {
+        this.contractAmount = contractAmount;
+        if (contractAmount != null) {
+            this.amount = contractAmount.doubleValue(); // 同步设置原字段
+        }
+    }
+    
+    public Date getContractDate() {
+        return contractDate;
+    }
+    
+    public void setContractDate(Date contractDate) {
+        this.contractDate = contractDate;
+    }
+    
+    public Date getStartDate() {
+        return startDate;
+    }
+    
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
+    }
+    
+    public Date getEndDate() {
+        return endDate;
+    }
+    
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+    
+    public String getPartyAID() {
+        return fromEnterpriseId; // 返回原字段值
+    }
+    
+    public void setPartyAID(String partyAID) {
+        this.partyAID = partyAID;
+        this.fromEnterpriseId = partyAID; // 同步设置原字段
+    }
+    
+    public String getPartyBID() {
+        return toEnterpriseId; // 返回原字段值
+    }
+    
+    public void setPartyBID(String partyBID) {
+        this.partyBID = partyBID;
+        this.toEnterpriseId = partyBID; // 同步设置原字段
     }
 }
