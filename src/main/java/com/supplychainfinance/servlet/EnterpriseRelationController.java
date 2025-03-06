@@ -140,7 +140,7 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
         // Convert to JSON and send response
         Gson gson = new Gson();
         String jsonResponse = gson.toJson(data);
-        System.out.println("Sending JSON response: " + jsonResponse);
+        //System.out.println("Sending JSON response: " + jsonResponse);
         out.write(jsonResponse);
         
     } catch (Exception e) {
@@ -221,10 +221,7 @@ private List<Enterprise> getRelatedSuppliers(String enterpriseId, int limit, int
             // 其他字段设置
             
             suppliers.add(supplier);
-             System.out.println("Added supplier: " + supplier.getEnterpriseName() + 
-                               ", ID: " + supplier.getEnterpriseID() + 
-                               ", Phone: " + supplier.getTelephone() + 
-                               ", Address: " + supplier.getAddress());
+            
         }
     } catch (SQLException e) {
         System.err.println("Error fetching suppliers: " + e.getMessage());

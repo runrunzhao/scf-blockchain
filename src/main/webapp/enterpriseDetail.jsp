@@ -845,7 +845,8 @@ iseDetail.jsp
         // 文档就绪函数 - 初始化页面
         $(document).ready(function () {
             console.log("页面加载 - 初始化");
-
+            // 确保初始状态下只有suppliers标签页是活动的
+            $('.tab-pane').not('#suppliers').removeClass('active show');
             // 1. 加载企业详情
             loadEnterpriseDetails();
 
@@ -861,34 +862,43 @@ iseDetail.jsp
                     $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
                 }
             );
+            // 4. 标签切换处理 - 解决内容叠加问题
+            $('#myTab a').on('click', function (e) {
+                e.preventDefault(); // 阻止默认行为
 
-            // 4. 设置标签页事件处理
-            $('#myTab a').on('shown.bs.tab', function (e) {
-                const tabId = $(e.target).attr("href").substring(1);
-                console.log("激活标签页: " + tabId);
+                // 获取点击的标签和目标内容区ID
+                const $this = $(this);
+                const tabHref = $this.attr('href');
+                const tabId = tabHref.substring(1); // 去掉开头的#
+
+                console.log("点击标签页: " + tabId);
+
+                // 移除所有标签的激活状态
+                $('#myTab a').removeClass('active');
+                $this.addClass('active');
+
+                // 隐藏所有标签内容
+                $('.tab-pane').removeClass('active show').hide();
+
+                // 仅显示当前标签内容
+                $(tabHref).addClass('active show').show();
 
                 // 获取URL中的企业ID
                 const urlParams = new URLSearchParams(window.location.search);
                 const enterpriseId = urlParams.get('id');
 
-                // 如果是suppliers标签页且有企业ID
-                if (tabId === 'suppliers' && enterpriseId) {
-                    // 加载供应商数据
-                    fetchAndDisplaySuppliers(enterpriseId);
-                }
+                if (!enterpriseId) return;
 
-                // 添加此代码: 如果是distributors标签页且有企业ID
-                else if (tabId === 'distributors' && enterpriseId) {
-                    // 加载经销商数据
+                // 根据不同的标签页加载相应数据
+                if (tabId === 'suppliers') {
+                    fetchAndDisplaySuppliers(enterpriseId);
+                } else if (tabId === 'distributors') {
                     fetchAndDisplayDistributors(enterpriseId);
-                }
-                // 添加这个条件: 如果是contracts标签页且有企业ID
-                else if (tabId === 'contracts' && enterpriseId) {
-                    // 加载合同数据
+                } else if (tabId === 'contracts') {
                     fetchAndDisplayContracts(enterpriseId);
                 }
-
             });
+
 
             // 5. 获取URL中的企业ID
             const urlParams = new URLSearchParams(window.location.search);
@@ -897,24 +907,30 @@ iseDetail.jsp
 
             // 6. 强制显示suppliers标签页内容
             if (enterpriseId && mode !== 'add') {
-                // 添加CSS样式确保suppliers标签始终可见
+                // 添加CSS样式，但改为只显示激活的标签
                 const style = document.createElement('style');
                 style.type = 'text/css';
                 style.innerHTML = `
-                    /* 强制覆盖Bootstrap的标签样式 */
-                    #suppliers.tab-pane {
-                        display: block !important; 
-                        opacity: 1 !important;
-                        visibility: visible !important;
-                    }
-                    
-                    /* 确保suppliers标签按钮看起来是激活的 */
-                    #suppliers-tab {
-                        color: #007bff !important;
-                        background-color: #fff !important;
-                        border-color: #dee2e6 #dee2e6 #fff !important;
-                    }
-                `;
+        /* 确保只有激活的标签页可见 */
+        .tab-pane.active {
+            display: block !important; 
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+        
+        /* 确保非激活标签页隐藏 */
+        .tab-pane:not(.active) {
+            display: none !important;
+            opacity: 0 !important;
+        }
+        
+        /* 确保suppliers标签按钮初始状态看起来是激活的 */
+        #suppliers-tab {
+            color: #007bff !important;
+            background-color: #fff !important;
+            border-color: #dee2e6 #dee2e6 #fff !important;
+        }
+    `;
                 document.head.appendChild(style);
 
                 // 延迟加载供应商数据，确保DOM已准备好
