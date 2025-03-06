@@ -261,7 +261,7 @@ private List<Enterprise> getRelatedDistributors(String enterpriseId, int limit, 
             distributor.setRole("Distributor"); // 固定设置为 Distributor
             distributor.setTelephone(rs.getString("telephone"));
             // 其他字段设置
-            
+            distributor.setAddress(rs.getString("address"));
             distributors.add(distributor);
             System.out.println("Added distributor: " + distributor.getEnterpriseName());
         }
