@@ -141,7 +141,7 @@ webapp/index.jsp -->
                 </a>
                 <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
                     <a class="dropdown-item" href="enterprise.jsp">Search Enterprises</a>
-                    <a class="dropdown-item" href="enterpriseDetail.jsp?mode=add">Add New Enterprise</a>
+                    <a class="dropdown-item" href="singleEnterprise.jsp?mode=add">Add New Enterprise</a>
                 </div>
             </div>
              

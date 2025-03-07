@@ -42,6 +42,8 @@ public class CreateEnterpriseServlet extends HttpServlet {
             enterprise.setTelephone(jsonObject.get("contact").getAsString());
             enterprise.setAddress(jsonObject.get("address").getAsString());
             enterprise.setMemo(jsonObject.has("memo") ? jsonObject.get("memo").getAsString() : "");
+               // 检查这行是否存在并正确实现：
+            enterprise.setTier(jsonObject.get("tier").getAsInt());
             
             boolean success = enterpriseDAO.createEnterprise(enterprise);
             

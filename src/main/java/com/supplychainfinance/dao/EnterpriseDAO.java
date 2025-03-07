@@ -30,6 +30,7 @@ public class EnterpriseDAO {
                 enterprise.setTelephone(rs.getString("telephone"));
                 enterprise.setRole(rs.getString("role"));
                 enterprise.setMemo(rs.getString("memo"));
+                enterprise.setTier(rs.getInt("tier"));
             }
             
         } catch (SQLException e) {
@@ -55,7 +56,7 @@ public class EnterpriseDAO {
                 enterprise.setTelephone(rs.getString("telephone"));
                 enterprise.setRole(rs.getString("role"));
                 enterprise.setMemo(rs.getString("memo"));
-                
+                enterprise.setTier(rs.getInt("tier")); // 添加这行
                 enterprises.add(enterprise);
             }
             
@@ -69,7 +70,7 @@ public class EnterpriseDAO {
     public boolean updateEnterprise(Enterprise enterprise) {
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                "UPDATE enterprise SET enterpriseName = ?, address = ?, telephone = ?, role = ?, memo = ? " +
+                "UPDATE enterprise SET enterpriseName = ?, address = ?, telephone = ?, role = ?, memo = ?,tier= ? " +
                 "WHERE enterpriseID = ?")) {
             
             stmt.setString(1, enterprise.getEnterpriseName());
@@ -77,7 +78,8 @@ public class EnterpriseDAO {
             stmt.setString(3, enterprise.getTelephone());
             stmt.setString(4, enterprise.getRole());
             stmt.setString(5, enterprise.getMemo());
-            stmt.setString(6, enterprise.getEnterpriseID());
+            stmt.setInt(6, enterprise.getTier());  // 添加tier字段
+            stmt.setString(7, enterprise.getEnterpriseID());
             
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
@@ -91,8 +93,8 @@ public class EnterpriseDAO {
     public boolean createEnterprise(Enterprise enterprise) {
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
-                "INSERT INTO enterprise (enterpriseID, enterpriseName, address, telephone, role, memo) " +
-                "VALUES (?, ?, ?, ?, ?, ?)")) {
+                "INSERT INTO enterprise (enterpriseID, enterpriseName, address, telephone, role, memo,tier) " +
+                "VALUES (?, ?, ?, ?, ?, ?,?)")) {
             
             stmt.setString(1, enterprise.getEnterpriseID());
             stmt.setString(2, enterprise.getEnterpriseName());
@@ -100,7 +102,8 @@ public class EnterpriseDAO {
             stmt.setString(4, enterprise.getTelephone());
             stmt.setString(5, enterprise.getRole());
             stmt.setString(6, enterprise.getMemo());
-            
+            stmt.setInt(7, enterprise.getTier());
+
             int rowsAffected = stmt.executeUpdate();
             return rowsAffected > 0;
             
@@ -187,7 +190,7 @@ public List<Enterprise> searchEnterprises(String id, String name, String type) {
             enterprise.setTelephone(rs.getString("telephone"));
             enterprise.setRole(rs.getString("role"));
             enterprise.setMemo(rs.getString("memo"));
-            
+            enterprise.setTier(rs.getInt("tier")); // 添加这行
             enterprises.add(enterprise);
             System.out.println("Found enterprise: " + enterprise.getEnterpriseID() + " - " + enterprise.getEnterpriseName());
         }
