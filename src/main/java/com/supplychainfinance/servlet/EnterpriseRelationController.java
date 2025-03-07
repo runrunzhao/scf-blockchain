@@ -183,30 +183,22 @@ protected void doGet(HttpServletRequest request, HttpServletResponse response) t
         return tier;
     }
     
-    /**
-     * 获取与指定企业关联的供应商
-     * 
-     * @param enterpriseId 企业ID
-     * @param currentTier 当前企业的层级
-     * @param limit 最大返回记录数
-     * @param offset 跳过的记录数
-     * @return 供应商列表
-     */
-    // 修改 getRelatedSuppliers 方法
-private List<Enterprise> getRelatedSuppliers(String enterpriseId, int limit, int offset) {
+    private List<Enterprise> getRelatedSuppliers(String enterpriseId, int limit, int offset) {
     List<Enterprise> suppliers = new ArrayList<>();
     Connection conn = null;
     PreparedStatement stmt = null;
     ResultSet rs = null;
-    
     try {
         conn = DBConnectionManager.getConnection();
         
-        // 专门查询供应商
-        String sql = "SELECT * FROM enterprise WHERE role = 'Supplier' LIMIT ? OFFSET ?";
+        // 获取当前企业的tier值
+        int currentTier = getEnterpriseTier(enterpriseId);
+              
+        String sql = "SELECT * FROM enterprise WHERE role = 'Supplier' AND tier = ? LIMIT ? OFFSET ?";
         stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, limit);
-        stmt.setInt(2, offset);
+        stmt.setInt(1, currentTier + 1);
+        stmt.setInt(2, limit);
+        stmt.setInt(3, offset);
         
         rs = stmt.executeQuery();
         
@@ -214,14 +206,12 @@ private List<Enterprise> getRelatedSuppliers(String enterpriseId, int limit, int
             Enterprise supplier = new Enterprise();
             supplier.setEnterpriseID(rs.getString("enterpriseID"));
             supplier.setEnterpriseName(rs.getString("enterpriseName"));
-            supplier.setRole("Supplier"); // 固定设置为 Supplier
+            supplier.setRole("Supplier");
             supplier.setTelephone(rs.getString("telephone"));
-            
             supplier.setAddress(rs.getString("address"));
-            // 其他字段设置
+            supplier.setTier(rs.getInt("tier"));  // 一定要设置tier值
             
             suppliers.add(supplier);
-            
         }
     } catch (SQLException e) {
         System.err.println("Error fetching suppliers: " + e.getMessage());
@@ -233,7 +223,6 @@ private List<Enterprise> getRelatedSuppliers(String enterpriseId, int limit, int
     return suppliers;
 }
 
-// 修改 getRelatedDistributors 方法
 private List<Enterprise> getRelatedDistributors(String enterpriseId, int limit, int offset) {
     List<Enterprise> distributors = new ArrayList<>();
     Connection conn = null;
@@ -243,11 +232,16 @@ private List<Enterprise> getRelatedDistributors(String enterpriseId, int limit, 
     try {
         conn = DBConnectionManager.getConnection();
         
-        // 专门查询分销商
-        String sql = "SELECT * FROM enterprise WHERE role = 'Distributor' LIMIT ? OFFSET ?";
+        // 获取当前企业的tier值
+        int currentTier = getEnterpriseTier(enterpriseId);
+        System.out.println("Current enterprise tier: " + currentTier);
+        
+        // 修改SQL查询，只获取tier值=currentTier+1的分销商
+        String sql = "SELECT * FROM enterprise WHERE role = 'Distributor' AND tier = ? LIMIT ? OFFSET ?";
         stmt = conn.prepareStatement(sql);
-        stmt.setInt(1, limit);
-        stmt.setInt(2, offset);
+        stmt.setInt(1, currentTier + 1);
+        stmt.setInt(2, limit);
+        stmt.setInt(3, offset);
         
         rs = stmt.executeQuery();
         
@@ -255,12 +249,12 @@ private List<Enterprise> getRelatedDistributors(String enterpriseId, int limit, 
             Enterprise distributor = new Enterprise();
             distributor.setEnterpriseID(rs.getString("enterpriseID"));
             distributor.setEnterpriseName(rs.getString("enterpriseName"));
-            distributor.setRole("Distributor"); // 固定设置为 Distributor
+            distributor.setRole("Distributor");
             distributor.setTelephone(rs.getString("telephone"));
-            // 其他字段设置
             distributor.setAddress(rs.getString("address"));
+            distributor.setTier(rs.getInt("tier"));  // 一定要设置tier值
+            
             distributors.add(distributor);
-            System.out.println("Added distributor: " + distributor.getEnterpriseName());
         }
     } catch (SQLException e) {
         System.err.println("Error fetching distributors: " + e.getMessage());
