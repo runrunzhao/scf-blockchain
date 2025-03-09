@@ -1,444 +1,664 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<!DOCTYPE html>
-<html lang="en">
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+    <!DOCTYPE html>
+    <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contract Details - Supply Chain Finance</title>
-    <!-- Bootstrap CSS for responsive layout and styling -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Custom styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7fa;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Contract Details - Supply Chain Finance</title>
+        <!-- Bootstrap CSS for responsive layout and styling -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            /* Custom styles */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f7fa;
+            }
 
-        .container {
-            margin-top: 30px;
-        }
+            .container {
+                margin-top: 30px;
+            }
 
-        .menu {
-            margin-bottom: 30px;
-        }
+            .menu {
+                margin-bottom: 30px;
+            }
 
-        .menu a {
-            color: #fff;
-            font-size: 18px;
-            margin: 0 15px;
-        }
+            .menu a {
+                color: #fff;
+                font-size: 18px;
+                margin: 0 15px;
+            }
 
-        .menu a:hover {
-            text-decoration: underline;
-        }
+            .menu a:hover {
+                text-decoration: underline;
+            }
 
-        .header {
-            background-color: #007bff;
-            padding: 15px;
-            color: white;
-            text-align: center;
-            font-size: 24px;
-            border-radius: 10px;
-        }
+            .header {
+                background-color: #007bff;
+                padding: 15px;
+                color: white;
+                text-align: center;
+                font-size: 24px;
+                border-radius: 10px;
+            }
 
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 14px;
-            color: #aaa;
-        }
+            .footer {
+                text-align: center;
+                margin-top: 50px;
+                font-size: 14px;
+                color: #aaa;
+            }
 
-        .detail-panel {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 30px;
-        }
+            .detail-panel {
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+                margin-bottom: 30px;
+            }
 
-        .form-section {
-            margin-bottom: 30px;
-        }
-        
-        /* Updated dropdown menu styling */
-        .dropdown-menu {
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            margin-top: 10px;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            z-index: 1021;
-        }
+            .form-section {
+                margin-bottom: 30px;
+            }
 
-        .dropdown-item {
-            color: #333333 !important;
-            font-weight: 500;
-            padding: 0.5rem 1.5rem;
-        }
+            /* Updated dropdown menu styling */
+            .dropdown-menu {
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                margin-top: 10px;
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+                z-index: 1021;
+            }
 
-        .dropdown-item:hover {
-            background-color: #007bff;
-            color: white !important;
-        }
+            .dropdown-item {
+                color: #333333 !important;
+                font-weight: 500;
+                padding: 0.5rem 1.5rem;
+            }
 
-        /* Make the dropdown visible */
-        .dropdown-toggle {
-            cursor: pointer;
-        }
+            .dropdown-item:hover {
+                background-color: #007bff;
+                color: white !important;
+            }
 
-        .dropdown-toggle::after {
-            display: inline-block;
-            margin-left: 0.255em;
-            vertical-align: 0.255em;
-            content: "";
-            border-top: 0.3em solid;
-            border-right: 0.3em solid transparent;
-            border-bottom: 0;
-            border-left: 0.3em solid transparent;
-        }
+            /* Make the dropdown visible */
+            .dropdown-toggle {
+                cursor: pointer;
+            }
 
-        /* Fix inline display */
-        .dropdown.d-inline-block {
-            vertical-align: middle;
-        }
-    </style>
-</head>
+            .dropdown-toggle::after {
+                display: inline-block;
+                margin-left: 0.255em;
+                vertical-align: 0.255em;
+                content: "";
+                border-top: 0.3em solid;
+                border-right: 0.3em solid transparent;
+                border-bottom: 0;
+                border-left: 0.3em solid transparent;
+            }
 
-<body>
+            /* Fix inline display */
+            .dropdown.d-inline-block {
+                vertical-align: middle;
+            }
+        </style>
+    </head>
 
-    <!-- Header and Navigation Menu -->
-    <div class="header">
-        <h1>Supply Chain Finance Platform</h1>
-        <div class="menu">
-            <a href="index.jsp">Home</a>
-            <a href="#user-management">User</a>
-            
-            <!-- Enterprise dropdown menu -->
-            <div class="dropdown d-inline-block">
-                <a class="dropdown-toggle" href="#" role="button" id="enterpriseDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Enterprise
-                </a>
-                <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
-                    <a class="dropdown-item" href="enterprise.jsp">Search Enterprises</a>
-                    <a class="dropdown-item" href="enterpriseDetail.jsp?mode=add">Add New Enterprise</a>
+    <body>
+
+        <!-- Header and Navigation Menu -->
+        <div class="header">
+            <h1>Supply Chain Finance Platform</h1>
+            <div class="menu">
+                <a href="index.jsp">Home</a>
+                <a href="#user-management">User</a>
+
+                <!-- Enterprise dropdown menu -->
+                <div class="dropdown d-inline-block">
+                    <a class="dropdown-toggle" href="#" role="button" id="enterpriseDropdown" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Enterprise
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
+                        <a class="dropdown-item" href="enterprise.jsp">Search Enterprises</a>
+                        <a class="dropdown-item" href="enterpriseDetail.jsp?mode=add">Add New Enterprise</a>
+                    </div>
                 </div>
-            </div>
-            
-            <!-- Contract dropdown menu -->
-            <div class="dropdown d-inline-block">
-                <a class="dropdown-toggle" href="#" role="button" id="contractDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    Contract
-                </a>
-                <div class="dropdown-menu" aria-labelledby="contractDropdown">
-                    <a class="dropdown-item" href="contract.jsp">Search Contracts</a>
-                    <a class="dropdown-item" href="contractDetail.jsp?mode=add">Add New Contract</a>
+
+                <!-- Contract dropdown menu -->
+                <div class="dropdown d-inline-block">
+                    <a class="dropdown-toggle" href="#" role="button" id="contractDropdown" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Contract
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="contractDropdown">
+                        <a class="dropdown-item" href="contract.jsp">Search Contracts</a>
+                        <a class="dropdown-item" href="contractDetail.jsp?mode=add">Add New Contract</a>
+                    </div>
                 </div>
-            </div>
-            
-           <!-- Invoice dropdown menu -->
-<div class="dropdown d-inline-block">
-    <a class="dropdown-toggle" href="#" role="button" id="invoiceDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-        Invoice
-    </a>
-    <div class="dropdown-menu" aria-labelledby="invoiceDropdown">
-        <a class="dropdown-item" href="invoice.jsp">Search Invoices</a>
-        <a class="dropdown-item" href="invoiceDetail.jsp?mode=add">Add New Invoice</a>
-    </div>
-</div>
 
-        </div>
-    </div>
-
-    <div class="container">
-        <!-- Contract Details Panel -->
-        <div class="row">
-            <div class="col-12">
-                <div class="detail-panel">
-                    <h3 class="mb-4" id="panelTitle">Add New Contract</h3>
-                    
-                    <!-- Form for adding or editing a contract -->
-                    <form id="contractForm">
-                        <div class="form-section">
-                            <h4>Basic Information</h4>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="contractId">Contract ID</label>
-                                    <input type="text" class="form-control" id="contractId" placeholder="Auto-generated" readonly>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="contractName">Contract Name</label>
-                                    <input type="text" class="form-control" id="contractName" placeholder="Enter Contract Name">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="contractType">Contract Type</label>
-                                    <select class="form-control" id="contractType">
-                                        <option value="Purchase">Purchase Contract</option>
-                                        <option value="Sales">Sales Contract</option>
-                                        <option value="Service">Service Contract</option>
-                                    </select>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="contractStatus">Status</label>
-                                    <select class="form-control" id="contractStatus">
-                                        <option value="Draft">Draft</option>
-                                        <option value="Pending">Pending</option>
-                                        <option value="Active">Active</option>
-                                    </select>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <h4>Enterprise Information</h4>
-                            <div class="form-row">
-                                <div class="form-group col-md-6">
-                                    <label for="fromEnterpriseId">From Enterprise</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="fromEnterpriseId" placeholder="Enterprise ID" readonly>
-                                        <input type="text" class="form-control" id="fromEnterpriseName" placeholder="Enterprise Name" readonly>
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="button" onclick="selectFromEnterprise()">Select</button>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-6">
-                                    <label for="toEnterpriseId">To Enterprise</label>
-                                    <div class="input-group">
-                                        <input type="text" class="form-control" id="toEnterpriseId" placeholder="Enterprise ID" readonly>
-                                        <input type="text" class="form-control" id="toEnterpriseName" placeholder="Enterprise Name" readonly>
-                                        <div class="input-group-append">
-                                            <button class="btn btn-outline-secondary" type="button" onclick="selectToEnterprise()">Select</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <h4>Financial Information</h4>
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="amount">Total Amount</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text">$</span>
-                                        </div>
-                                        <input type="number" class="form-control" id="amount" placeholder="0.00" step="0.01">
-                                    </div>
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="signDate">Sign Date</label>
-                                    <input type="date" class="form-control" id="signDate">
-                                </div>
-                                <div class="form-group col-md-4">
-                                    <label for="effectiveDate">Effective Date</label>
-                                    <input type="date" class="form-control" id="effectiveDate">
-                                </div>
-                            </div>
-                            <div class="form-row">
-                                <div class="form-group col-md-4">
-                                    <label for="expiryDate">Expiry Date</label>
-                                    <input type="date" class="form-control" id="expiryDate">
-                                </div>
-                                <div class="form-group col-md-8">
-                                    <label for="paymentTerms">Payment Terms</label>
-                                    <input type="text" class="form-control" id="paymentTerms" placeholder="e.g., Net 30 days">
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-section">
-                            <h4>Additional Information</h4>
-                            <div class="form-group">
-                                <label for="description">Description</label>
-                                <textarea class="form-control" id="description" rows="3" placeholder="Enter contract description"></textarea>
-                            </div>
-                            <div class="form-group">
-                                <label for="remarks">Remarks</label>
-                                <textarea class="form-control" id="remarks" rows="2" placeholder="Any additional notes"></textarea>
-                            </div>
-                        </div>
-
-                        <div class="form-row mt-4">
-                            <div class="col-md-6 mb-2">
-                                <button type="button" class="btn btn-primary btn-block" onclick="saveContract()">Save Contract</button>
-                            </div>
-                            <div class="col-md-6 mb-2">
-                                <button type="button" class="btn btn-secondary btn-block" onclick="goBack()">Cancel</button>
-                            </div>
-                        </div>
-                    </form>
+                <!-- Invoice dropdown menu -->
+                <div class="dropdown d-inline-block">
+                    <a class="dropdown-toggle" href="#" role="button" id="invoiceDropdown" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Invoice
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="invoiceDropdown">
+                        <a class="dropdown-item" href="invoice.jsp">Search Invoices</a>
+                        <a class="dropdown-item" href="invoiceDetail.jsp?mode=add">Add New Invoice</a>
+                    </div>
                 </div>
+
             </div>
         </div>
-    </div>
 
-    <!-- Footer -->
-    <div class="footer">
-        <p>&copy; 2025 Supply Chain Finance Platform | All rights reserved.</p>
-    </div>
+        <div class="container">
+            <!-- Contract Details Panel -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="detail-panel">
+                        <h3 class="mb-4" id="panelTitle">Add New Contract</h3>
 
-    <!-- Bootstrap and jQuery JS -->
-    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+                        <!-- Form for adding or editing a contract -->
+                        <form id="contractForm">
+                            <div class="form-section">
+                                <h4>Basic Information</h4>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="contractId">Contract ID</label>
+                                        <input type="text" class="form-control" id="contractId"
+                                            placeholder="Auto-generated" readonly>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="contractName">Contract Name</label>
+                                        <input type="text" class="form-control" id="contractName"
+                                            placeholder="Enter Contract Name">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="contractType">Contract Type</label>
+                                        <select class="form-control" id="contractType">
+                                            <option value="Purchase">Purchase Contract</option>
+                                            <option value="Sales">Sales Contract</option>
+                                            <option value="Service">Service Contract</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="contractStatus">Status</label>
+                                        <select class="form-control" id="contractStatus">
+                                            <option value="Draft">Draft</option>
+                                            <option value="Pending">Pending</option>
+                                            <option value="Active">Active</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
 
-    <script>
-        // Variable to track the current mode (add or view/edit)
-        let isAddMode = true;
-        
-        // Function to initialize the page based on parameters
-        function initPage() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const id = urlParams.get('id');
-            const mode = urlParams.get('mode');
-            
-            if (mode === 'add') {
-                isAddMode = true;
-                document.getElementById('panelTitle').innerText = 'Add New Contract';
-                // Set today's date as the default sign date
-                document.getElementById('signDate').valueAsDate = new Date();
-            } else if (id) {
-                isAddMode = false;
-                document.getElementById('panelTitle').innerText = 'Contract Details';
-                loadContractDetails(id);
-            } else {
-                alert('Invalid parameters. Redirecting to contract search.');
+                            <div class="form-section">
+                                <h4>Enterprise Information</h4>
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="fromEnterpriseId">From Enterprise</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="fromEnterpriseId"
+                                                placeholder="Enterprise ID" readonly>
+                                            <input type="text" class="form-control" id="fromEnterpriseName"
+                                                placeholder="Enterprise Name" readonly>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button"
+                                                    onclick="selectFromEnterprise()">Select</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="toEnterpriseId">To Enterprise</label>
+                                        <div class="input-group">
+                                            <input type="text" class="form-control" id="toEnterpriseId"
+                                                placeholder="Enterprise ID" readonly>
+                                            <input type="text" class="form-control" id="toEnterpriseName"
+                                                placeholder="Enterprise Name" readonly>
+                                            <div class="input-group-append">
+                                                <button class="btn btn-outline-secondary" type="button"
+                                                    onclick="selectToEnterprise()">Select</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h4>Financial Information</h4>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="amount">Total Amount</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">$</span>
+                                            </div>
+                                            <input type="number" class="form-control" id="amount" placeholder="0.00"
+                                                step="0.01">
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="signDate">Sign Date</label>
+                                        <input type="date" class="form-control" id="signDate">
+                                    </div>
+                                    <div class="form-group col-md-4">
+                                        <label for="effectiveDate">Effective Date</label>
+                                        <input type="date" class="form-control" id="effectiveDate">
+                                    </div>
+                                </div>
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        <label for="expiryDate">Expiry Date</label>
+                                        <input type="date" class="form-control" id="expiryDate">
+                                    </div>
+                                    <div class="form-group col-md-8">
+                                        <label for="paymentTerms">Payment Terms</label>
+                                        <input type="text" class="form-control" id="paymentTerms"
+                                            placeholder="e.g., Net 30 days">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-section">
+                                <h4>Additional Information</h4>
+                                <div class="form-group">
+                                    <label for="description">Description</label>
+                                    <textarea class="form-control" id="description" rows="3"
+                                        placeholder="Enter contract description"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="remarks">Remarks</label>
+                                    <textarea class="form-control" id="remarks" rows="2"
+                                        placeholder="Any additional notes"></textarea>
+                                </div>
+                            </div>
+
+                            <div class="form-row mt-4">
+                                <div class="col-md-6 mb-2">
+                                    <button type="button" class="btn btn-primary btn-block"
+                                        onclick="saveContract()">Save Contract</button>
+                                </div>
+                                <div class="col-md-6 mb-2">
+                                    <button type="button" class="btn btn-secondary btn-block"
+                                        onclick="goBack()">Cancel</button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>&copy; 2025 Supply Chain Finance Platform | All rights reserved.</p>
+        </div>
+
+        <!-- Bootstrap and jQuery JS -->
+        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+
+        <script>
+            // Variable to track the current mode (add or view/edit)
+            let isAddMode = true;
+
+            // Function to initialize the page based on parameters
+            function initPage() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const id = urlParams.get('id');
+                const mode = urlParams.get('mode');
+
+                if (mode === 'add') {
+                    isAddMode = true;
+                    document.getElementById('panelTitle').innerText = 'Add New Contract';
+                    // Set today's date as the default sign date
+                    document.getElementById('signDate').valueAsDate = new Date();
+                } else if (id) {
+                    isAddMode = false;
+                    document.getElementById('panelTitle').innerText = 'Contract Details';
+                    loadContractDetails(id);
+                } else {
+                    alert('Invalid parameters. Redirecting to contract search.');
+                    window.location.href = 'contract.jsp';
+                }
+            }
+
+            // Function to load contract details (for edit mode)
+            function loadContractDetails(id) {
+                // This would be an AJAX call to get contract details from the server
+                // For now, just show an alert
+                alert('Loading contract with ID: ' + id);
+
+                // Simulate loading data after a delay
+                setTimeout(() => {
+                    document.getElementById('contractId').value = id;
+                    document.getElementById('contractName').value = 'Sample Contract ' + id;
+                    // Set other fields...
+                }, 500);
+            }
+
+            // Global variable to store current target fields
+            let currentTargetFields = {
+                idField: '',
+                nameField: ''
+            };
+
+            // Function to select from enterprise
+            function selectFromEnterprise() {
+                // Set the target fields for the selection
+                currentTargetFields = {
+                    idField: 'fromEnterpriseId',
+                    nameField: 'fromEnterpriseName'
+                };
+
+                // Clear previous search results
+                document.getElementById('searchEnterpriseId').value = '';
+                document.getElementById('searchEnterpriseName').value = '';
+                document.getElementById('enterpriseResultBody').innerHTML = '';
+                document.getElementById('enterpriseSearchMessage').innerText = 'Enter search criteria and click Search';
+
+                // Open the enterprise selection modal
+                $('#enterpriseSearchModal').modal('show');
+            }
+
+            // Function to select to enterprise
+            function selectToEnterprise() {
+                // Set the target fields for the selection
+                currentTargetFields = {
+                    idField: 'toEnterpriseId',
+                    nameField: 'toEnterpriseName'
+                };
+
+                // Clear previous search results
+                document.getElementById('searchEnterpriseId').value = '';
+                document.getElementById('searchEnterpriseName').value = '';
+                document.getElementById('enterpriseResultBody').innerHTML = '';
+                document.getElementById('enterpriseSearchMessage').innerText = 'Enter search criteria and click Search';
+
+                // Open the enterprise selection modal
+                $('#enterpriseSearchModal').modal('show');
+            }
+
+            // Function to search for enterprises
+            function searchEnterprises() {
+                const enterpriseId = document.getElementById('searchEnterpriseId').value;
+                const enterpriseName = document.getElementById('searchEnterpriseName').value;
+
+                if (!enterpriseId && !enterpriseName) {
+                    document.getElementById('enterpriseSearchMessage').innerHTML =
+                        '<div class="alert alert-warning">Please enter at least one search criteria</div>';
+                    return;
+                }
+
+                document.getElementById('enterpriseSearchMessage').innerHTML =
+                    '<div class="spinner-border text-primary" role="status"><span class="sr-only">Loading...</span></div>';
+
+                // 创建搜索参数，与enterprise.jsp中的方式保持一致
+                const searchParams = new URLSearchParams();
+                if (enterpriseId) searchParams.append('id', enterpriseId);
+                if (enterpriseName) searchParams.append('name', enterpriseName);
+                // 添加一个空的type参数，保持一致性
+                searchParams.append('type', '');
+
+                console.log('Search URL: searchEnterprises?' + searchParams.toString());
+
+                // 使用与enterprise.jsp相同的URL和参数调用方式
+                $.ajax({
+                    url: 'searchEnterprises?' + searchParams.toString(),  // 使用正确的Servlet名称
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function (data) {
+                        console.log("Enterprise search result:", data);
+                        displayEnterpriseSearchResults(data);
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error searching enterprises:", error);
+                        console.error("Response status:", xhr.status);
+                        console.error("Response text:", xhr.responseText);
+
+                        document.getElementById('enterpriseSearchMessage').innerHTML =
+                            '<div class="alert alert-danger">Error searching enterprises: ' + error + '</div>';
+                    }
+                });
+            }
+
+            // Function to display enterprise search results - 修改为与 enterprise.jsp 一致
+            function displayEnterpriseSearchResults(enterprises) {
+                const tableBody = document.getElementById('enterpriseResultBody');
+                tableBody.innerHTML = '';
+
+                console.log("Displaying enterprises:", enterprises);
+
+                if (enterprises && enterprises.length > 0) {
+                    enterprises.forEach(function (enterprise) {
+                        // 创建表格行
+                        const row = document.createElement('tr');
+                        row.style.cursor = 'pointer';
+
+                        // 存储企业 ID 和名称用于选择
+                        row.setAttribute('data-enterprise-id', enterprise.enterpriseID);
+                        row.setAttribute('data-enterprise-name', enterprise.enterpriseName);
+
+                        // 企业 ID 列
+                        const idCell = document.createElement('td');
+                        idCell.textContent = enterprise.enterpriseID;
+                        row.appendChild(idCell);
+
+                        // 名称列
+                        const nameCell = document.createElement('td');
+                        nameCell.textContent = enterprise.enterpriseName;
+                        row.appendChild(nameCell);
+
+                        // 类型列
+                        const typeCell = document.createElement('td');
+                        typeCell.textContent = enterprise.role || '';
+                        row.appendChild(typeCell);
+
+                              // 电话列 - 改为显示电话而非层级
+            const phoneCell = document.createElement('td');
+            phoneCell.textContent = enterprise.telephone || '';
+            row.appendChild(phoneCell);
+
+                        // 地址列
+                        const addressCell = document.createElement('td');
+                        addressCell.textContent = enterprise.address || '';
+                        row.appendChild(addressCell);
+
+                        // 添加行到表格
+                        tableBody.appendChild(row);
+                    });
+
+                    document.getElementById('enterpriseSearchMessage').innerHTML =
+                        `<div class="alert alert-success">${enterprises.length} enterprises found. Double-click a row to select.</div>`;
+                } else {
+                    document.getElementById('enterpriseSearchMessage').innerHTML =
+                        '<div class="alert alert-info">No enterprises found matching your criteria</div>';
+                }
+            }
+
+            // Function to select an enterprise from search results
+            function selectEnterpriseFromRow(enterpriseId, enterpriseName) {
+                if (currentTargetFields.idField && currentTargetFields.nameField) {
+                    document.getElementById(currentTargetFields.idField).value = enterpriseId;
+                    document.getElementById(currentTargetFields.nameField).value = enterpriseName;
+                    $('#enterpriseSearchModal').modal('hide');
+                }
+            }
+
+            // Function to save the contract
+            function saveContract() {
+                // Validate form fields
+                if (!validateForm()) {
+                    return;
+                }
+
+                // This would be an AJAX call to save the contract to the server
+                alert('Contract saved successfully');
+
+                // Redirect to contract search page
                 window.location.href = 'contract.jsp';
             }
-        }
-        
-        // Function to load contract details (for edit mode)
-        function loadContractDetails(id) {
-            // This would be an AJAX call to get contract details from the server
-            // For now, just show an alert
-            alert('Loading contract with ID: ' + id);
-            
-            // Simulate loading data after a delay
-            setTimeout(() => {
-                document.getElementById('contractId').value = id;
-                document.getElementById('contractName').value = 'Sample Contract ' + id;
-                // Set other fields...
-            }, 500);
-        }
-        
-        // Function to select from enterprise
-        function selectFromEnterprise() {
-            // Open a modal or navigate to a selection page
-            alert('Enterprise selection feature will be implemented here');
-            // For now, simulate selection
-            document.getElementById('fromEnterpriseId').value = 'CORE001';
-            document.getElementById('fromEnterpriseName').value = 'Central Manufacturing Inc.';
-        }
-        
-        // Function to select to enterprise
-        function selectToEnterprise() {
-            // Open a modal or navigate to a selection page
-            alert('Enterprise selection feature will be implemented here');
-            // For now, simulate selection
-            document.getElementById('toEnterpriseId').value = 'S001';
-            document.getElementById('toEnterpriseName').value = 'FastSupply Materials Co.';
-        }
-        
-        // Function to save the contract
-        function saveContract() {
-            // Validate form fields
-            if (!validateForm()) {
-                return;
+
+            // Function to validate the form
+            function validateForm() {
+                // Add your validation logic here
+                const contractName = document.getElementById('contractName').value;
+                if (!contractName) {
+                    alert('Please enter a contract name');
+                    return false;
+                }
+
+                return true;
             }
-            
-            // This would be an AJAX call to save the contract to the server
-            alert('Contract saved successfully');
-            
-            // Redirect to contract search page
-            window.location.href = 'contract.jsp';
-        }
-        
-        // Function to validate the form
-        function validateForm() {
-            // Add your validation logic here
-            const contractName = document.getElementById('contractName').value;
-            if (!contractName) {
-                alert('Please enter a contract name');
-                return false;
-            }
-            
-            return true;
-        }
-        
-        // Function to go back to the previous page
-        function goBack() {
-            window.location.href = 'contract.jsp';
-        }
-        
-        // Initialize when document is ready
-        $(document).ready(function() {
-            // Initialize page
-            initPage();
-            
-            // Initialize dropdown menu
-            $('.dropdown-toggle').dropdown();
-            
-            // Add event listener to make dropdown work on hover too
-            $('.dropdown').hover(
-                function() {
-                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
-                },
-                function() {
-                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
-                }
-            );
-        });
-        // Function to load contract details (for edit mode)
-function loadContractDetails(id) {
-    // Make AJAX call to get contract details
-    $.ajax({
-        url: "getContract", // You'll need to create this servlet
-        type: "GET",
-        data: {
-            contractId: id
-        },
-        dataType: "json",
-        success: function(contract) {
-            if (contract) {
-                document.getElementById('contractId').value = contract.contractId;
-                document.getElementById('contractName').value = contract.contractName;
-                document.getElementById('contractType').value = contract.contractType;
-                document.getElementById('contractStatus').value = contract.status;
-                document.getElementById('fromEnterpriseId').value = contract.fromEnterpriseId;
-                document.getElementById('fromEnterpriseName').value = contract.fromEnterpriseName;
-                document.getElementById('toEnterpriseId').value = contract.toEnterpriseId;
-                document.getElementById('toEnterpriseName').value = contract.toEnterpriseName;
-                document.getElementById('amount').value = contract.amount;
-                
-                // Set dates if available
-                if (contract.signDate) {
-                    document.getElementById('signDate').value = contract.signDate;
-                }
-                if (contract.effectiveDate) {
-                    document.getElementById('effectiveDate').value = contract.effectiveDate;
-                }
-                if (contract.expiryDate) {
-                    document.getElementById('expiryDate').value = contract.expiryDate;
-                }
-                
-                document.getElementById('paymentTerms').value = contract.paymentTerms || '';
-                document.getElementById('description').value = contract.description || '';
-                document.getElementById('remarks').value = contract.remarks || '';
-            } else {
-                alert('Contract not found');
+
+            // Function to go back to the previous page
+            function goBack() {
                 window.location.href = 'contract.jsp';
             }
-        },
-        error: function(xhr, status, error) {
-            alert("Error loading contract: " + error);
-            window.location.href = 'contract.jsp';
-        }
-    });
-}
-    </script>
-</body>
 
-</html>
+            // Initialize when document is ready
+            $(document).ready(function () {
+                // Initialize page
+                initPage();
+
+                // Initialize dropdown menu
+                $('.dropdown-toggle').dropdown();
+
+                // Add event listener to make dropdown work on hover too
+                $('.dropdown').hover(
+                    function () {
+                        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
+                    },
+                    function () {
+                        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
+                    }
+                );
+
+                // Add event listener for enterprise search table rows
+                $(document).on('click', '#enterpriseResultTable tbody tr', function () {
+                    // Highlight the selected row
+                    $(this).addClass('table-primary').siblings().removeClass('table-primary');
+                });
+
+                // Add double-click event for quick selection
+                $(document).on('dblclick', '#enterpriseResultTable tbody tr', function () {
+                    const enterpriseId = $(this).attr('data-enterprise-id');
+                    const enterpriseName = $(this).attr('data-enterprise-name');
+                    selectEnterpriseFromRow(enterpriseId, enterpriseName);
+                });
+
+            });
+            // Function to load contract details (for edit mode)
+            function loadContractDetails(id) {
+                // Make AJAX call to get contract details
+                $.ajax({
+                    url: "getContract", // You'll need to create this servlet
+                    type: "GET",
+                    data: {
+                        contractId: id
+                    },
+                    dataType: "json",
+                    success: function (contract) {
+                        if (contract) {
+                            document.getElementById('contractId').value = contract.contractId;
+                            document.getElementById('contractName').value = contract.contractName;
+                            document.getElementById('contractType').value = contract.contractType;
+                            document.getElementById('contractStatus').value = contract.status;
+                            document.getElementById('fromEnterpriseId').value = contract.fromEnterpriseId;
+                            document.getElementById('fromEnterpriseName').value = contract.fromEnterpriseName;
+                            document.getElementById('toEnterpriseId').value = contract.toEnterpriseId;
+                            document.getElementById('toEnterpriseName').value = contract.toEnterpriseName;
+                            document.getElementById('amount').value = contract.amount;
+
+                            // Set dates if available
+                            if (contract.signDate) {
+                                document.getElementById('signDate').value = contract.signDate;
+                            }
+                            if (contract.effectiveDate) {
+                                document.getElementById('effectiveDate').value = contract.effectiveDate;
+                            }
+                            if (contract.expiryDate) {
+                                document.getElementById('expiryDate').value = contract.expiryDate;
+                            }
+
+                            document.getElementById('paymentTerms').value = contract.paymentTerms || '';
+                            document.getElementById('description').value = contract.description || '';
+                            document.getElementById('remarks').value = contract.remarks || '';
+                        } else {
+                            alert('Contract not found');
+                            window.location.href = 'contract.jsp';
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        alert("Error loading contract: " + error);
+                        window.location.href = 'contract.jsp';
+                    }
+                });
+            }
+        </script>
+
+        <!-- Enterprise Search Modal -->
+        <div class="modal fade" id="enterpriseSearchModal" tabindex="-1" role="dialog"
+            aria-labelledby="enterpriseSearchModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="enterpriseSearchModalLabel">Search Enterprise</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Search Form -->
+                        <div class="form-row mb-3">
+                            <div class="form-group col-md-5">
+                                <label for="searchEnterpriseId">Enterprise ID</label>
+                                <input type="text" class="form-control" id="searchEnterpriseId"
+                                    placeholder="Enter Enterprise ID">
+                            </div>
+                            <div class="form-group col-md-5">
+                                <label for="searchEnterpriseName">Enterprise Name</label>
+                                <input type="text" class="form-control" id="searchEnterpriseName"
+                                    placeholder="Enter Enterprise Name">
+                            </div>
+                            <div class="form-group col-md-2 d-flex align-items-end">
+                                <button type="button" class="btn btn-primary w-100"
+                                    onclick="searchEnterprises()">Search</button>
+                            </div>
+                        </div>
+
+                        <!-- Search Results Table -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-hover" id="enterpriseResultTable">
+                                <thead class="thead-light">
+                                    <tr>
+                                        <th>ID</th>
+                                        <th>Name</th>
+                                        <th>Role</th>
+                                        <th>Phone</th>
+                                        <th>Address</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="enterpriseResultBody">
+                                    <!-- Results will be loaded here -->
+                                </tbody>
+                            </table>
+                        </div>
+                        <div id="enterpriseSearchMessage" class="mt-2 text-center">
+                            Enter search criteria and click Search
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </body>
+
+    </html>
