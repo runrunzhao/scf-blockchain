@@ -170,9 +170,9 @@
                                             placeholder="Auto-generated" readonly>
                                     </div>
                                     <div class="form-group col-md-6">
-                                        <label for="contractName">Contract Name</label>
+                                        <label for="contractName">Real NO</label>
                                         <input type="text" class="form-control" id="contractName"
-                                            placeholder="Enter Contract Name">
+                                            placeholder="Enter real Contract NO">
                                     </div>
                                 </div>
                                 <div class="form-row">
@@ -278,7 +278,7 @@
 
                             <div class="form-row mt-4">
                                 <div class="col-md-6 mb-2">
-                                    <button type="button" class="btn btn-primary btn-block"
+                                    <button type="button" id="saveButton" class="btn btn-primary btn-block"
                                         onclick="saveContract()">Save Contract</button>
                                 </div>
                                 <div class="col-md-6 mb-2">
@@ -325,20 +325,6 @@
                     alert('Invalid parameters. Redirecting to contract search.');
                     window.location.href = 'contract.jsp';
                 }
-            }
-
-            // Function to load contract details (for edit mode)
-            function loadContractDetails(id) {
-                // This would be an AJAX call to get contract details from the server
-                // For now, just show an alert
-                alert('Loading contract with ID: ' + id);
-
-                // Simulate loading data after a delay
-                setTimeout(() => {
-                    document.getElementById('contractId').value = id;
-                    document.getElementById('contractName').value = 'Sample Contract ' + id;
-                    // Set other fields...
-                }, 500);
             }
 
             // Global variable to store current target fields
@@ -458,10 +444,10 @@
                         typeCell.textContent = enterprise.role || '';
                         row.appendChild(typeCell);
 
-                              // 电话列 - 改为显示电话而非层级
-            const phoneCell = document.createElement('td');
-            phoneCell.textContent = enterprise.telephone || '';
-            row.appendChild(phoneCell);
+                        // 电话列 - 改为显示电话而非层级
+                        const phoneCell = document.createElement('td');
+                        phoneCell.textContent = enterprise.telephone || '';
+                        row.appendChild(phoneCell);
 
                         // 地址列
                         const addressCell = document.createElement('td');
@@ -489,18 +475,149 @@
                 }
             }
 
-            // Function to save the contract
+            // Function to save contract
             function saveContract() {
-                // Validate form fields
+                // Validate form
                 if (!validateForm()) {
                     return;
                 }
 
-                // This would be an AJAX call to save the contract to the server
-                alert('Contract saved successfully');
+                // Get form data
+                const contract = {
+                    contractId: $('#contractId').val(),
+                    contractName: $('#contractName').val(),
+                    contractType: $('#contractType').val(),
+                    status: $('#contractStatus').val(),
+                    fromEnterpriseId: $('#fromEnterpriseId').val(),
+                    fromEnterpriseName: $('#fromEnterpriseName').val(),
+                    toEnterpriseId: $('#toEnterpriseId').val(),
+                    toEnterpriseName: $('#toEnterpriseName').val(),
+                    amount: $('#amount').val(),
+                    signDate: $('#signDate').val(),
+                    effectiveDate: $('#effectiveDate').val(),
+                    expiryDate: $('#expiryDate').val(),
+                    paymentTerms: $('#paymentTerms').val(),
+                    description: $('#description').val(),
+                    remarks: $('#remarks').val()
+                };
 
-                // Redirect to contract search page
-                window.location.href = 'contract.jsp';
+                console.log('Saving contract data:', contract);
+
+                // Show saving indicator
+                $('#saveButton').prop('disabled', true).html('<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Saving...');
+
+                $.ajax({
+                    url: 'saveContract',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(contract),
+                    success: function (response) {
+                        // Restore button
+                        $('#saveButton').prop('disabled', false).html('Save Contract');
+                        console.log('Save response:', response);
+
+                        if (response && response.success) {
+                            // Show success message
+                            const alertDiv = $(`
+                        <div class="alert alert-success alert-dismissible fade show" role="alert">
+                            Contract saved successfully!
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    `);
+                            $('.detail-panel h3').after(alertDiv);
+
+                            // Get current mode
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const mode = urlParams.get('mode');
+
+                            // If in add mode, update URL and show contract ID
+                            if (mode === 'add') {
+                                // Update URL without refreshing
+                                const newContractId = response.contractId;
+                                console.log('New contract ID:', newContractId);
+                                history.pushState(null, '', `contractDetail.jsp?contractId=${newContractId}&mode=edit`);
+
+                                // Update contract ID field
+                                $('#contractId').val(newContractId);
+
+                                // Update page title
+                                document.getElementById('panelTitle').innerText = 'Edit Contract';
+
+                                // Change mode flag
+                                isAddMode = false;
+                            }
+
+                            // Auto-hide alert after 5 seconds
+                            setTimeout(function () {
+                                alertDiv.alert('close');
+                            }, 5000);
+                        } else {
+                            // Show error message
+                            const errorMessage = response && response.error ? response.error : 'Unknown error occurred';
+                            const alertDiv = $(`
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            Error: ${errorMessage}
+                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                    `);
+                            $('.detail-panel h3').after(alertDiv);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // Restore button
+                        $('#saveButton').prop('disabled', false).html('Save Contract');
+                        console.error('Error saving contract:', error);
+                        console.error('Response:', xhr.responseText);
+
+                        // Show error message
+                        let errorMessage = 'Error saving contract';
+                        try {
+                            const response = JSON.parse(xhr.responseText);
+                            if (response && response.error) {
+                                errorMessage += ': ' + response.error;
+                            }
+                        } catch (e) {
+                            errorMessage += ': ' + error;
+                        }
+
+                        const alertDiv = $(`
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        ${errorMessage}
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                `);
+                        $('.detail-panel h3').after(alertDiv);
+                    }
+                });
+            }
+
+            // Function to show alert
+            function showAlert(type, message) {
+                const alertDiv = $(`
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                ${message}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+        `);
+
+                // Remove existing alerts
+                $('.alert').remove();
+
+                // Add new alert to page
+                $('.detail-panel h3').after(alertDiv);
+
+                // Auto-hide after 5 seconds
+                setTimeout(function () {
+                    alertDiv.alert('close');
+                }, 5000);
             }
 
             // Function to validate the form
@@ -508,7 +625,7 @@
                 // Add your validation logic here
                 const contractName = document.getElementById('contractName').value;
                 if (!contractName) {
-                    alert('Please enter a contract name');
+                    alert('Please enter a real contract NO');
                     return false;
                 }
 
@@ -520,38 +637,6 @@
                 window.location.href = 'contract.jsp';
             }
 
-            // Initialize when document is ready
-            $(document).ready(function () {
-                // Initialize page
-                initPage();
-
-                // Initialize dropdown menu
-                $('.dropdown-toggle').dropdown();
-
-                // Add event listener to make dropdown work on hover too
-                $('.dropdown').hover(
-                    function () {
-                        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
-                    },
-                    function () {
-                        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
-                    }
-                );
-
-                // Add event listener for enterprise search table rows
-                $(document).on('click', '#enterpriseResultTable tbody tr', function () {
-                    // Highlight the selected row
-                    $(this).addClass('table-primary').siblings().removeClass('table-primary');
-                });
-
-                // Add double-click event for quick selection
-                $(document).on('dblclick', '#enterpriseResultTable tbody tr', function () {
-                    const enterpriseId = $(this).attr('data-enterprise-id');
-                    const enterpriseName = $(this).attr('data-enterprise-name');
-                    selectEnterpriseFromRow(enterpriseId, enterpriseName);
-                });
-
-            });
             // Function to load contract details (for edit mode)
             function loadContractDetails(id) {
                 // Make AJAX call to get contract details
@@ -599,6 +684,103 @@
                     }
                 });
             }
+
+            // Helper function to get URL parameters
+            function getUrlParameter(name) {
+                name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+                var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+                var results = regex.exec(location.search);
+                return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+            }
+
+            // Document ready function
+            $(document).ready(function () {
+                // Get URL parameters
+                const urlParams = new URLSearchParams(window.location.search);
+                const contractId = urlParams.get('contractId');
+                const mode = urlParams.get('mode');
+
+                // Initialize dropdown menu
+                $('.dropdown-toggle').dropdown();
+
+                // Add event listener to make dropdown work on hover too
+                $('.dropdown').hover(
+                    function () {
+                        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
+                    },
+                    function () {
+                        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
+                    }
+                );
+
+                // Add event listener for enterprise search table rows
+                $(document).on('click', '#enterpriseResultTable tbody tr', function () {
+                    // Highlight the selected row
+                    $(this).addClass('table-primary').siblings().removeClass('table-primary');
+                });
+
+                // Add double-click event for quick selection
+                $(document).on('dblclick', '#enterpriseResultTable tbody tr', function () {
+                    const enterpriseId = $(this).attr('data-enterprise-id');
+                    const enterpriseName = $(this).attr('data-enterprise-name');
+                    selectEnterpriseFromRow(enterpriseId, enterpriseName);
+                });
+
+                if (mode === 'add') {
+                    // Setup for add mode
+                    isAddMode = true;
+                    document.getElementById('panelTitle').innerText = 'Add New Contract';
+                    // Set Contract ID field as read-only
+                    $('#contractId').prop('readonly', true).attr('placeholder', 'Auto-generated');
+                    // Set today's date as the default sign date
+                    document.getElementById('signDate').valueAsDate = new Date();
+
+                    // 确保显示正确的按钮
+                    $('#saveButton').show().html('Save Contract');
+
+                } else if (contractId) {
+                    // Setup for edit/view mode with a contract ID
+                    isAddMode = false;
+                    loadContractDetails(contractId);
+
+                    if (mode === 'view') {
+                        // 视图模式
+                        document.getElementById('panelTitle').innerText = 'View Contract';
+
+                        // 禁用所有输入字段
+                        $('#contractForm input, #contractForm select, #contractForm textarea').prop('disabled', true);
+
+                        // 使用普通字符串拼接而非模板字符串，确保变量正确解析
+                        $('.form-row.mt-4').html(
+                            '<div class="col-md-6 mb-2">' +
+                            '<button type="button" class="btn btn-primary btn-block" ' +
+                            'onclick="location.href=\'contractDetail.jsp?contractId=' + contractId + '&mode=edit\'">' +
+                            'Edit Contract' +
+                            '</button>' +
+                            '</div>' +
+                            '<div class="col-md-6 mb-2">' +
+                            '<button type="button" class="btn btn-secondary btn-block" ' +
+                            'onclick="goBack()">Back to List</button>' +
+                            '</div>'
+                        );
+                    } else {
+                        // 编辑模式
+                        document.getElementById('panelTitle').innerText = 'Edit Contract';
+
+                        // 确保表单可编辑
+                        $('#contractForm input, #contractForm select, #contractForm textarea').prop('disabled', false);
+                        $('#contractId').prop('readonly', true); // ID 字段始终只读
+
+                        // 确保显示保存按钮
+                        $('#saveButton').show().html('Update Contract');
+                    }
+                } else if (mode === 'edit' || mode === 'view') {
+                    // Handle edit/view mode without a contract ID
+                    alert('Contract ID is required for edit/view mode');
+                    window.location.href = 'contract.jsp';
+                }
+            });
+
         </script>
 
         <!-- Enterprise Search Modal -->

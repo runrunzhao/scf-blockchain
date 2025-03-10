@@ -1,5 +1,6 @@
 com/supplychainfinance/servlet/EnterpriseRelationController.class
 com/supplychainfinance/servlet/UpdateEnterpriseServlet.class
+com/supplychainfinance/servlet/SaveContractServlet.class
 com/supplychainfinance/servlet/SearchContractServlet.class
 com/supplychainfinance/servlet/GetContractServlet.class
 com/supplychainfinance/dao/ContractDAO.class

@@ -98,5 +98,13 @@
     <url-pattern>/getRelatedEntities</url-pattern>
 </servlet-mapping>
 
+<servlet>
+    <servlet-name>SaveContractServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.SaveContractServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SaveContractServlet</servlet-name>
+    <url-pattern>/saveContract</url-pattern>
+</servlet-mapping>
   
 </web-app>
