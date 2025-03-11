@@ -1,6 +1,8 @@
+com/supplychainfinance/model/Invoice.class
 com/supplychainfinance/servlet/EnterpriseRelationController.class
 com/supplychainfinance/servlet/UpdateEnterpriseServlet.class
 com/supplychainfinance/servlet/SaveContractServlet.class
+com/supplychainfinance/servlet/SaveContractServlet$1.class
 com/supplychainfinance/servlet/SearchContractServlet.class
 com/supplychainfinance/servlet/GetContractServlet.class
 com/supplychainfinance/dao/ContractDAO.class
@@ -11,5 +13,8 @@ com/supplychainfinance/servlet/CreateEnterpriseServlet.class
 com/supplychainfinance/dao/DBConnectionManager.class
 com/supplychainfinance/model/Enterprise.class
 com/supplychainfinance/model/Contract.class
+com/supplychainfinance/model/PaymentPeriod.class
 com/supplychainfinance/servlet/SearchEnterprisesServlet.class
+com/supplychainfinance/dao/InvoiceDAO.class
+com/supplychainfinance/servlet/SaveContractServlet$2.class
 com/supplychainfinance/controller/MainController.class

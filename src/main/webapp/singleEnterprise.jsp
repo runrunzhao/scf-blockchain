@@ -290,98 +290,68 @@
 
             // 保存企业信息
             function saveEnterprise() {
-                // Generate Enterprise ID only at save time if in add mode
-                if (isAddMode) {
-                    const selectedType = document.getElementById('editType').value;
-                    document.getElementById('editId').value = generateEnterpriseID(selectedType);
-                }
-
-                // Get the tier value directly from the dropdown (it's already a number as string)
-                const tierValue = document.getElementById('editTier').value;
-
-                // Create object with both frontend and backend field names
+                // 获取表单数据
                 const enterpriseData = {
-                    // ID fields - mapping frontend to backend
-                    id: document.getElementById('editId').value,
-                    enterpriseID: document.getElementById('editId').value,
-
-                    // Name fields - mapping frontend to backend
+                    // 如果是添加模式，不传ID；如果是编辑模式，传原ID
+                    id: isAddMode ? "" : document.getElementById('editId').value,
                     name: document.getElementById('editName').value,
-                    enterpriseName: document.getElementById('editName').value,
-
-                    // Type/Role fields - mapping frontend to backend
                     type: document.getElementById('editType').value,
-                    role: document.getElementById('editType').value,
-
-                    // Tier field - parse as integer for backend
-                    tier: parseInt(tierValue),
-
-                    // Contact fields - mapping frontend to backend
                     contact: document.getElementById('editContact').value,
-                    telephone: document.getElementById('editContact').value,
-
-                    // Other fields
                     address: document.getElementById('editAddress').value,
-                    memo: document.getElementById('editMemo').value
+                    memo: document.getElementById('editMemo').value,
+                    tier: document.getElementById('editTier').value
                 };
 
-                console.log("Full data payload:", JSON.stringify(enterpriseData));
-
-                // 执行验证
+                // 表单验证
                 if (!enterpriseData.name.trim()) {
-                    alert('Enterprise name cannot be empty');
+                    alert("企业名称不能为空");
                     return;
                 }
 
-                if (!enterpriseData.contact.trim()) {
-                    alert('Contact number cannot be empty');
-                    return;
-                }
-
-                if (!enterpriseData.address.trim()) {
-                    alert('Address cannot be empty');
-                    return;
-                }
-
-                // 发送数据到服务器
-                const endpoint = isAddMode ? 'createEnterprise' : 'updateEnterprise';
-                console.log("Sending data to " + endpoint + ":", enterpriseData);
-
+                // AJAX保存企业数据
                 $.ajax({
-                    url: endpoint,
+                    url: 'createEnterprise',
                     type: 'POST',
                     contentType: 'application/json',
                     data: JSON.stringify(enterpriseData),
                     success: function (response) {
-                        console.log("Response from server:", response);
-
                         if (response.success) {
-                            alert(isAddMode ? 'Enterprise created successfully' : 'Enterprise updated successfully');
+                            // 如果是添加模式并成功创建，更新ID字段显示
+                            if (isAddMode && response.enterpriseID) {
+                                document.getElementById('editId').value = response.enterpriseID;
 
-                            if (isAddMode) {
-                                // 对于新企业，重定向到详情页
-                                var newUrl = "singleEnterprise.jsp?id=" + response.enterpriseID;
-                                console.log("Redirecting to: " + newUrl);
-                                window.location.href = newUrl;
-                            } else {
-                                // 对于现有企业，更新视图数据
+                                // 更新查看模式的显示
+                                document.getElementById('detailId').textContent = response.enterpriseID;
                                 document.getElementById('detailName').textContent = enterpriseData.name;
                                 document.getElementById('detailType').textContent = getTypeDisplayText(enterpriseData.type);
                                 document.getElementById('detailTier').textContent = getTierDisplayText(enterpriseData.tier);
-                                document.getElementById('detailContact').textContent = enterpriseData.contact;
-                                document.getElementById('detailAddress').textContent = enterpriseData.address;
+                                document.getElementById('detailContact').textContent = enterpriseData.contact || '-';
+                                document.getElementById('detailAddress').textContent = enterpriseData.address || '-';
                                 document.getElementById('detailMemo').textContent = enterpriseData.memo || '-';
 
-                                // 切换回查看模式
-                                toggleEditMode();
+                                // 更新页面模式 - 从添加模式变为查看/编辑模式
+                                isAddMode = false;
+                                document.getElementById('pageTitle').textContent = 'Enterprise Details';
+                                document.title = `Enterprise Details: ${enterpriseData.name} - Supply Chain Finance`;
+
+                                // 修改URL以包含企业ID (不刷新页面)
+                                history.pushState(null, '', `singleEnterprise.jsp?id=${response.enterpriseID}`);
                             }
+
+                            alert('保存成功');
+
+                            // 切换回查看模式
+                            toggleEditMode();
+
+                            // 不再跳转到不存在的页面
+                            // window.location.href = 'enterpriseList.jsp';
                         } else {
-                            alert('Error: ' + response.message);
+                            alert('保存失败: ' + (response.message || '未知错误'));
                         }
                     },
                     error: function (xhr, status, error) {
-                        console.error("AJAX Error:", xhr.responseText);
-                        alert('Error connecting to server: ' + error);
+                        console.error("保存企业信息错误:", xhr.responseText);
+                        alert('保存失败: ' + error);
                     }
                 });
             }
@@ -408,12 +378,7 @@
                 return 'Tier ' + tierValue;
             }
 
-            // 基于角色生成企业ID
-            function generateEnterpriseID(role) {
-                const prefix = role.charAt(0); // C, B, S, or D
-                const randomNum = Math.floor(Math.random() * 900) + 100; // 随机3位数
-                return prefix + randomNum;
-            }
+
 
             // 加载企业详情
             function loadEnterpriseDetails() {
@@ -449,13 +414,13 @@
 
                     return;
                 }
-
-                // 如果不是添加模式，继续加载现有企业
-                if (!id) {
-                    alert('No enterprise ID provided');
-                    goBack();
-                    return;
-                }
+    // 修改这个条件判断
+    if (!id || id.trim() === '') {
+        console.error("ID参数缺失或为空字符串:", id);
+        alert('No enterprise ID provided');
+        goBack();
+        return;
+    }
 
                 // 从服务器获取企业数据
                 $.ajax({

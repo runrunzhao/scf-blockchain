@@ -75,7 +75,7 @@
         .results-table table tbody tr:hover {
             background-color: #f1f1f1;
         }
-        
+
         #loading {
             display: none;
             text-align: center;
@@ -83,46 +83,45 @@
         }
 
         /* Updated dropdown menu styling */
-.dropdown-menu {
-    background-color: #f8f9fa;
-    border-radius: 5px;
-    margin-top: 10px;
-    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-    z-index: 1021;
-}
+        .dropdown-menu {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            margin-top: 10px;
+            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            z-index: 1021;
+        }
 
-.dropdown-item {
-    color: #333333 !important;
-    font-weight: 500;
-    padding: 0.5rem 1.5rem;
-}
+        .dropdown-item {
+            color: #333333 !important;
+            font-weight: 500;
+            padding: 0.5rem 1.5rem;
+        }
 
-.dropdown-item:hover {
-    background-color: #007bff;
-    color: white !important;
-}
+        .dropdown-item:hover {
+            background-color: #007bff;
+            color: white !important;
+        }
 
-/* Make the dropdown visible */
-.dropdown-toggle {
-    cursor: pointer;
-}
+        /* Make the dropdown visible */
+        .dropdown-toggle {
+            cursor: pointer;
+        }
 
-.dropdown-toggle::after {
-    display: inline-block;
-    margin-left: 0.255em;
-    vertical-align: 0.255em;
-    content: "";
-    border-top: 0.3em solid;
-    border-right: 0.3em solid transparent;
-    border-bottom: 0;
-    border-left: 0.3em solid transparent;
-}
+        .dropdown-toggle::after {
+            display: inline-block;
+            margin-left: 0.255em;
+            vertical-align: 0.255em;
+            content: "";
+            border-top: 0.3em solid;
+            border-right: 0.3em solid transparent;
+            border-bottom: 0;
+            border-left: 0.3em solid transparent;
+        }
 
-/* Fix inline display */
-.dropdown.d-inline-block {
-    vertical-align: middle;
-}
-
+        /* Fix inline display */
+        .dropdown.d-inline-block {
+            vertical-align: middle;
+        }
     </style>
 </head>
 
@@ -135,7 +134,8 @@
             <a href="index.jsp">Home</a>
             <a href="#user-management">User</a>
             <div class="dropdown d-inline-block">
-                <a href="#" class="dropdown-toggle" id="enterpriseDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a href="#" class="dropdown-toggle" id="enterpriseDropdown" data-toggle="dropdown" aria-haspopup="true"
+                    aria-expanded="false">
                     Enterprise
                 </a>
                 <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
@@ -143,7 +143,7 @@
                     <a class="dropdown-item" href="singleEnterprise.jsp?mode=add">Add New Enterprise</a>
                 </div>
             </div>
-         
+
             <a href="contract.jsp">Contract</a>
             <a href="invoice.jsp">Invoice</a>
         </div>
@@ -159,11 +159,13 @@
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="enterpriseId">Enterprise ID</label>
-                                <input type="text" class="form-control" id="enterpriseId" placeholder="Enter Enterprise ID">
+                                <input type="text" class="form-control" id="enterpriseId"
+                                    placeholder="Enter Enterprise ID">
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="enterpriseName">Enterprise Name</label>
-                                <input type="text" class="form-control" id="enterpriseName" placeholder="Enter Enterprise Name">
+                                <input type="text" class="form-control" id="enterpriseName"
+                                    placeholder="Enter Enterprise Name">
                             </div>
                         </div>
                         <div class="form-row">
@@ -180,13 +182,16 @@
                         </div>
                         <div class="form-row">
                             <div class="col-md-6 mb-2">
-                                <button type="button" class="btn btn-primary btn-block" onclick="searchEnterprises()">Search</button>
+                                <button type="button" class="btn btn-primary btn-block"
+                                    onclick="searchEnterprises()">Search</button>
                             </div>
                             <div class="col-md-3 mb-2">
-                                <button type="button" class="btn btn-secondary btn-block" onclick="resetForm()">Reset</button>
+                                <button type="button" class="btn btn-secondary btn-block"
+                                    onclick="resetForm()">Reset</button>
                             </div>
                             <div class="col-md-3 mb-2">
-                                <button type="button" class="btn btn-success btn-block" onclick="addNewEnterprise()">Add New</button>
+                                <button type="button" class="btn btn-success btn-block" onclick="addNewEnterprise()">Add
+                                    New</button>
                             </div>
                         </div>
                     </form>
@@ -241,109 +246,127 @@
 
     <script>
         // Function to search enterprises
-      // Update the searchEnterprises function error handler:
+        // Update the searchEnterprises function error handler:
 
-function searchEnterprises() {
-    const enterpriseId = document.getElementById('enterpriseId').value;
-    const enterpriseName = document.getElementById('enterpriseName').value;
-    const enterpriseType = document.getElementById('enterpriseType').value;
-    
-    // Show loading indicator
-    document.getElementById('loading').style.display = 'block';
-    document.getElementById('noResults').style.display = 'none';
-    document.getElementById('resultsBody').innerHTML = '';
-    
-    // Prepare search parameters
-    const searchParams = new URLSearchParams();
-    if (enterpriseId) searchParams.append('id', enterpriseId);
-    if (enterpriseName) searchParams.append('name', enterpriseName);
-    if (enterpriseType) searchParams.append('type', enterpriseType);
-    
-    // Log the search URL for debugging
-    console.log('Search URL: searchEnterprises?' + searchParams.toString());
-    
-    // Send AJAX request to get enterprises
-    $.ajax({
-        url: 'searchEnterprises?' + searchParams.toString(),
-        type: 'GET',
-        dataType: 'json',
-        success: function(data) {
-            // Hide loading indicator
-            document.getElementById('loading').style.display = 'none';
-            
-            // Log the response for debugging
-            console.log('Search response:', data);
-            
-            // Update results table
-            if (data && data.length > 0) {
-                renderEnterpriseTable(data);
-            } else {
-                document.getElementById('noResults').style.display = 'block';
-            }
-        },
-        error: function(xhr, status, error) {
-            // Hide loading indicator
-            document.getElementById('loading').style.display = 'none';
-            
-            // Show error message with more details
-            console.error('Search error:', error);
-            console.error('Response text:', xhr.responseText);
-            
-            // Update the UI to show the error
+        function searchEnterprises() {
+            const enterpriseId = document.getElementById('enterpriseId').value;
+            const enterpriseName = document.getElementById('enterpriseName').value;
+            const enterpriseType = document.getElementById('enterpriseType').value;
+
+            // Show loading indicator
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('noResults').style.display = 'none';
             document.getElementById('resultsBody').innerHTML = '';
-            document.getElementById('noResults').style.display = 'block';
-            document.getElementById('noResults').innerHTML = 
-                '<p class="text-danger">Error searching enterprises. Please check console for details.</p>';
-            
-            // Alert with simplified error message
-            alert('Error searching enterprises. Please try again later.');
+
+            // Prepare search parameters
+            const searchParams = new URLSearchParams();
+            if (enterpriseId) searchParams.append('id', enterpriseId);
+            if (enterpriseName) searchParams.append('name', enterpriseName);
+            if (enterpriseType) searchParams.append('type', enterpriseType);
+
+            // Log the search URL for debugging
+            console.log('Search URL: searchEnterprises?' + searchParams.toString());
+
+            // Send AJAX request to get enterprises
+            $.ajax({
+                url: 'searchEnterprises?' + searchParams.toString(),
+                type: 'GET',
+                dataType: 'json',
+                success: function (data) {
+                    // Hide loading indicator
+                    document.getElementById('loading').style.display = 'none';
+
+                    // Log the response for debugging
+                    console.log('Search response:', data);
+
+                    // Update results table
+                    if (data && data.length > 0) {
+                        renderEnterpriseTable(data);
+                    } else {
+                        document.getElementById('noResults').style.display = 'block';
+                    }
+                },
+                error: function (xhr, status, error) {
+                    // Hide loading indicator
+                    document.getElementById('loading').style.display = 'none';
+
+                    // Show error message with more details
+                    console.error('Search error:', error);
+                    console.error('Response text:', xhr.responseText);
+
+                    // Update the UI to show the error
+                    document.getElementById('resultsBody').innerHTML = '';
+                    document.getElementById('noResults').style.display = 'block';
+                    document.getElementById('noResults').innerHTML =
+                        '<p class="text-danger">Error searching enterprises. Please check console for details.</p>';
+
+                    // Alert with simplified error message
+                    alert('Error searching enterprises. Please try again later.');
+                }
+            });
         }
-    });
-}
-        
+
         // Function to render enterprise table
         function renderEnterpriseTable(enterprises) {
             const tbody = document.getElementById('resultsBody');
             tbody.innerHTML = '';
-            
-            enterprises.forEach(function(enterprise) {
+
+            // Log the full data for debugging
+            console.log("Enterprises data:", enterprises);
+
+            enterprises.forEach(function (enterprise, index) {
                 const row = document.createElement('tr');
-                row.ondblclick = function() {
-                    showEnterpriseDetail(enterprise.enterpriseID);
-                };
-                
+
+                // Extract ID and ensure consistency
+                const id = enterprise.enterpriseID || enterprise.id || enterprise.ID || '';
+                console.log(`Enterprise ${index} ID:`, id);
+
+                // 将ID存储为行的数据属性
+                row.setAttribute('data-enterprise-id', id);
+
+                // 使用jQuery绑定双击事件以确保可靠性
+                $(row).dblclick(function () {
+                    const clickedId = $(this).attr('data-enterprise-id');
+
+                    showEnterpriseDetail(clickedId);
+                });
+
                 // Enterprise ID column
                 const idCell = document.createElement('td');
-                idCell.textContent = enterprise.enterpriseID;
+                idCell.textContent = id;
                 row.appendChild(idCell);
-                
+
                 // Name column
                 const nameCell = document.createElement('td');
                 nameCell.textContent = enterprise.enterpriseName;
                 row.appendChild(nameCell);
-                
+
                 // Type column
                 const typeCell = document.createElement('td');
                 typeCell.textContent = getTypeDisplayText(enterprise.role);
                 row.appendChild(typeCell);
-                
+
                 // Phone column
                 const phoneCell = document.createElement('td');
                 phoneCell.textContent = enterprise.telephone;
                 row.appendChild(phoneCell);
-                
+
                 // Address column
                 const addressCell = document.createElement('td');
                 addressCell.textContent = enterprise.address;
                 row.appendChild(addressCell);
-                
+
                 tbody.appendChild(row);
             });
+
+            // 在渲染完成后添加调试信息
+            console.log("Table rendering complete, rows count:", $('#resultsBody tr').length);
         }
-        
+
+
         // Helper function to get display text for enterprise type
         function getTypeDisplayText(type) {
-            switch(type) {
+            switch (type) {
                 case 'Core': return 'Core Enterprise';
                 case 'Bank': return 'Bank';
                 case 'Supplier': return 'Supplier';
@@ -357,34 +380,41 @@ function searchEnterprises() {
             document.getElementById('enterpriseSearchForm').reset();
         }
 
-        // Function to show enterprise details
         function showEnterpriseDetail(id) {
-            window.location.href = `enterpriseDetail.jsp?id=${id}`;
+            if (!id) {
+                console.error("尝试查看详情但企业ID为空");
+                alert("无法显示企业详情：缺少企业ID");
+                return;
+            }
+            // 转义$符号防止JSP误解为EL表达式
+            const url = "singleEnterprise.jsp?id=" + encodeURIComponent(id.trim());
+
+            window.location.href = url;
         }
-        
+
         // Function to add new enterprise
         function addNewEnterprise() {
             //window.location.href = "enterpriseDetail.jsp?mode=add";
             window.location.href = "singleEnterprise.jsp?mode=add";
         }
-        
+
         // Load all enterprises when the page loads
-        $(document).ready(function() {
+        $(document).ready(function () {
             searchEnterprises();
         });
 
-        $(document).ready(function() {
-        // Make sure dropdown works properly
-        $('.dropdown-toggle').dropdown();
-        
-        $('.dropdown').hover(
-            function() {
-                $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
-            },
-            function() {
-                $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
-            }
-        );
+        $(document).ready(function () {
+            // Make sure dropdown works properly
+            $('.dropdown-toggle').dropdown();
+
+            $('.dropdown').hover(
+                function () {
+                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
+                },
+                function () {
+                    $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
+                }
+            );
         });
 
     </script>

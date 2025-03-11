@@ -229,63 +229,81 @@
 
                             <div class="form-section">
                                 <h4>Financial Information</h4>
-                                <div class="form-row">
-                                    <div class="form-group col-md-4">
-                                        <label for="amount">Total Amount</label>
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <span class="input-group-text">$</span>
+                                <div class="card mb-4">
+                                    <div class="card-body">
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label for="amount">Total Amount</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input type="number" class="form-control" id="amount"
+                                                        placeholder="0.00" step="0.01">
+                                                </div>
                                             </div>
-                                            <input type="number" class="form-control" id="amount" placeholder="0.00"
-                                                step="0.01">
+                                            <div class="form-group col-md-4">
+                                                <label for="signDate">Sign Date</label>
+                                                <input type="date" class="form-control" id="signDate">
+                                            </div>
+                                            <div class="form-group col-md-4">
+                                                <label for="effectiveDate">Effective Date</label>
+                                                <input type="date" class="form-control" id="effectiveDate">
+                                            </div>
+                                        </div>
+                                        <div class="form-row">
+                                            <div class="form-group col-md-4">
+                                                <label for="expiryDate">Expiry Date</label>
+                                                <input type="date" class="form-control" id="expiryDate">
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="form-group col-md-4">
-                                        <label for="signDate">Sign Date</label>
-                                        <input type="date" class="form-control" id="signDate">
-                                    </div>
-                                    <div class="form-group col-md-4">
-                                        <label for="effectiveDate">Effective Date</label>
-                                        <input type="date" class="form-control" id="effectiveDate">
-                                    </div>
                                 </div>
-                                <div class="form-row">
-                                    <div class="form-group col-md-4">
-                                        <label for="expiryDate">Expiry Date</label>
-                                        <input type="date" class="form-control" id="expiryDate">
-                                    </div>
-                                    <div class="form-group col-md-8">
-                                        <label for="paymentTerms">Payment Terms</label>
-                                        <input type="text" class="form-control" id="paymentTerms"
-                                            placeholder="e.g., Net 30 days">
-                                    </div>
-                                </div>
-                            </div>
 
-                            <div class="form-section">
-                                <h4>Additional Information</h4>
-                                <div class="form-group">
-                                    <label for="description">Description</label>
-                                    <textarea class="form-control" id="description" rows="3"
-                                        placeholder="Enter contract description"></textarea>
+                                <!-- Payment Terms Card -->
+                                <div class="card">
+                                    <div class="card-header bg-light">
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <h5 class="mb-0">Payment Schedule</h5>
+                                            <select class="form-control form-control-sm w-auto" id="paymentPeriods"
+                                                onchange="updatePaymentFields()">
+                                                <option value="1">1 Payment Period</option>
+                                                <option value="2">2 Payment Periods</option>
+                                                <option value="3">3 Payment Periods</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="card-body">
+                                        <div id="paymentPeriodsContainer" class="mt-2">
+                                            <!-- Payment period fields will be generated here -->
+                                        </div>
+                                    </div>
                                 </div>
-                                <div class="form-group">
-                                    <label for="remarks">Remarks</label>
-                                    <textarea class="form-control" id="remarks" rows="2"
-                                        placeholder="Any additional notes"></textarea>
-                                </div>
-                            </div>
 
-                            <div class="form-row mt-4">
-                                <div class="col-md-6 mb-2">
-                                    <button type="button" id="saveButton" class="btn btn-primary btn-block"
-                                        onclick="saveContract()">Save Contract</button>
+                                <div class="form-section">
+                                    <h4>Additional Information</h4>
+                                    <div class="form-group">
+                                        <label for="description">Description</label>
+                                        <textarea class="form-control" id="description" rows="3"
+                                            placeholder="Enter contract description"></textarea>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="remarks">Remarks</label>
+                                        <textarea class="form-control" id="remarks" rows="2"
+                                            placeholder="Any additional notes"></textarea>
+                                    </div>
                                 </div>
-                                <div class="col-md-6 mb-2">
-                                    <button type="button" class="btn btn-secondary btn-block"
-                                        onclick="goBack()">Cancel</button>
+
+                                <div class="form-row mt-4">
+                                    <div class="col-md-6 mb-2">
+                                        <button type="button" id="saveButton" class="btn btn-primary btn-block"
+                                            onclick="saveContract()">Save Contract</button>
+                                    </div>
+                                    <div class="col-md-6 mb-2">
+                                        <button type="button" class="btn btn-secondary btn-block"
+                                            onclick="goBack()">Cancel</button>
+                                    </div>
                                 </div>
-                            </div>
                         </form>
                     </div>
                 </div>
@@ -475,11 +493,138 @@
                 }
             }
 
+            // Function to update payment fields based on selected number of periods
+            function updatePaymentFields() {
+                const periods = parseInt($('#paymentPeriods').val());
+                const container = $('#paymentPeriodsContainer');
+                container.empty();
+
+                // Calculate default amounts - divide total amount by number of periods
+                const totalAmount = parseFloat($('#amount').val() || 0);
+                const defaultAmount = totalAmount > 0 ? (totalAmount / periods).toFixed(2) : '';
+
+                // Create a card for payment periods
+                const paymentCard = $('<div class="payment-periods-table"></div>');
+
+                // Add header row
+                const headerRow = $(`
+        <div class="row payment-period-header border-bottom pb-2 mb-3">
+            <div class="col-md-2"><strong>Period</strong></div>
+            <div class="col-md-3"><strong>Date</strong></div>
+            <div class="col-md-3"><strong>Amount ($)</strong></div>
+            <div class="col-md-4"><strong>Memo</strong></div>
+        </div>
+    `);
+                paymentCard.append(headerRow);
+
+                // Create fields for each payment period
+                for (let i = 1; i <= periods; i++) {
+                    const periodRow = $(`
+            <div class="row mb-3 payment-period" data-period="${i}">
+                <div class="col-md-2 d-flex align-items-center">
+                    <span class="badge badge-primary">Period ${i}</span>
+                </div>
+                <div class="col-md-3">
+                    <input type="date" class="form-control payment-date" 
+                        id="paymentDate${i}" placeholder="Date">
+                </div>
+                <div class="col-md-3">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">$</span>
+                        </div>
+                        <input type="number" class="form-control payment-amount" 
+                            id="paymentAmount${i}" placeholder="Amount" value="${defaultAmount}" step="0.01">
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <input type="text" class="form-control payment-terms"
+                        id="Memo${i}" placeholder="e.g., Net 30 days">
+                </div>
+            </div>
+        `);
+                    paymentCard.append(periodRow);
+                }
+
+                // Add a total row
+                const totalRow = $(`
+        <div class="row mt-3 pt-2 border-top">
+            <div class="col-md-5 text-right">
+                <strong>Total:</strong>
+            </div>
+            <div class="col-md-3">
+                <div class="input-group">
+                    <div class="input-group-prepend">
+                        <span class="input-group-text">$</span>
+                    </div>
+                    <input type="text" class="form-control" 
+                        id="totalPaymentAmount" value="${totalAmount.toFixed(2)}" readonly>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    `);
+                paymentCard.append(totalRow);
+
+                container.append(paymentCard);
+
+                // Add event listeners to recalculate total when amounts change
+                $('.payment-amount').on('input', function () {
+                    updateTotalPaymentAmount();
+                });
+            }
+
+            // Function to update the total payment amount
+            function updateTotalPaymentAmount() {
+                let total = 0;
+                $('.payment-amount').each(function () {
+                    const amount = parseFloat($(this).val()) || 0;
+                    total += amount;
+                });
+                $('#totalPaymentAmount').val(total.toFixed(2));
+
+                // Highlight if total doesn't match contract amount
+                const contractAmount = parseFloat($('#amount').val()) || 0;
+                if (Math.abs(total - contractAmount) > 0.01) {
+                    $('#totalPaymentAmount').addClass('border-warning');
+                } else {
+                    $('#totalPaymentAmount').removeClass('border-warning');
+                }
+            }
+
+
             // Function to save contract
             function saveContract() {
                 // Validate form
                 if (!validateForm()) {
                     return;
+                }
+
+                // Collect payment periods data
+                const paymentPeriods = [];
+                const periodCount = parseInt($('#paymentPeriods').val());
+
+                for (let i = 1; i <= periodCount; i++) {
+                    // Validate required fields for each payment period
+                    const date = $(`#paymentDate${i}`).val();
+                    const amount = $(`#paymentAmount${i}`).val();
+
+                    if (!date) {
+                        showAlert('Please enter a date for Payment Period ' + i, 'danger');
+                        return;
+                    }
+
+                    if (!amount) {
+                        showAlert('Please enter an amount for Payment Period ' + i, 'danger');
+                        return;
+                    }
+
+                    paymentPeriods.push({
+                        period: i,
+                        date: date,
+                        amount: amount,
+                        terms: $(`#Memo${i}`).val()
+                    });
                 }
 
                 // Get form data
@@ -496,7 +641,7 @@
                     signDate: $('#signDate').val(),
                     effectiveDate: $('#effectiveDate').val(),
                     expiryDate: $('#expiryDate').val(),
-                    paymentTerms: $('#paymentTerms').val(),
+                    paymentPeriods: paymentPeriods,
                     description: $('#description').val(),
                     remarks: $('#remarks').val()
                 };
@@ -518,15 +663,7 @@
 
                         if (response && response.success) {
                             // Show success message
-                            const alertDiv = $(`
-                        <div class="alert alert-success alert-dismissible fade show" role="alert">
-                            Contract saved successfully!
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    `);
-                            $('.detail-panel h3').after(alertDiv);
+                            showAlert('Contract saved successfully! Invoices have been generated.', 'success');
 
                             // Get current mode
                             const urlParams = new URLSearchParams(window.location.search);
@@ -548,23 +685,10 @@
                                 // Change mode flag
                                 isAddMode = false;
                             }
-
-                            // Auto-hide alert after 5 seconds
-                            setTimeout(function () {
-                                alertDiv.alert('close');
-                            }, 5000);
                         } else {
                             // Show error message
                             const errorMessage = response && response.error ? response.error : 'Unknown error occurred';
-                            const alertDiv = $(`
-                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                            Error: ${errorMessage}
-                            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                    `);
-                            $('.detail-panel h3').after(alertDiv);
+                            showAlert('Error: ' + errorMessage, 'danger');
                         }
                     },
                     error: function (xhr, status, error) {
@@ -584,29 +708,21 @@
                             errorMessage += ': ' + error;
                         }
 
-                        const alertDiv = $(`
-                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                        ${errorMessage}
-                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
-                `);
-                        $('.detail-panel h3').after(alertDiv);
+                        showAlert(errorMessage, 'danger');
                     }
                 });
             }
 
-            // Function to show alert
-            function showAlert(type, message) {
+            // Helper function to show alerts
+            function showAlert(message, type) {
                 const alertDiv = $(`
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                ${message}
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        `);
+        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            ${message}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+    `);
 
                 // Remove existing alerts
                 $('.alert').remove();
@@ -641,7 +757,7 @@
             function loadContractDetails(id) {
                 // Make AJAX call to get contract details
                 $.ajax({
-                    url: "getContract", // You'll need to create this servlet
+                    url: "getContract",
                     type: "GET",
                     data: {
                         contractId: id
@@ -670,9 +786,32 @@
                                 document.getElementById('expiryDate').value = contract.expiryDate;
                             }
 
-                            document.getElementById('paymentTerms').value = contract.paymentTerms || '';
                             document.getElementById('description').value = contract.description || '';
                             document.getElementById('remarks').value = contract.remarks || '';
+
+                            // Set payment periods if they exist
+                            if (contract.paymentPeriods && contract.paymentPeriods.length > 0) {
+                                $('#paymentPeriods').val(contract.paymentPeriods.length);
+
+                                // Call updatePaymentFields first to create the fields
+                                updatePaymentFields();
+
+                                // Then set the values
+                                setTimeout(function () {
+                                    contract.paymentPeriods.forEach(function (period) {
+                                        $(`#paymentDate${period.period}`).val(period.date);
+                                        $(`#paymentAmount${period.period}`).val(period.amount);
+                                        $(`#Memo${period.period}`).val(period.terms);
+                                    });
+
+                                    // Recalculate total
+                                    updateTotalPaymentAmount();
+                                }, 100);
+                            } else {
+                                // Default to 1 payment period
+                                $('#paymentPeriods').val(1);
+                                updatePaymentFields();
+                            }
                         } else {
                             alert('Contract not found');
                             window.location.href = 'contract.jsp';
@@ -735,6 +874,9 @@
                     // Set today's date as the default sign date
                     document.getElementById('signDate').valueAsDate = new Date();
 
+
+                    // Initialize payment period fields with default selection (1 period)
+                    updatePaymentFields();
                     // 确保显示正确的按钮
                     $('#saveButton').show().html('Save Contract');
 
@@ -778,7 +920,14 @@
                     // Handle edit/view mode without a contract ID
                     alert('Contract ID is required for edit/view mode');
                     window.location.href = 'contract.jsp';
+                } else {
+                    updatePaymentFields();
+
                 }
+                // Update payment fields when amount changes
+                $('#amount').on('change', function () {
+                    updatePaymentFields();
+                });
             });
 
         </script>

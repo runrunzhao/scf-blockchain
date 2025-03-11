@@ -247,7 +247,7 @@ public class ContractDAO {
     }
     
     // 生成合同ID
-    private String generateContractId() {
+    public String generateContractId() {
         return "C" + String.format("%07d", Math.abs(System.currentTimeMillis() % 10000000));
     }
 }

@@ -11,7 +11,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class EnterpriseDAO {
-    
+
+     public String generateEnterpriseId(){
+        return "E" + String.format("%07d", Math.abs(System.currentTimeMillis() % 10000000));
+     }    
     public Enterprise getEnterpriseById(String id) {
         Enterprise enterprise = null;
         
@@ -91,6 +94,14 @@ public class EnterpriseDAO {
     }
     
     public boolean createEnterprise(Enterprise enterprise) {
+       
+    String id = enterprise.getEnterpriseID();
+    if (id == null || id.trim().isEmpty()) {
+        System.out.println("ERROR: Attempting to create enterprise with empty ID!");
+        // 如果ID为空，重新生成一个
+        id = generateEnterpriseId();
+        enterprise.setEnterpriseID(id);
+    }
         try (Connection conn = DBUtil.getConnection();
              PreparedStatement stmt = conn.prepareStatement(
                 "INSERT INTO enterprise (enterpriseID, enterpriseName, address, telephone, role, memo,tier) " +

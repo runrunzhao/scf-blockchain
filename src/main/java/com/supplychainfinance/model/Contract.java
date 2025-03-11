@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class Contract {
     private String contractId;     // contractID
@@ -21,6 +22,10 @@ public class Contract {
     private String paymentTerms;   // 支付条款 (非数据库字段)
     private String description;    // 描述 (非数据库字段)
     private String remarks;        // 备注 (非数据库字段)
+    
+    private List<PaymentPeriod> paymentPeriods;
+    
+
     
     // 默认构造函数
     public Contract() {
@@ -276,6 +281,16 @@ public String getFormattedExpiryDate() {
         this.toEnterpriseId = toEnterpriseId;
     }
     
+        // Add paymentPeriods getter and setter
+    public List<PaymentPeriod> getPaymentPeriods() {
+        return paymentPeriods;
+    }
+    
+    public void setPaymentPeriods(List<PaymentPeriod> paymentPeriods) {
+        this.paymentPeriods = paymentPeriods;
+    }
+    
+
     @Override
     public String toString() {
         return "Contract{" +

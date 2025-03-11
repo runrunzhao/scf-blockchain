@@ -1,160 +1,205 @@
 package com.supplychainfinance.servlet;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import com.supplychainfinance.dao.ContractDAO;
+import com.supplychainfinance.dao.InvoiceDAO;
 import com.supplychainfinance.model.Contract;
+import com.supplychainfinance.model.Invoice;
+import com.supplychainfinance.model.PaymentPeriod;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
+import java.lang.reflect.Type;
+import java.sql.SQLException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class SaveContractServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
-
+    
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        JsonObject jsonResponse = new JsonObject();
-
+        
+        // Read JSON data from request
+        StringBuilder sb = new StringBuilder();
+        BufferedReader reader = request.getReader();
+        String line;
+        while ((line = reader.readLine()) != null) {
+            sb.append(line);
+        }
+        
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd").create();
+        Map<String, Object> result = new HashMap<>();
+        
         try {
-            // 读取请求体
-            String requestBody = request.getReader().lines().collect(Collectors.joining());
-            System.out.println("Received contract data: " + requestBody);
-
-            // 解析 JSON
-            JsonObject contractJson = JsonParser.parseString(requestBody).getAsJsonObject();
-
-            // 创建 Contract 对象
+            // Parse request JSON into Contract object
+            Type contractType = new TypeToken<Map<String, Object>>() {}.getType();
+            Map<String, Object> contractData = gson.fromJson(sb.toString(), contractType);
+            
+            // Create Contract object
             Contract contract = new Contract();
-
-            // 处理 ID（如果存在且不为空）
-            if (contractJson.has("contractId") && !contractJson.get("contractId").getAsString().trim().isEmpty()) {
-                contract.setContractId(contractJson.get("contractId").getAsString());
-            }
-
-            // 设置基本字段
-            if (contractJson.has("contractName")) {
-                contract.setContractName(contractJson.get("contractName").getAsString());
-            }
-
-            if (contractJson.has("fromEnterpriseId")) {
-                contract.setFromEnterpriseId(contractJson.get("fromEnterpriseId").getAsString());
-            }
-
-            if (contractJson.has("toEnterpriseId")) {
-                contract.setToEnterpriseId(contractJson.get("toEnterpriseId").getAsString());
-            }
-
-            // 解析金额
-            try {
-                if (contractJson.has("amount") && !contractJson.get("amount").getAsString().isEmpty()) {
-                    String amountStr = contractJson.get("amount").getAsString();
-                    contract.setAmount(Double.parseDouble(amountStr));
-                }
-            } catch (Exception e) {
-                contract.setAmount(0.0);
-                System.out.println("Error parsing amount: " + e.getMessage());
-            }
-
-            // 设置状态
-            if (contractJson.has("status")) {
-                contract.setStatus(contractJson.get("status").getAsString());
+            
+            // Check if this is an update or new contract
+            boolean isUpdate = contractData.get("contractId") != null && !contractData.get("contractId").toString().isEmpty();
+            
+            if (isUpdate) {
+                contract.setContractId(contractData.get("contractId").toString());
             } else {
-                contract.setStatus("Active");  // 默认状态
+                // Generate new contract ID
+                ContractDAO contractDAO = new ContractDAO();
+                String newContractID = contractDAO.generateContractId();
+                contract.setContractId(newContractID);
             }
-
-            // 解析日期 - 使用完全限定名
+            
+            contract.setContractName(contractData.get("contractName").toString());
+            contract.setContractType(contractData.get("contractType").toString());
+            contract.setStatus(contractData.get("status").toString());
+            contract.setFromEnterpriseId(contractData.get("fromEnterpriseId").toString());
+            contract.setToEnterpriseId(contractData.get("toEnterpriseId").toString());
+            contract.setAmount(Double.parseDouble(contractData.get("amount").toString()));
+            
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-
-            try {
-                if (contractJson.has("signDate") && !contractJson.get("signDate").getAsString().isEmpty()) {
-                    java.util.Date parsedDate = dateFormat.parse(contractJson.get("signDate").getAsString());
-                    contract.setSignDate(parsedDate);
-                } else {
-                    contract.setSignDate(new java.util.Date()); // 默认今天
+            if (contractData.get("signDate") != null && !contractData.get("signDate").toString().isEmpty()) {
+                contract.setSignDate(dateFormat.parse(contractData.get("signDate").toString()));
+            }
+            
+            if (contractData.get("effectiveDate") != null && !contractData.get("effectiveDate").toString().isEmpty()) {
+                contract.setEffectiveDate(dateFormat.parse(contractData.get("effectiveDate").toString()));
+            }
+            
+            if (contractData.get("expiryDate") != null && !contractData.get("expiryDate").toString().isEmpty()) {
+                contract.setExpiryDate(dateFormat.parse(contractData.get("expiryDate").toString()));
+            }
+            
+            contract.setDescription(contractData.get("description") != null ? contractData.get("description").toString() : "");
+            contract.setRemarks(contractData.get("remarks") != null ? contractData.get("remarks").toString() : "");
+            
+            // Parse payment periods
+            List<PaymentPeriod> paymentPeriods = new ArrayList<>();
+            if (contractData.get("paymentPeriods") != null) {
+                Type periodListType = new TypeToken<ArrayList<Map<String, Object>>>() {}.getType();
+                List<Map<String, Object>> periodData = gson.fromJson(
+                        gson.toJson(contractData.get("paymentPeriods")), periodListType);
+                
+                for (Map<String, Object> period : periodData) {
+                    PaymentPeriod paymentPeriod = new PaymentPeriod();
+                    paymentPeriod.setPeriod(Integer.parseInt(period.get("period").toString()));
+                    
+                    if (period.get("date") != null && !period.get("date").toString().isEmpty()) {
+                        paymentPeriod.setDate(dateFormat.parse(period.get("date").toString()));
+                    }
+                    
+                    if (period.get("amount") != null && !period.get("amount").toString().isEmpty()) {
+                        paymentPeriod.setAmount(Double.parseDouble(period.get("amount").toString()));
+                    }
+                    
+                    paymentPeriod.setTerms(period.get("terms") != null ? period.get("terms").toString() : "");
+                    paymentPeriods.add(paymentPeriod);
                 }
-            } catch (Exception e) {
-                contract.setSignDate(new java.util.Date()); // 解析失败时默认今天
-                System.out.println("Error parsing sign date: " + e.getMessage());
             }
-
-            try {
-                if (contractJson.has("effectiveDate") && !contractJson.get("effectiveDate").getAsString().isEmpty()) {
-                    java.util.Date parsedDate = dateFormat.parse(contractJson.get("effectiveDate").getAsString());
-                    contract.setEffectiveDate(parsedDate);
-                } else {
-                    contract.setEffectiveDate(new java.util.Date()); // 默认今天
-                }
-            } catch (Exception e) {
-                contract.setEffectiveDate(new java.util.Date());
-                System.out.println("Error parsing effective date: " + e.getMessage());
-            }
-
-            try {
-                if (contractJson.has("expiryDate") && !contractJson.get("expiryDate").getAsString().isEmpty()) {
-                    java.util.Date parsedDate = dateFormat.parse(contractJson.get("expiryDate").getAsString());
-                    contract.setExpiryDate(parsedDate);
-                } else {
-                    // 默认一年后
-                    Calendar calendar = Calendar.getInstance();
-                    calendar.add(Calendar.YEAR, 1);
-                    contract.setExpiryDate(calendar.getTime());
-                }
-            } catch (Exception e) {
-                // 默认一年后
-                Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.YEAR, 1);
-                contract.setExpiryDate(calendar.getTime());
-                System.out.println("Error parsing expiry date: " + e.getMessage());
-            }
-
-            // 保存非数据库字段
-            if (contractJson.has("contractType")) {
-                contract.setContractType(contractJson.get("contractType").getAsString());
-            }
-
-            if (contractJson.has("paymentTerms")) {
-                contract.setPaymentTerms(contractJson.get("paymentTerms").getAsString());
-            }
-
-            if (contractJson.has("description")) {
-                contract.setDescription(contractJson.get("description").getAsString());
-            }
-
-            if (contractJson.has("remarks")) {
-                contract.setRemarks(contractJson.get("remarks").getAsString());
-            }
-
-            // 使用 DAO 保存到数据库
+            contract.setPaymentPeriods(paymentPeriods);
+            
+            // Save contract data
             ContractDAO contractDAO = new ContractDAO();
-
-            if (contract.getContractId() == null || contract.getContractId().trim().isEmpty()) {
-                contractDAO.insertContract(contract);
-            } else {
-                contractDAO.updateContract(contract);
+            boolean success = false;
+            
+            try {
+                if (isUpdate) {
+                    contractDAO.updateContract(contract);
+                    success = true;
+                } else {
+                    contractDAO.insertContract(contract);
+                    success = true;
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                success = false;
             }
-
-            // 返回成功响应
-            jsonResponse.addProperty("success", true);
-            jsonResponse.addProperty("contractId", contract.getContractId());
-            out.print(jsonResponse);
-
+            
+            if (success) {
+                // Generate invoices from payment periods
+                boolean invoicesGenerated = generateInvoicesFromPaymentPeriods(contract.getContractId(), paymentPeriods);
+                
+                result.put("success", true);
+                result.put("contractId", contract.getContractId());
+                result.put("message", isUpdate ? "Contract updated successfully" : "Contract created successfully");
+                if (invoicesGenerated) {
+                    result.put("invoicesGenerated", true);
+                }
+            } else {
+                result.put("success", false);
+                result.put("error", "Failed to save contract data");
+            }
+            
         } catch (Exception e) {
             e.printStackTrace();
-
-            // 返回错误响应
-            jsonResponse.addProperty("success", false);
-            jsonResponse.addProperty("error", e.getMessage());
-            out.print(jsonResponse);
+            result.put("success", false);
+            result.put("error", "Error processing contract data: " + e.getMessage());
+        }
+        
+        out.println(gson.toJson(result));
+    }
+    
+    /**
+     * Generate invoice records from payment periods
+     * @param contractId The contract ID
+     * @param paymentPeriods List of payment periods
+     * @return boolean - success/failure
+     */
+    private boolean generateInvoicesFromPaymentPeriods(String contractId, List<PaymentPeriod> paymentPeriods) {
+        if (paymentPeriods == null || paymentPeriods.isEmpty()) {
+            return false;
+        }
+        
+        try {
+            InvoiceDAO invoiceDAO = new InvoiceDAO();
+            List<Invoice> invoices = new ArrayList<>();
+            
+            // Get existing invoices for this contract
+            List<Invoice> existingInvoices = invoiceDAO.getInvoicesByContractID(contractId);
+            
+            // If there are existing invoices, we won't create new ones
+            if (existingInvoices != null && !existingInvoices.isEmpty()) {
+                return true;
+            }
+            
+            // Create new invoices for each payment period
+            for (PaymentPeriod period : paymentPeriods) {
+                if (period.getDate() == null || period.getAmount() <= 0) {
+                    continue; // Skip invalid periods
+                }
+                
+                String invoiceID = invoiceDAO.generateInvoiceID();
+                Invoice invoice = new Invoice();
+                invoice.setInvoiceID(invoiceID);
+                invoice.setContractID(contractId);
+                invoice.setAmount(period.getAmount());
+                invoice.setPayDate(period.getDate());
+                invoice.setStatus("Pending"); // Default status
+                invoice.setMemo(period.getTerms());
+                
+                invoices.add(invoice);
+            }
+            
+            return invoiceDAO.createInvoicesBatch(invoices);
+            
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
         }
     }
 }
