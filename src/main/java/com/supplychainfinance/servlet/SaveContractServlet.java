@@ -97,10 +97,10 @@ public class SaveContractServlet extends HttpServlet {
                 
                 for (Map<String, Object> period : periodData) {
                     PaymentPeriod paymentPeriod = new PaymentPeriod();
-                    paymentPeriod.setPeriod(Integer.parseInt(period.get("period").toString()));
+                    paymentPeriod.setPeriod((int) Math.round(Double.parseDouble(period.get("period").toString())));
                     
-                    if (period.get("date") != null && !period.get("date").toString().isEmpty()) {
-                        paymentPeriod.setDate(dateFormat.parse(period.get("date").toString()));
+                    if (period.get("paydate") != null && !period.get("paydate").toString().isEmpty()) {
+                        paymentPeriod.setDate(dateFormat.parse(period.get("paydate").toString()));
                     }
                     
                     if (period.get("amount") != null && !period.get("amount").toString().isEmpty()) {
@@ -161,6 +161,9 @@ public class SaveContractServlet extends HttpServlet {
      * @return boolean - success/failure
      */
     private boolean generateInvoicesFromPaymentPeriods(String contractId, List<PaymentPeriod> paymentPeriods) {
+            System.out.println("Generating invoices for contract: " + contractId);
+    System.out.println("Number of payment periods: " + paymentPeriods.size());
+
         if (paymentPeriods == null || paymentPeriods.isEmpty()) {
             return false;
         }
@@ -168,21 +171,36 @@ public class SaveContractServlet extends HttpServlet {
         try {
             InvoiceDAO invoiceDAO = new InvoiceDAO();
             List<Invoice> invoices = new ArrayList<>();
-            
+
+         /*   
             // Get existing invoices for this contract
             List<Invoice> existingInvoices = invoiceDAO.getInvoicesByContractID(contractId);
             
-            // If there are existing invoices, we won't create new ones
-            if (existingInvoices != null && !existingInvoices.isEmpty()) {
-                return true;
-            }
-            
+    System.out.println("Existing invoices check - result: " + 
+                  (existingInvoices != null ? existingInvoices.size() + " invoices found" : "null result"));
+
+// 如果有现有发票，不创建新发票
+if (existingInvoices != null && !existingInvoices.isEmpty()) {
+    System.out.println("Existing invoices found for contract " + contractId + ". Skipping invoice generation.");
+    return true;
+}
+      */      
             // Create new invoices for each payment period
             for (PaymentPeriod period : paymentPeriods) {
+              
+              System.out.println("Processing period " + period.getPeriod() + 
+                              ", Date: " + period.getDate() + 
+                              ", Amount: " + period.getAmount());
+
                 if (period.getDate() == null || period.getAmount() <= 0) {
+                    System.out.println("Skipping period " + period.getPeriod() + " due to null date");
                     continue; // Skip invalid periods
                 }
                 
+                System.out.println("Processing period " + period.getPeriod() + 
+                              ", Date: " + period.getDate() + 
+                              ", Amount: " + period.getAmount());
+
                 String invoiceID = invoiceDAO.generateInvoiceID();
                 Invoice invoice = new Invoice();
                 invoice.setInvoiceID(invoiceID);
@@ -191,7 +209,7 @@ public class SaveContractServlet extends HttpServlet {
                 invoice.setPayDate(period.getDate());
                 invoice.setStatus("Pending"); // Default status
                 invoice.setMemo(period.getTerms());
-                
+                System.out.println("Generating invoices ID: " + invoiceID);
                 invoices.add(invoice);
             }
             

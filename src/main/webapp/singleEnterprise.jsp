@@ -414,13 +414,13 @@
 
                     return;
                 }
-    // 修改这个条件判断
-    if (!id || id.trim() === '') {
-        console.error("ID参数缺失或为空字符串:", id);
-        alert('No enterprise ID provided');
-        goBack();
-        return;
-    }
+                // 修改这个条件判断
+                if (!id || id.trim() === '') {
+                    console.error("ID参数缺失或为空字符串:", id);
+                    alert('No enterprise ID provided');
+                    goBack();
+                    return;
+                }
 
                 // 从服务器获取企业数据
                 $.ajax({

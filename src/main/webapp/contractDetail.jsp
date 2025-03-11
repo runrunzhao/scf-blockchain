@@ -620,10 +620,10 @@
                     }
 
                     paymentPeriods.push({
-                        period: i,
-                        date: date,
+                        period: parseInt(i),
+                        paydate: date,
                         amount: amount,
-                        terms: $(`#Memo${i}`).val()
+                        terms: $("#Memo" + i).val()
                     });
                 }
 
@@ -715,14 +715,15 @@
 
             // Helper function to show alerts
             function showAlert(message, type) {
-                const alertDiv = $(`
-        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-            ${message}
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
-        </div>
-    `);
+                // 修改后：
+                const alertDiv = $(
+                    '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                    message +
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                    '<span aria-hidden="true">&times;</span>' +
+                    '</button>' +
+                    '</div>'
+                );
 
                 // Remove existing alerts
                 $('.alert').remove();

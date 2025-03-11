@@ -1,3 +1,4 @@
+com/supplychainfinance/servlet/GetInvoicesServlet.class
 com/supplychainfinance/model/Invoice.class
 com/supplychainfinance/servlet/EnterpriseRelationController.class
 com/supplychainfinance/servlet/UpdateEnterpriseServlet.class

@@ -9,6 +9,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Arrays;
 
 public class InvoiceDAO {
     
@@ -89,9 +90,12 @@ public class InvoiceDAO {
                 pstmt.setString(5, invoice.getStatus());
                 pstmt.setString(6, invoice.getMemo());
                 pstmt.addBatch();
+                 System.out.println("Added to batch: Invoice " + invoice.getInvoiceID());
             }
             
             int[] rowsAffected = pstmt.executeBatch();
+         System.out.println("Batch execution results: " + Arrays.toString(rowsAffected)); // 修复变量名
+
             conn.commit();
             
             // Check if all inserts were successful
@@ -173,4 +177,101 @@ public class InvoiceDAO {
         
         return invoices;
     }
+
+    /**
+ * Search invoices based on criteria
+ * @param invoiceId Invoice ID (optional)
+ * @param contractId Contract ID (optional)
+ * @param enterpriseName Enterprise name (optional)
+ * @param status Invoice status (optional)
+ * @return List of matching invoices
+ */
+public List<Invoice> searchInvoices(String invoiceId, String contractId, 
+                                   String enterpriseName, String status) {
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    List<Invoice> invoices = new ArrayList<>();
+    
+    try {
+        conn = DBUtil.getConnection();
+        
+        // 构建动态查询
+        StringBuilder sql = new StringBuilder(
+            "SELECT i.*, c.part1, c.part2 " +
+            "FROM invoice i " +
+            "LEFT JOIN contract c ON i.contractID = c.contractID " +
+            "WHERE 1=1 ");
+        
+        List<Object> params = new ArrayList<>();
+        
+        // 添加过滤条件
+        if (invoiceId != null && !invoiceId.trim().isEmpty()) {
+            sql.append("AND i.invoiceID LIKE ? ");
+            params.add("%" + invoiceId + "%");
+        }
+        
+        if (contractId != null && !contractId.trim().isEmpty()) {
+            sql.append("AND i.contractID LIKE ? ");
+            params.add("%" + contractId + "%");
+        }
+        
+        if (enterpriseName != null && !enterpriseName.trim().isEmpty()) {
+            sql.append("AND (c.part1 LIKE ? OR c.part2 LIKE ?) ");
+            params.add("%" + enterpriseName + "%");
+            params.add("%" + enterpriseName + "%");
+        }
+        
+        if (status != null && !status.trim().isEmpty()) {
+            sql.append("AND i.status = ? ");
+            params.add(status);
+        }
+        
+        sql.append("ORDER BY i.payDate DESC");
+        
+        System.out.println("Executing SQL: " + sql.toString());
+        System.out.println("With parameters: " + params);
+        
+        pstmt = conn.prepareStatement(sql.toString());
+        
+        // 设置参数
+        for (int i = 0; i < params.size(); i++) {
+            pstmt.setObject(i + 1, params.get(i));
+        }
+        
+        rs = pstmt.executeQuery();
+        
+        // 处理结果
+        while (rs.next()) {
+            Invoice invoice = new Invoice();
+            invoice.setInvoiceID(rs.getString("invoiceID"));
+            invoice.setContractID(rs.getString("contractID"));
+            invoice.setAmount(rs.getDouble("amount"));
+            invoice.setPayDate(rs.getDate("payDate"));
+            invoice.setStatus(rs.getString("status"));
+            invoice.setMemo(rs.getString("memo"));
+            
+              
+            invoices.add(invoice);
+        }
+        
+        System.out.println("Found " + invoices.size() + " invoices");
+        
+    } catch (SQLException e) {
+        System.out.println("Error searching invoices: " + e.getMessage());
+        e.printStackTrace();
+    } finally {
+        // 关闭资源
+        try {
+            if (rs != null) rs.close();
+            if (pstmt != null) pstmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    return invoices;
+}
+
 }
