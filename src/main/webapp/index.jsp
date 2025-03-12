@@ -161,8 +161,13 @@
                     <a class="dropdown-item" href="invoiceDetail.jsp?mode=add">Add New Invoice</a>
                 </div>
             </div>
+                    <!-- Add CTT menu -->
+        <a href="CTTinfo.jsp">CTT</a>
+
         </div>
     </div>
+
+    
 
     <div class="container">
         <!-- Core Enterprise Section -->

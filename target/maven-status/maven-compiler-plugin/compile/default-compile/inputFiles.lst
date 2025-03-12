@@ -11,6 +11,7 @@
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/CreateEnterpriseServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/dao/InvoiceDAO.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/util/DBUtil.java
+/workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/SingleInvoiceServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/CoreEnterpriseServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/SearchContractServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/UpdateEnterpriseServlet.java

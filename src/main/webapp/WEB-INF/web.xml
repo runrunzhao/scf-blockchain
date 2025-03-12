@@ -134,5 +134,14 @@
     <servlet-name>GetContractDetailsServlet</servlet-name>
     <url-pattern>/getContractDetails</url-pattern>
 </servlet-mapping>
+
+<servlet>
+    <servlet-name>SingleInvoiceServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.SingleInvoiceServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SingleInvoiceServlet</servlet-name>
+    <url-pattern>/addInvoice</url-pattern>
+</servlet-mapping>
   
 </web-app>

@@ -1,336 +1,351 @@
-webapp/contractDetail.jsp -->
-<!DOCTYPE html>
-<html lang="en">
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+    <!DOCTYPE html>
+    <html lang="en">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contract Details - Supply Chain Finance</title>
-    <!-- Bootstrap CSS -->
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Custom styles */
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f7fa;
-        }
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Invoice Details - Supply Chain Finance</title>
+        <!-- Bootstrap CSS -->
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+        <style>
+            /* Custom styles */
+            body {
+                font-family: Arial, sans-serif;
+                background-color: #f4f7fa;
+            }
 
-        .container {
-            margin-top: 30px;
-        }
+            .container {
+                margin-top: 30px;
+            }
 
-        .menu {
-            margin-bottom: 30px;
-        }
+            .menu {
+                margin-bottom: 30px;
+            }
 
-        .menu a {
-            color: #fff;
-            font-size: 18px;
-            margin: 0 15px;
-        }
+            .menu a {
+                color: #fff;
+                font-size: 18px;
+                margin: 0 15px;
+            }
 
-        .menu a:hover {
-            text-decoration: underline;
-        }
+            .menu a:hover {
+                text-decoration: underline;
+            }
 
-        .header {
-            background-color: #007bff;
-            padding: 15px;
-            color: white;
-            text-align: center;
-            font-size: 24px;
-            border-radius: 10px;
-        }
+            .header {
+                background-color: #007bff;
+                padding: 15px;
+                color: white;
+                text-align: center;
+                font-size: 24px;
+                border-radius: 10px;
+            }
 
-        .footer {
-            text-align: center;
-            margin-top: 50px;
-            font-size: 14px;
-            color: #aaa;
-        }
+            .footer {
+                text-align: center;
+                margin-top: 50px;
+                font-size: 14px;
+                color: #aaa;
+            }
 
-        .detail-panel {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-            margin-bottom: 20px;
-        }
+            .detail-panel {
+                background-color: #ffffff;
+                padding: 20px;
+                border-radius: 10px;
+                box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+                margin-bottom: 20px;
+            }
 
-        .related-entities {
-            background-color: #ffffff;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        }
+            .view-mode,
+            .add-mode {
+                display: none;
+                /* Hide both by default and show based on mode */
+            }
 
-        .status-badge {
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: bold;
-            display: inline-block;
-        }
+            /* Updated dropdown menu styling */
+            .dropdown-menu {
+                background-color: #f8f9fa;
+                border-radius: 5px;
+                margin-top: 10px;
+                box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+                z-index: 1021;
+            }
 
-        .status-active {
-            background-color: #d4edda;
-            color: #155724;
-        }
+            .dropdown-item {
+                color: #333333 !important;
+                font-weight: 500;
+                padding: 0.5rem 1.5rem;
+            }
 
-        .status-pending {
-            background-color: #fff3cd;
-            color: #856404;
-        }
+            .dropdown-item:hover {
+                background-color: #007bff;
+                color: white !important;
+            }
 
-        .status-completed {
-            background-color: #cce5ff;
-            color: #004085;
-        }
+            .button-group {
+                margin-top: 25px;
+                padding-top: 20px;
+                border-top: 1px solid #eee;
+                text-align: center;
+            }
 
-        hr.section-divider {
-            border-top: 1px solid #eaeaea;
-            margin: 25px 0;
-        }
+            .button-group button {
+                margin: 0 10px;
+                min-width: 100px;
+                font-weight: 500;
+            }
 
-        /* Updated dropdown menu styling */
-        .dropdown-menu {
-            background-color: #f8f9fa;
-            border-radius: 5px;
-            margin-top: 10px;
-            box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
-            z-index: 1021;
-        }
+            .form-section {
+                margin-bottom: 20px;
+                padding-bottom: 20px;
+                border-bottom: 1px solid #eee;
+            }
+        </style>
+    </head>
 
-        .dropdown-item {
-            color: #333333 !important;
-            font-weight: 500;
-            padding: 0.5rem 1.5rem;
-        }
-
-        .dropdown-item:hover {
-            background-color: #007bff;
-            color: white !important;
-        }
-
-        /* Make the dropdown visible */
-        .dropdown-toggle {
-            cursor: pointer;
-        }
-
-        .dropdown-toggle::after {
-            display: inline-block;
-            margin-left: 0.255em;
-            vertical-align: 0.255em;
-            content: "";
-            border-top: 0.3em solid;
-            border-right: 0.3em solid transparent;
-            border-bottom: 0;
-            border-left: 0.3em solid transparent;
-        }
-
-        /* Fix inline display */
-        .dropdown.d-inline-block {
-            vertical-align: middle;
-        }
-    </style>
-</head>
-
-<body>
-
-    <!-- Header and Navigation Menu -->
-    <div class="header">
-        <h1>Supply Chain Finance Platform</h1>
-        <div class="menu">
-            <a href="index.jsp">Home</a>
-            <a href="#user-management">User</a>
-
-            <!-- Enterprise dropdown menu -->
-            <div class="dropdown d-inline-block">
-                <a class="dropdown-toggle" href="#" role="button" id="enterpriseDropdown" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    Enterprise
-                </a>
-                <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
-                    <a class="dropdown-item" href="enterprise.jsp">Search Enterprises</a>
-                    <a class="dropdown-item" href="enterpriseDetail.jsp?mode=add">Add New Enterprise</a>
-                </div>
-            </div>
-
-            <!-- Contract dropdown menu -->
-            <div class="dropdown d-inline-block">
-                <a class="dropdown-toggle" href="#" role="button" id="contractDropdown" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    Contract
-                </a>
-                <div class="dropdown-menu" aria-labelledby="contractDropdown">
-                    <a class="dropdown-item" href="contract.jsp">Search Contracts</a>
-                    <a class="dropdown-item" href="contractDetail.jsp?mode=add">Add New Contract</a>
-                </div>
-            </div>
-
-            <!-- Invoice dropdown menu -->
-            <div class="dropdown d-inline-block">
-                <a class="dropdown-toggle" href="#" role="button" id="invoiceDropdown" data-toggle="dropdown"
-                    aria-haspopup="true" aria-expanded="false">
-                    Invoice
-                </a>
-                <div class="dropdown-menu" aria-labelledby="invoiceDropdown">
-                    <a class="dropdown-item" href="invoice.jsp">Search Invoices</a>
-                    <a class="dropdown-item" href="invoiceDetail.jsp?mode=add">Add New Invoice</a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Add this near the top of your content area -->
-    <div id="loadingIndicator" style="display: none;" class="text-center my-4">
-        <div class="spinner-border text-primary" role="status">
-            <span class="sr-only">Loading...</span>
-        </div>
-        <p class="mt-2">Loading invoice data...</p>
-    </div>
-
-    <div class="container">
-        <!-- Contract Detail Section -->
-        <div class="row">
-            <div class="col-12">
-                <div class="detail-panel">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
-                        <h3>Contract Details</h3>
-                        <button class="btn btn-secondary" onclick="goBack()">Back to Search</button>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><strong>Contract ID:</strong></label>
-                                <p id="detailId">C001</p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Real Contract Number:</strong></label>
-                                <p id="detailRealNo">XYZ-2025-001</p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Amount:</strong></label>
-                                <p id="detailAmount">$250,000</p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Date:</strong></label>
-                                <p id="detailDate">January 15, 2025</p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label><strong>Status:</strong></label>
-                                <p><span class="status-badge status-active" id="detailStatus">Active</span></p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Core Enterprise:</strong></label>
-                                <p id="detailCoreEnterprise">XYZ Corporation (001)</p>
-                                <a href="enterpriseDetail.jsp?id=001" class="btn btn-sm btn-info">View Enterprise</a>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Supplier:</strong></label>
-                                <p id="detailSupplier">Acme Suppliers (S001)</p>
-                                <a href="enterpriseDetail.jsp?id=S001" class="btn btn-sm btn-info">View Supplier</a>
-                            </div>
-                        </div>
-                    </div>
-
-                    <hr class="section-divider">
-
-                    <div class="row">
-                        <div class="col-12">
-                            <h5>Contract Description</h5>
-                            <div class="form-group">
-                                <label><strong>Part 1:</strong></label>
-                                <p id="detailPart1">This contract covers the supply of raw materials for Q1 2025
-                                    production requirements for XYZ Corporation. The agreement includes all delivery
-                                    schedules and quality requirements as per attached specifications.</p>
-                            </div>
-                            <div class="form-group">
-                                <label><strong>Part 2:</strong></label>
-                                <p id="detailPart2">Payment terms are Net 60 from the date of delivery, with 2% discount
-                                    if paid within 15 days. All deliveries must be accompanied by quality certificates
-                                    and must meet ISO 9001 standards.</p>
-                            </div>
-                        </div>
+    <body>
+        <!-- Header and Navigation Menu -->
+        <div class="header">
+            <h1>Supply Chain Finance Platform</h1>
+            <div class="menu">
+                <a href="index.jsp">Home</a>
+                <a href="#user-management">User</a>
+                <div class="dropdown d-inline-block">
+                    <a href="#" class="dropdown-toggle" id="enterpriseDropdown" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Enterprise
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="enterpriseDropdown">
+                        <a class="dropdown-item" href="enterprise.jsp">Search Enterprises</a>
+                        <a class="dropdown-item" href="singleEnterprise.jsp?mode=add">Add New Enterprise</a>
                     </div>
                 </div>
+                <a href="contract.jsp">Contract</a>
+                <a href="invoice.jsp">Invoice</a>
             </div>
         </div>
 
-        <!-- Related Invoices Section -->
-        <div class="row">
-            <div class="col-12">
-                <div class="related-entities">
-                    <h4 class="mb-4">Related Invoices</h4>
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Invoice ID</th>
-                                    <th>Amount</th>
-                                    <th>Date</th>
-                                    <th>Status</th>
-                                    <th>Action</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr>
-                                    <td>INV001</td>
-                                    <td>$85,000</td>
-                                    <td>01/30/2025</td>
-                                    <td><span class="badge badge-success">Paid</span></td>
-                                    <td><a href="invoiceDetail.jsp?id=INV001" class="btn btn-sm btn-info">View</a></td>
-                                </tr>
-                                <tr>
-                                    <td>INV002</td>
-                                    <td>$75,000</td>
-                                    <td>02/15/2025</td>
-                                    <td><span class="badge badge-warning">Pending</span></td>
-                                    <td><a href="invoiceDetail.jsp?id=INV002" class="btn btn-sm btn-info">View</a></td>
-                                </tr>
-                                <tr>
-                                    <td>INV003</td>
-                                    <td>$90,000</td>
-                                    <td>03/01/2025</td>
-                                    <td><span class="badge badge-secondary">Draft</span></td>
-                                    <td><a href="invoiceDetail.jsp?id=INV003" class="btn btn-sm btn-info">View</a></td>
-                                </tr>
-                            </tbody>
-                        </table>
+        <div class="container">
+            <!-- Invoice Detail Section -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="detail-panel">
+                        <!-- Page Title -->
+                        <div class="mb-4">
+                            <h3 id="panelTitle">Invoice Details</h3>
+                        </div>
+
+                        <!-- View Mode Section -->
+                        <div class="view-mode">
+                            <!-- Basic Information -->
+                            <div class="form-section">
+                                <h4>Basic Information</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label><strong>Invoice ID:</strong></label>
+                                            <p id="invoiceId">-</p>
+                                        </div>
+                                        <div class="form-group">
+                                            <label><strong>Contract ID:</strong></label>
+                                            <p id="contractId">-</p>
+                                            <p><small><a href="#" id="viewContractLink">View associated
+                                                        contract</a></small></p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label><strong>Contract Real No:</strong></label>
+                                            <p id="contractRealNo">-</p>
+                                        </div>
+                                        <div class="form-group">
+                                            <label><strong>Contract Amount:</strong></label>
+                                            <p id="contractAmount">-</p>
+                                        </div>
+                                        <div class="form-group">
+                                            <label><strong>Contract Status:</strong></label>
+                                            <p id="contractStatus">-</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Payment Details -->
+                            <div class="form-section">
+                                <h4>Payment Details</h4>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label><strong>Invoice Date:</strong></label>
+                                            <p id="invoiceDate">-</p>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label><strong>Invoice Amount:</strong></label>
+                                            <p id="invoiceAmount">-</p>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="form-group">
+                                            <label><strong>Memo:</strong></label>
+                                            <p id="memo">-</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Action Buttons -->
+                            <div class="button-group">
+                                <button class="btn btn-primary" onclick="goToInvoiceList()">Back to List</button>
+                                <button class="btn btn-secondary" onclick="printInvoice()">Print Invoice</button>
+                            </div>
+                        </div>
+
+                        <!-- Add Mode Section -->
+                        <div class="add-mode">
+                            <form id="addInvoiceForm">
+                                <!-- Basic Information -->
+                                <div class="form-section">
+                                    <h4>Basic Information</h4>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="add_contractId">Contract ID</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="add_contractId"
+                                                        name="contractId" required readonly>
+                                                    <div class="input-group-append">
+                                                        <button class="btn btn-outline-secondary" type="button"
+                                                            onclick="openContractSelector()">
+                                                            Select Contract
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group">
+                                                <label for="add_realNo">Contract Real No</label>
+                                                <input type="text" class="form-control" id="add_realNo" readonly>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label>Contract Status:</label>
+                                                <p id="add_contractStatus" class="form-control-plaintext">-</p>
+                                            </div>
+                                            <div class="form-group">
+                                                <label>Contract Amount:</label>
+                                                <p id="add_contractAmount" class="form-control-plaintext">-</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Payment Details -->
+                                <div class="form-section">
+                                    <h4>Payment Details</h4>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="add_invoiceDate">Invoice Date</label>
+                                                <input type="date" class="form-control" id="add_invoiceDate"
+                                                    name="invoiceDate" required>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="add_amount">Invoice Amount</label>
+                                                <div class="input-group">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">$</span>
+                                                    </div>
+                                                    <input type="number" class="form-control" id="add_amount"
+                                                        name="amount" step="0.01" min="0" required>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="add_paymentMethod">Payment Method</label>
+                                                <select class="form-control" id="add_paymentMethod"
+                                                    name="paymentMethod">
+                                                    <option value="">Select method</option>
+                                                    <option value="Bank Transfer">Bank Transfer</option>
+                                                    <option value="Credit Card">Credit Card</option>
+                                                    <option value="Check">Check</option>
+                                                    <option value="Cash">Cash</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="add_memo">Memo</label>
+                                                <textarea class="form-control" id="add_memo" name="memo"
+                                                    rows="3"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Action Buttons -->
+                                <div class="button-group">
+                                    <button type="button" class="btn btn-secondary"
+                                        onclick="goToInvoiceList()">Cancel</button>
+                                    <button type="button" class="btn btn-primary" onclick="saveInvoice()">Save
+                                        Invoice</button>
+                                </div>
+                            </form>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Contract Timeline Section -->
-        <div class="card mt-4" id="contractTimelineSection">
-            <div class="card-header bg-primary text-white">
-                <h5 class="mb-0">Contract Timeline</h5>
-            </div>
-            <div class="card-body">
-                <div class="timeline">
-                    <div class="timeline-item">
-                        <div class="timeline-marker bg-primary"></div>
-                        <div class="timeline-content">
-                            <h4 class="timeline-title">Signing Date</h4>
-                            <p id="signingDate">-</p>
+        <!-- Contract Selector Modal -->
+        <div class="modal fade" id="contractSelectorModal" tabindex="-1" aria-labelledby="contractSelectorModalLabel"
+            aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="contractSelectorModalLabel">Select Contract</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="input-group mb-3">
+                            <input type="text" id="contractSearchInput" class="form-control"
+                                placeholder="Search contracts...">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary" type="button" onclick="searchContracts()">
+                                    Search
+                                </button>
+                            </div>
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Contract ID</th>
+                                        <th>Real No</th>
+                                        <th>Amount</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contractTableBody">
+                                    <!-- Contracts will be loaded here -->
+                                </tbody>
+                            </table>
                         </div>
                     </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker bg-info"></div>
-                        <div class="timeline-content">
-                            <h4 class="timeline-title">Effective Date</h4>
-                            <p id="effectiveDate">-</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-marker bg-success"></div>
-                        <div class="timeline-content">
-                            <h4 class="timeline-title">End Date</h4>
-                            <p id="endDate">-</p>
-                        </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                     </div>
                 </div>
             </div>
@@ -341,236 +356,369 @@ webapp/contractDetail.jsp -->
             <p>&copy; 2025 Supply Chain Finance Platform | All rights reserved.</p>
         </div>
 
-        <!-- Make sure your script tags at the bottom of invoiceDetail.jsp look like this -->
-
         <!-- Bootstrap and jQuery JS -->
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
         <script>
-            // Variable to track the current mode (add or view/edit)
-            let isAddMode = true;
+            // Initialize page when document is ready
+            $(document).ready(function () {
+                console.log("Page loading - initialization");
 
-            // Function to initialize the page based on parameters
-            function initPage() {
+                // Get URL parameters
                 const urlParams = new URLSearchParams(window.location.search);
-                const id = urlParams.get('id');
+                const invoiceId = urlParams.get('id');
                 const mode = urlParams.get('mode');
 
+                // Determine which mode to display
                 if (mode === 'add') {
-                    isAddMode = true;
-                    document.getElementById('panelTitle').innerText = 'Add New Invoice';
-                    // Set today's date as the default invoice date
-                    document.getElementById('invoiceDate').valueAsDate = new Date();
-                    // Set due date as 30 days from today by default
-                    const dueDate = new Date();
-                    dueDate.setDate(dueDate.getDate() + 30);
-                    document.getElementById('dueDate').valueAsDate = dueDate;
-                } else if (id) {
-                    isAddMode = false;
-                    document.getElementById('panelTitle').innerText = 'Invoice Details';
-                    loadInvoiceDetails(id);
+                    // Set page to add mode
+                    $('#panelTitle').text('Add New Invoice');
+                    $('.add-mode').show();
+                    $('.view-mode').hide();
+
+                    // Set default values for date fields
+                    const today = new Date();
+                    $('#add_invoiceDate').val(formatDateForInput(today));
+                } else if (invoiceId) {
+                    // Set page to view mode and load invoice details
+                    $('#panelTitle').text('Invoice Details');
+                    $('.view-mode').show();
+                    $('.add-mode').hide();
+                    loadInvoiceDetails(invoiceId);
                 } else {
-                    alert('Invalid parameters. Redirecting to invoice search.');
-                    window.location.href = 'invoice.jsp';
-                }
-            }
-
-
-
-            // Function to select a contract
-            function selectContract() {
-                // Open a modal or navigate to a selection page
-                alert('Contract selection feature will be implemented here');
-                // For now, simulate selection
-                document.getElementById('contractId').value = 'CONT001';
-                document.getElementById('contractName').value = 'Supply Agreement - Central Manufacturing';
-            }
-
-            // Function to save the invoice
-            function saveInvoice() {
-                // Validate form fields
-                if (!validateForm()) {
-                    return;
+                    // No valid parameters, redirect to invoice list
+                    showAlert('No invoice ID provided. Redirecting to invoice search.', 'warning');
+                    setTimeout(() => {
+                        window.location.href = 'invoice.jsp';
+                    }, 2000);
                 }
 
-                // This would be an AJAX call to save the invoice to the server
-                alert('Invoice saved successfully');
-
-                // Redirect to invoice search page
-                window.location.href = 'invoice.jsp';
-            }
-
-            // Function to validate the form
-            function validateForm() {
-                // Add your validation logic here
-                const amount = document.getElementById('amount').value;
-                if (!amount || amount <= 0) {
-                    alert('Please enter a valid invoice amount');
-                    return false;
-                }
-
-                return true;
-            }
-
-            // Function to go back to the previous page
-            function goBack() {
-                window.location.href = 'invoice.jsp';
-            }
-
-            // Initialize dropdown menu function
-            function initDropdowns() {
-                console.log('Initializing dropdowns...');
+                // Initialize dropdown menu
                 $('.dropdown-toggle').dropdown();
 
                 // Add event listener to make dropdown work on hover too
                 $('.dropdown').hover(
                     function () {
-                        console.log('Dropdown hover in');
                         $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
                     },
                     function () {
-                        console.log('Dropdown hover out');
                         $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
                     }
                 );
-            }
 
-            $(document).ready(function () {
-                // Get parameters from URL
-                const urlParams = new URLSearchParams(window.location.search);
-                const invoiceId = urlParams.get('id');
-                const contractId = urlParams.get('contractId');
-                const mode = urlParams.get('mode');
-
-                // If mode is add, show the add form
-                if (mode === 'add') {
-                    // For add mode, you might want to show empty form
-                    $('#contractTimelineSection').hide();
-                }
-                // If we have an invoice ID, load invoice details (which will then load contract details)
-                else if (invoiceId) {
-                    loadInvoiceDetails(invoiceId);
-                }
-                // If we have a contract ID directly, load contract details
-                else if (contractId) {
-                    loadContractDetails(contractId);
-                }
-                // No valid parameters
-                else {
-                    alert('Invalid parameters. Redirecting to invoice search.');
-                    window.location.href = 'invoice.jsp';
-                }
+                $("#contractSearchInput").on("keypress", function (event) {
+                    if (event.key === "Enter") {
+                        event.preventDefault();
+                        searchContracts();
+                    }
+                });
             });
 
+            // Function to load invoice details for view mode
             function loadInvoiceDetails(invoiceId) {
-                // Show loading indicator
-                $('#loadingIndicator').show();
-
-                // Fetch invoice data from backend
+                // Make AJAX call to get invoice details
                 $.ajax({
-                    url: 'getSingleInvoice',  // This is the correct URL
-                    type: 'GET',
-                    data: { invoiceId: invoiceId },
-                    dataType: 'json',
-                    success: function (invoiceData) {
-                        // Populate invoice fields
-                        $('#invoiceId').val(invoiceData.invoiceID);
-                        $('#invoiceAmount').val(invoiceData.amount);
-                        $('#invoiceDate').val(formatDateForInput(invoiceData.payDate));
-                        $('#invoiceStatus').val(invoiceData.status);
-                        $('#memo').val(invoiceData.memo);
+                    url: "getSingleInvoice",
+                    type: "GET",
+                    data: {
+                        invoiceId: invoiceId
+                    },
+                    dataType: "json",
+                    success: function (invoice) {
+                        if (invoice) {
+                            // Populate basic information
+                            $('#invoiceId').text(invoice.invoiceID);
+                            $('#contractId').text(invoice.contractID);
 
-                        // Since we now have the contractID, load the contract details
-                        loadContractDetails(invoiceData.contractID);
+                            // Set up view contract link
+                            $('#viewContractLink').attr('href', 'contractDetail.jsp?contractId=' + invoice.contractID);
+
+                            // Populate payment details
+                            $('#invoiceDate').text(formatDate(invoice.payDate));
+                            $('#memo').text(invoice.memo || '-');
+                            $('#invoiceAmount').text('$' + invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+
+                            // Load contract details
+                            $.ajax({
+                                url: "getContractDetails",
+                                type: "GET",
+                                data: {
+                                    contractId: invoice.contractID
+                                },
+                                dataType: "json",
+                                success: function (contract) {
+                                    $('#contractRealNo').text(contract.realNo || '-');
+                                    $('#contractAmount').text('$' + contract.amount.toLocaleString('en-US',
+                                        { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                                    $('#contractStatus').text(contract.status || '-');
+                                },
+                                error: function () {
+                                    $('#contractRealNo').text('Not found');
+                                    $('#contractAmount').text('Not found');
+                                    $('#contractStatus').text('Not found');
+                                }
+                            });
+
+                            // Update page title with invoice ID
+                            document.title = `Invoice Details: ${invoice.invoiceID} - Supply Chain Finance`;
+                        } else {
+                            showAlert('Invoice not found', 'danger');
+                            setTimeout(() => {
+                                window.location.href = 'invoice.jsp';
+                            }, 2000);
+                        }
                     },
                     error: function (xhr, status, error) {
-                        console.error("Error loading invoice details:", error);
-                        alert('Failed to load invoice details: ' + error);
-                        $('#loadingIndicator').hide();
+                        showAlert('Error loading invoice details: ' + error, 'danger');
+                        console.error('Error response:', xhr.responseText);
+                    }
+                });
+            }
+
+            // Function to open contract selector modal
+            function openContractSelector() {
+                $('#contractSelectorModal').modal('show');
+                searchContracts();
+            }
+
+            function searchContracts() {
+                const searchTerm = $('#contractSearchInput').val();
+
+                // Show loading indicator
+                $('#contractTableBody').html('<tr><td colspan="5" class="text-center">Loading contracts...</td></tr>');
+
+                // Make AJAX call to get contracts
+                $.ajax({
+                    url: "getContract",
+                    type: "GET",
+                    data: {
+                        keyword: searchTerm,
+                        contractId: searchTerm,
+                    },
+                    dataType: "json",
+                    success: function (response) {
+                        console.log("Contracts loaded:", response);
+
+                        if (response) {
+                            renderContractsTable(response);
+                        } else {
+                            $('#contractTableBody').html('<tr><td colspan="5" class="text-center">No contracts found</td></tr>');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error with contract search endpoint:", error);
+                        $('#contractTableBody').html('<tr><td colspan="5" class="text-center">Error loading contracts</td></tr>');
                     }
                 });
             }
 
 
-            function loadContractDetails(contractId) {
-                console.log("Loading contract details for ID:", contractId);
+            function renderContractsTable(contracts) {
+                try {
+                    console.log("renderContractsTable called with:", contracts);
 
-                // Show loading indicator
-                $('#loadingIndicator').show();
+                    // Convert single object to array if needed
+                    if (contracts && !Array.isArray(contracts)) {
+                        contracts = [contracts]; // Convert single object to array
+                    }
 
+                    // Now process as array
+                    if (contracts && contracts.length > 0) {
+                        let html = '';
+                        contracts.forEach(function (contract) {
+                            // Safely format amount with null/undefined check
+                            let formattedAmount = 'N/A';
+                            if (contract.amount != null) {
+                                try {
+                                    formattedAmount = '$' + parseFloat(contract.amount).toLocaleString('en-US',
+                                        { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                                } catch (e) {
+                                    formattedAmount = '$' + contract.amount;
+                                }
+                            }
+
+                            html += '<tr>' +
+                                '<td>' + (contract.contractId || '') + '</td>' +
+                                '<td>' + (contract.realNo || contract.contractName || '') + '</td>' +
+                                '<td>' + formattedAmount + '</td>' +
+                                '<td>' + (contract.status || '') + '</td>' +
+                                '<td><button class="btn btn-sm btn-primary" onclick="selectContract(\'' +
+                                (contract.contractId || '') + '\', \'' + (contract.realNo || contract.contractName || '') + '\', ' +
+                                (contract.amount || 0) + ', \'' + (contract.status || '') + '\')">Select</button></td>' +
+                                '</tr>';
+                        }); // FIXED: Proper closure of the forEach loop
+
+                        $('#contractTableBody').html(html); // FIXED: This now runs after the loop completes
+                    } else {
+                        $('#contractTableBody').html('<tr><td colspan="5" class="text-center">No contracts found</td></tr>');
+                    }
+                } catch (error) {
+                    console.error("Error in renderContractsTable:", error);
+                    $('#contractTableBody').html('<tr><td colspan="5" class="text-center">Error rendering contracts</td></tr>');
+                }
+            }
+
+            // Mock data function
+            function loadMockContracts() {
+                const mockContracts = [
+                    {
+                        contractId: "CRT001",
+                        realNo: "SCF-2025-001",
+                        amount: 50000,
+                        status: "Active"
+                    }
+                ];
+
+                renderContractsTable(mockContracts);
+                console.log("Loaded mock contract data");
+            }
+
+            // Function to select a contract from the modal
+            function selectContract(contractId, realNo, amount, status) {
+                $('#add_contractId').val(contractId);
+                $('#add_realNo').val(realNo);
+                $('#add_contractStatus').text(status);
+                $('#add_contractAmount').text('$' + amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                $('#contractSelectorModal').modal('hide');
+            }
+
+            function saveInvoice() {
+                // Validate form
+                if (!validateInvoiceForm()) {
+                    return;
+                }
+
+                // Get form data
+                const invoiceData = {
+                    contractID: $('#add_contractId').val(),
+                    amount: $('#add_amount').val(),
+                    payDate: $('#add_invoiceDate').val(),
+                    paymentMethod: $('#add_paymentMethod').val(),
+                    memo: $('#add_memo').val()
+                };
+
+                // Make AJAX call to save invoice
                 $.ajax({
-                    url: 'getContractDetails',
-                    type: 'GET',
-                    data: { contractId: contractId },
-                    dataType: 'json',
-                    success: function (contractData) {
-                        console.log("Contract data received:", contractData);
+                    url: "addInvoice",
+                    type: "POST",
+                    data: invoiceData,
+                    success: function (response) {
+                        if (response.success) {
+                            showAlert('Invoice saved successfully', 'success');
 
-                        // Update the contract details
-                        $("#detailId").text(contractData.contractId);
-                        $("#detailRealNo").text(contractData.contractName);  // Using contractName for realNo
-                        $("#detailAmount").text("$" + contractData.amount.toLocaleString());
-                        $("#detailStatus").text(contractData.status);
+                            // Switch to view mode using the newly created invoice ID
+                            if (response.invoiceId) {
+                                // Change URL without refreshing page
+                                window.history.replaceState({}, '', 'invoiceDetail.jsp?id=' + response.invoiceId);
 
-                        // Update contract description fields
-                        $("#detailPart1").text(contractData.fromEnterpriseName || "");  // Using fromEnterpriseName as part1 for display
-                        $("#detailPart2").text(contractData.toEnterpriseName || "");    // Using toEnterpriseName as part2 for display
+                                // Switch UI to view mode
+                                $('#panelTitle').text('Invoice Details');
+                                $('.add-mode').hide();
+                                $('.view-mode').show();
 
-                        // Update the contract timeline section with the correct field names
-                        $('#signingDate').text(formatDate(contractData.signDate));      // signDate not signingDate
-                        $('#effectiveDate').text(formatDate(contractData.effectiveDate));
-                        $('#endDate').text(formatDate(contractData.expiryDate));        // expiryDate not invalidDate
-
-                        // Update enterprise information if available
-                        if (contractData.fromEnterpriseId) {
-                            $("#detailCoreEnterprise").text(contractData.fromEnterpriseName + " (" + contractData.fromEnterpriseId + ")");
+                                // Load the new invoice details
+                                loadInvoiceDetails(response.invoiceId);
+                            } else {
+                                // Fallback if no invoice ID is returned
+                                setTimeout(() => {
+                                    window.location.href = 'invoice.jsp';
+                                }, 2000);
+                            }
+                        } else {
+                            showAlert('Failed to save invoice: ' + response.message, 'danger');
                         }
-
-                        if (contractData.toEnterpriseId) {
-                            $("#detailSupplier").text(contractData.toEnterpriseName + " (" + contractData.toEnterpriseId + ")");
-                        }
-
-                        // Hide loading indicator
-                        $('#loadingIndicator').hide();
                     },
                     error: function (xhr, status, error) {
-                        console.error("Error loading contract details:", error);
-                        console.error("Status code:", xhr.status);
-                        console.error("Response text:", xhr.responseText.substring(0, 200));
-                        $('#loadingIndicator').hide();
-                        alert("Failed to load contract details. Please try again.");
+                        showAlert('Error saving invoice: ' + error, 'danger');
+                        console.error('Error response:', xhr.responseText);
                     }
                 });
             }
 
-            // Helper function to format dates
+
+            // Function to validate invoice form
+            function validateInvoiceForm() {
+                let isValid = true;
+
+                // Check contract ID
+                if (!$('#add_contractId').val()) {
+                    showAlert('Please select a contract', 'warning');
+                    isValid = false;
+                }
+
+                // Check amount
+                const amount = $('#add_amount').val();
+                if (!amount || parseFloat(amount) <= 0) {
+                    showAlert('Please enter a valid amount', 'warning');
+                    isValid = false;
+                }
+
+                // Check invoice date
+                if (!$('#add_invoiceDate').val()) {
+                    showAlert('Please select an invoice date', 'warning');
+                    isValid = false;
+                }
+
+                return isValid;
+            }
+
+            // Function to format date for display
             function formatDate(dateStr) {
                 if (!dateStr) return '-';
 
-                // If it's already formatted like "Mar 11, 2025, 12:00:00 AM", return a cleaner version
-                if (typeof dateStr === 'string' && dateStr.includes(',')) {
-                    const parts = dateStr.split(',');
-                    if (parts.length >= 2) {
-                        return parts[0] + ',' + parts[1]; // Return "Mar 11, 2025"
-                    }
+                // Try to parse the date
+                const date = new Date(dateStr);
+                if (isNaN(date.getTime())) return dateStr;
+
+                // Format the date
+                return date.toLocaleDateString('en-US', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+            }
+
+            // Function to format date for input fields (YYYY-MM-DD)
+            function formatDateForInput(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}-${month}-${day}`;
+            }
+
+            // Function to show alerts
+            function showAlert(message, type) {
+                // Create alert element
+                const alertHtml = '<div class="alert alert-' + type + ' alert-dismissible fade show" role="alert">' +
+                    message +
+                    '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' +
+                    '<span aria-hidden="true">&times;</span>' +
+                    '</button>' +
+                    '</div>';
+
+                // Add new alert to page
+                $('#panelTitle').after(alertHtml);
+
+                // Auto-hide after 5 seconds for non-error alerts
+                if (type !== 'danger') {
+                    setTimeout(function () {
+                        $('.alert').alert('close');
+                    }, 5000);
                 }
-
-                // Otherwise try to parse as date
-                const date = new Date(dateStr);
-                return isNaN(date.getTime()) ? '-' : date.toLocaleDateString();
             }
 
-            // Helper function to format date for input fields (YYYY-MM-DD)
-            function formatDateForInput(dateStr) {
-                if (!dateStr) return '';
-                const date = new Date(dateStr);
-                return date.toISOString().split('T')[0];
+            // Function to navigate back to invoice list
+            function goToInvoiceList() {
+                window.location.href = 'invoice.jsp';
             }
 
+            // Function to print invoice
+            function printInvoice() {
+                window.print();
+            }
         </script>
+    </body>
 
-</body>
-
-</html>
+    </html>
