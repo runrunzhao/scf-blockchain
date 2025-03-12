@@ -117,5 +117,22 @@
     <url-pattern>/getInvoices</url-pattern>
 </servlet-mapping>
 
+<servlet>
+    <servlet-name>GetSingleInvoiceServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.GetSingleInvoiceServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>GetSingleInvoiceServlet</servlet-name>
+    <url-pattern>/getSingleInvoice</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>GetContractDetailsServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.GetContractDetailsServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>GetContractDetailsServlet</servlet-name>
+    <url-pattern>/getContractDetails</url-pattern>
+</servlet-mapping>
   
 </web-app>

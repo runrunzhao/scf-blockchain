@@ -1,44 +1,50 @@
 package com.supplychainfinance.servlet;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.List;
-
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
 import com.google.gson.Gson;
 import com.supplychainfinance.dao.InvoiceDAO;
 import com.supplychainfinance.model.Invoice;
 
+/**
+ * Servlet to handle requests for listing invoices
+ */
 public class GetInvoicesServlet extends HttpServlet {
-    
-    @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+    private static final long serialVersionUID = 1L;
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+        
+        String contractId = request.getParameter("contractId");
+        String enterpriseName = request.getParameter("enterpriseName");
+        String status = request.getParameter("status");
+        
         response.setContentType("application/json");
-        PrintWriter out = response.getWriter();
+        response.setCharacterEncoding("UTF-8");
         
         try {
-            String invoiceId = request.getParameter("invoiceId");
-            String contractId = request.getParameter("contractId");
-            String enterpriseName = request.getParameter("enterpriseName");
-            String status = request.getParameter("status");
-            
             InvoiceDAO invoiceDAO = new InvoiceDAO();
-            List<Invoice> invoices = invoiceDAO.searchInvoices(invoiceId, contractId, 
-                                                              enterpriseName, status);
+            List<Invoice> invoices;
             
-            // 转换为JSON
+            // If contractId is provided, get invoices for that contract
+            if (contractId != null && !contractId.trim().isEmpty()) {
+                invoices = invoiceDAO.getInvoicesByContractID(contractId);
+            } else {
+                // Otherwise use the search function
+                invoices = invoiceDAO.searchInvoices(null, contractId, enterpriseName, status);
+            }
+            
             Gson gson = new Gson();
-            out.print(gson.toJson(invoices));
-            
+            String jsonResponse = gson.toJson(invoices);
+            response.getWriter().write(jsonResponse);
         } catch (Exception e) {
             e.printStackTrace();
             response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            out.print("{\"error\":\"" + e.getMessage() + "\"}");
+            response.getWriter().write("{\"error\":\"Server error: " + e.getMessage() + "\"}");
         }
     }
 }

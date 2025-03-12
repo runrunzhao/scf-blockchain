@@ -274,4 +274,46 @@ public List<Invoice> searchInvoices(String invoiceId, String contractId,
     return invoices;
 }
 
+/**
+ * Get an invoice by its ID
+ * @param invoiceId The invoice ID to retrieve
+ * @return Invoice object or null if not found
+ */
+public Invoice getInvoiceById(String invoiceId) {
+    Connection conn = null;
+    PreparedStatement pstmt = null;
+    ResultSet rs = null;
+    Invoice invoice = null;
+    
+    try {
+        conn = DBUtil.getConnection();
+        String sql = "SELECT * FROM invoice WHERE invoiceID = ?";
+        pstmt = conn.prepareStatement(sql);
+        pstmt.setString(1, invoiceId);
+        rs = pstmt.executeQuery();
+        
+        if (rs.next()) {
+            invoice = new Invoice();
+            invoice.setInvoiceID(rs.getString("invoiceID"));
+            invoice.setContractID(rs.getString("contractID"));
+            invoice.setAmount(rs.getDouble("amount"));
+            invoice.setPayDate(rs.getDate("PayDate"));
+            invoice.setStatus(rs.getString("status"));
+            invoice.setMemo(rs.getString("memo"));
+        }
+    } catch (SQLException e) {
+        e.printStackTrace();
+    } finally {
+        try {
+            if (rs != null) rs.close();
+            if (pstmt != null) pstmt.close();
+            if (conn != null) conn.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+    }
+    
+    return invoice;
+}
+
 }

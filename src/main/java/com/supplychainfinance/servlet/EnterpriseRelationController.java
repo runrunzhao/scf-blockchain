@@ -17,7 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.sql.ResultSetMetaData;
+
 
 /**
  * Servlet that handles requests for related entities data based on the tier and role
@@ -26,7 +26,7 @@ import java.sql.ResultSetMetaData;
 public class EnterpriseRelationController extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    // 在类中添加此方法
+ /*   // 在类中添加此方法
 private void testEnterpriseTable(PrintWriter out) {
     Connection conn = null;
     PreparedStatement stmt = null;
@@ -72,6 +72,8 @@ private void testEnterpriseTable(PrintWriter out) {
         }
     }
 }
+
+*/
 
 @Override
 protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

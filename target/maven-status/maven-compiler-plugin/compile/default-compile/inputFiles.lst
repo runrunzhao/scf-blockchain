@@ -4,6 +4,7 @@
 /workspaces/scf-java/src/main/java/com/supplychainfinance/dao/DBConnectionManager.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/dao/EnterpriseDAO.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/dao/ContractDAO.java
+/workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/GetInvoicesServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/GetEnterpriseServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/controller/MainController.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/util/DBTest.java
@@ -16,5 +17,7 @@
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/SaveContractServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/model/Enterprise.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/SearchEnterprisesServlet.java
+/workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/GetContractDetailsServlet.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/model/Invoice.java
 /workspaces/scf-java/src/main/java/com/supplychainfinance/model/PaymentPeriod.java
+/workspaces/scf-java/src/main/java/com/supplychainfinance/servlet/GetSingleInvoiceServlet.java

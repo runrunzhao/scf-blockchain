@@ -3,14 +3,14 @@ package com.supplychainfinance.dao;
 import com.supplychainfinance.model.Contract;
 import com.supplychainfinance.util.DBUtil;
 
-import java.math.BigDecimal;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
+
 import java.util.List;
 
 public class ContractDAO {
@@ -134,8 +134,7 @@ public class ContractDAO {
                 if (effectiveDate != null) contract.setEffectiveDate(new java.util.Date(effectiveDate.getTime()));
                 if (invalidDate != null) contract.setExpiryDate(new java.util.Date(invalidDate.getTime()));
                 
-                // TODO: Load additional fields if needed
-            }
+                }
             
         } catch (SQLException e) {
             System.err.println("ERROR in ContractDAO.getContract: " + e.getMessage());
