@@ -143,5 +143,48 @@
     <servlet-name>SingleInvoiceServlet</servlet-name>
     <url-pattern>/addInvoice</url-pattern>
 </servlet-mapping>
-  
+
+<servlet>
+        <servlet-name>RegisterUserServlet</servlet-name>
+        <servlet-class>com.supplychainfinance.servlet.RegisterUserServlet</servlet-class>
+ </servlet>
+    
+<servlet-mapping>
+        <servlet-name>RegisterUserServlet</servlet-name>
+        <url-pattern>/registerUser</url-pattern>
+</servlet-mapping>
+
+
+<servlet>
+    <servlet-name>LoginServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.LoginServlet</servlet-class>
+</servlet>
+    
+<servlet-mapping>
+    <servlet-name>LoginServlet</servlet-name>
+    <url-pattern>/loginUser</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>LogoutServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.LogoutServlet</servlet-class>
+</servlet>
+    
+<servlet-mapping>
+    <servlet-name>LogoutServlet</servlet-name>
+    <url-pattern>/logout</url-pattern>
+</servlet-mapping>
+
+<!-- 在web.xml中添加以下配置 -->
+
+<filter>
+    <filter-name>AuthenticationFilter</filter-name>
+    <filter-class>com.supplychainfinance.filter.AuthenticationFilter</filter-class>
+</filter>
+
+<filter-mapping>
+    <filter-name>AuthenticationFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+</filter-mapping>
+
 </web-app>

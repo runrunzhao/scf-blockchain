@@ -1,7 +1,55 @@
 mvn jetty:run
-
+docker ps -a | grep scf-mysql
+docker start scf-mysql
 
 docker exec -it scf-mysql bash ;
+
+select * from  users;
+-- 用户表 - 存储注册用户信息
+CREATE TABLE  users (
+    user_id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL,  
+    first_name VARCHAR(50) NOT NULL,
+    last_name VARCHAR(50) NOT NULL,
+    email VARCHAR(100) NOT NULL ,
+    enterprise_id  char(8),  
+    registration_date date,
+    last_login TIMESTAMP,
+    account_status ENUM('active', 'inactive', 'suspended', 'pending') DEFAULT 'active',
+    memo VARCHAR(100)
+    
+);
+
+-- 用户角色表 - 用于权限管理
+CREATE TABLE IF NOT EXISTS user_roles (
+    role_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    role_name VARCHAR(30) NOT NULL,  -- 如: admin, user, enterprise_manager等
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    UNIQUE KEY unique_user_role (user_id, role_name)
+);
+
+-- 密码重置令牌表 - 用于支持忘记密码功能
+CREATE TABLE IF NOT EXISTS password_reset_tokens (
+    token_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    token VARCHAR(255) NOT NULL UNIQUE,
+    expiry_date TIMESTAMP NOT NULL,
+    used BOOLEAN DEFAULT FALSE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
+
+-- 登录日志表 - 记录用户登录活动
+CREATE TABLE IF NOT EXISTS login_logs (
+    log_id INT AUTO_INCREMENT PRIMARY KEY,
+    user_id INT NOT NULL,
+    login_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    ip_address VARCHAR(45),  -- 支持IPv6地址
+    device_info VARCHAR(255),
+    success BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE
+);
 
 INSERT INTO enterprise VALUES ('001', 'XYZ Corp', 'London', '123-456-7890','Core');
 
