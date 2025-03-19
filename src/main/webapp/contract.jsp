@@ -78,7 +78,7 @@
                     }
 
                     .results-table table tbody tr:hover {
-                        background-color: #f1f1f1;
+                        background-color: #0056b3;
                     }
 
                     #loading {

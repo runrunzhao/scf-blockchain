@@ -1,4 +1,3 @@
-/main/webapp/enterprise.jsp -->
 <!DOCTYPE html>
 <html lang="en">
 
@@ -73,7 +72,7 @@
         }
 
         .results-table table tbody tr:hover {
-            background-color: #f1f1f1;
+            background-color: #0056b3;
         }
 
         #loading {
@@ -399,12 +398,17 @@
         }
 
         // Load all enterprises when the page loads
-        $(document).ready(function () {
-            searchEnterprises();
-        });
+        // $(document).ready(function () {
+        //     searchEnterprises();
+        //  });
 
         $(document).ready(function () {
             // Make sure dropdown works properly
+            document.getElementById('noResults').style.display = 'block';
+            document.getElementById('noResults').innerHTML =
+                '<p class="text-center text-muted">Enter search criteria and click "Search" to find enterprises.</p>';
+
+
             $('.dropdown-toggle').dropdown();
 
             $('.dropdown').hover(
