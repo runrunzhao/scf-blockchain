@@ -21,7 +21,7 @@ public class GenerateCTTServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(GenerateCTTServlet.class.getName());
     private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private final CTTTokenService cttTokenService = new CTTTokenService();
-    private final Gson gson = new Gson();
+   // private final Gson gson = new Gson();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 

@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class GenerateCTTFromInvoiceServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(GenerateCTTFromInvoiceServlet.class.getName());
     private final InvoiceBlockchainService invoiceService = new InvoiceBlockchainService();
-    private final Gson gson = new Gson();
+    //private final Gson gson = new Gson();
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) 

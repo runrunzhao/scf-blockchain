@@ -13,30 +13,49 @@
     <description>A platform for supply chain finance with blockchain integration</description>
 
     <modules>
-        <module>scf-application</module>
         <module>scf-chaincode</module>
+        <module>scf-application</module>
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-        <fabric.version>2.2.5</fabric.version>
+     <!-- 使用确定可用的版本 -->
+    <fabric-gateway.version>2.2.0</fabric-gateway.version>
+    <fabric-sdk.version>2.2.5</fabric-sdk.version>
+    <fabric-chaincode.version>2.4.1</fabric-chaincode.version>
+        <grpc.version>1.53.0</grpc.version>
         <slf4j.version>1.7.36</slf4j.version>
         <logback.version>1.2.11</logback.version>
-        <gson.version>2.8.9</gson.version>
+        <gson.version>2.10.1</gson.version>
         <servlet-api.version>4.0.1</servlet-api.version>
-        <genson.version>1.5</genson.version>
-        <junit.version>5.8.2</junit.version>
+        <genson.version>1.6</genson.version>
+        <junit.version>5.9.2</junit.version>
     </properties>
 
-    <!-- 添加 JitPack 仓库 -->
-    <repositories>
-        <repository>
-            <id>jitpack.io</id>
-            <url>https://jitpack.io</url>
-        </repository>
-    </repositories>
+<repositories>
+    <repository>
+        <id>central</id>
+        <name>Central Repository</name>
+        <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
+    <repository>
+        <id>hyperledger</id>
+        <name>Hyperledger Nexus</name>
+        <url>https://hyperledger.jfrog.io/hyperledger/fabric-maven</url>
+    </repository>
+    <repository>
+        <id>hyperledger-releases</id>
+        <name>Hyperledger Releases</name>
+        <url>https://nexus.hyperledger.org/content/repositories/releases/</url>
+    </repository>
+    <repository>
+        <id>jitpack.io</id>
+        <url>https://jitpack.io</url>
+    </repository>
+</repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -44,24 +63,89 @@
             <dependency>
                 <groupId>org.hyperledger.fabric</groupId>
                 <artifactId>fabric-gateway-java</artifactId>
-                <version>${fabric.version}</version>
+                <version>${fabric-gateway.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.grpc</groupId>
+                        <artifactId>grpc-netty</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Hyperledger Fabric Java SDK -->
             <dependency>
                 <groupId>org.hyperledger.fabric-sdk-java</groupId>
                 <artifactId>fabric-sdk-java</artifactId>
-                <version>${fabric.version}</version>
+                <version>${fabric-sdk.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.grpc</groupId>
+                        <artifactId>grpc-netty</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.netty</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <!-- Fabric Contract API for chaincode -->
             <dependency>
                 <groupId>org.hyperledger.fabric-chaincode-java</groupId>
                 <artifactId>fabric-chaincode-shim</artifactId>
-                <version>2.4.1</version>
+                <version>${fabric-chaincode.version}</version>
+                <scope>compile</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>io.grpc</groupId>
+                        <artifactId>grpc-netty-shaded</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>io.opentelemetry</groupId>
+                        <artifactId>*</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
             
-            <!-- JSON Schema - 添加这个以解决依赖问题 -->
+            <!-- 统一 gRPC 版本 -->
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-netty-shaded</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-protobuf</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-stub</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-api</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.grpc</groupId>
+                <artifactId>grpc-core</artifactId>
+                <version>${grpc.version}</version>
+            </dependency>
+            
+            <!-- Bouncycastle for crypto operations -->
+            <dependency>
+                <groupId>org.bouncycastle</groupId>
+                <artifactId>bcpkix-jdk15on</artifactId>
+                <version>1.70</version>
+            </dependency>
+            
+            <!-- JSON Schema -->
             <dependency>
                 <groupId>org.everit.json</groupId>
                 <artifactId>org.everit.json.schema</artifactId>
@@ -94,7 +178,20 @@
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
-                <version>20220320</version>
+                <version>20230227</version>
+            </dependency>
+            
+            <!-- Apache Commons -->
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>3.12.0</version>
+            </dependency>
+            
+            <dependency>
+                <groupId>commons-io</groupId>
+                <artifactId>commons-io</artifactId>
+                <version>2.11.0</version>
             </dependency>
             
             <!-- Logging -->
@@ -125,7 +222,7 @@
             <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-core</artifactId>
-                <version>4.5.1</version>
+                <version>5.2.0</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>
@@ -159,14 +256,53 @@
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
-                    <version>3.0.0-M7</version>
+                    <version>3.0.0</version>
                 </plugin>
                 
                 <!-- Maven Shade Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
-                    <version>3.3.0</version>
+                    <version>3.4.1</version>
+                </plugin>
+                
+                <!-- Jetty Plugin -->
+                <plugin>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-maven-plugin</artifactId>
+    <version>9.4.44.v20210927</version>
+    <configuration>
+        <webApp>
+            <contextPath>/scf</contextPath>
+        </webApp>
+        <httpConnector>
+            <port>8088</port>
+        </httpConnector>
+    </configuration>
+</plugin>
+                
+                <!-- Maven Enforcer Plugin -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-enforcer-plugin</artifactId>
+                    <version>3.2.1</version>
+                    <executions>
+                        <execution>
+                            <id>enforce-versions</id>
+                            <goals>
+                                <goal>enforce</goal>
+                            </goals>
+                            <configuration>
+                                <rules>
+                                    <bannedDependencies>
+                                        <excludes>
+                                            <exclude>commons-logging:commons-logging</exclude>
+                                        </excludes>
+                                    </bannedDependencies>
+                                </rules>
+                            </configuration>
+                        </execution>
+                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>

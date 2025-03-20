@@ -23,10 +23,18 @@
             <artifactId>fabric-chaincode-shim</artifactId>
         </dependency>
 
-        <!-- JSON Schema -->
+        <!-- 添加 gRPC 直接依赖 -->
         <dependency>
-            <groupId>org.everit.json</groupId>
-            <artifactId>org.everit.json.schema</artifactId>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
         </dependency>
 
         <!-- JSON Processing with Genson -->
@@ -35,11 +43,10 @@
             <artifactId>genson</artifactId>
         </dependency>
 
-        <!-- JSON Processing with Gson (可选) -->
+        <!-- JSON Processing with Gson -->
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <scope>provided</scope>
         </dependency>
 
         <!-- 日志 -->
@@ -72,13 +79,6 @@
 
     <build>
         <finalName>scf-chaincode</finalName>
-        
-        <resources>
-            <resource>
-                <directory>/src/main/resources</directory>
-                <filtering>true</filtering>
-            </resource>
-        </resources>
         
         <plugins>
             <!-- 编译插件 -->

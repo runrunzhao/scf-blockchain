@@ -1,0 +1,6 @@
+/workspaces/scf-java/scf-chaincode/src/main/java/com/supplychainfinance/chaincode/CTTTokenChaincode.java
+/workspaces/scf-java/scf-chaincode/src/main/java/com/supplychainfinance/chaincode/model/CTTToken.java
+/workspaces/scf-java/scf-chaincode/src/main/java/com/supplychainfinance/chaincode/model/TokenState.java
+/workspaces/scf-java/scf-chaincode/src/main/java/com/supplychainfinance/chaincode/model/InvoiceState.java
+/workspaces/scf-java/scf-chaincode/src/main/java/com/supplychainfinance/chaincode/model/Invoice.java
+/workspaces/scf-java/scf-chaincode/src/main/java/com/supplychainfinance/chaincode/InvoiceProcessorChaincode.java

@@ -1,0 +1,6 @@
+com/supplychainfinance/chaincode/model/CTTToken.class
+com/supplychainfinance/chaincode/CTTTokenChaincode.class
+com/supplychainfinance/chaincode/model/TokenState.class
+com/supplychainfinance/chaincode/model/Invoice.class
+com/supplychainfinance/chaincode/InvoiceProcessorChaincode.class
+com/supplychainfinance/chaincode/model/InvoiceState.class

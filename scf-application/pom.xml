@@ -17,21 +17,49 @@
     <description>Supply Chain Finance Web Application</description>
 
     <dependencies>
-        <!-- 依赖于链码模块，以便访问链码中定义的数据模型 -->
+        <!-- 链码模块依赖，但排除冲突的依赖 -->
         <dependency>
             <groupId>com.supplychainfinance</groupId>
             <artifactId>scf-chaincode</artifactId>
             <version>${project.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hyperledger.fabric-chaincode-java</groupId>
+                    <artifactId>fabric-chaincode-shim</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.grpc</groupId>
+                    <artifactId>grpc-netty-shaded</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.grpc</groupId>
+                    <artifactId>grpc-protobuf</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>io.grpc</groupId>
+                    <artifactId>grpc-stub</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
-        <!-- Hyperledger Fabric 相关依赖 -->
+        <!-- Hyperledger Fabric Gateway -->
         <dependency>
             <groupId>org.hyperledger.fabric</groupId>
             <artifactId>fabric-gateway-java</artifactId>
         </dependency>
+
+        <!-- 额外的 gRPC 依赖 -->
         <dependency>
-            <groupId>org.hyperledger.fabric-sdk-java</groupId>
-            <artifactId>fabric-sdk-java</artifactId>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-netty-shaded</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-protobuf</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.grpc</groupId>
+            <artifactId>grpc-stub</artifactId>
         </dependency>
 
         <!-- Servlet API -->
@@ -49,6 +77,16 @@
         <dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
+        </dependency>
+
+        <!-- Apache Commons -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
         </dependency>
 
         <!-- 日志 -->
@@ -72,16 +110,23 @@
             <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <dependency>
+    <groupId>mysql</groupId>
+    <artifactId>mysql-connector-java</artifactId>
+    <version>8.0.28</version>
+</dependency>
+
     </dependencies>
 
     <build>
         <finalName>scf-application</finalName>
         
         <!-- 使用现有的目录结构 -->
-        <sourceDirectory>../src/main/java</sourceDirectory>
+        <sourceDirectory>src/main/java</sourceDirectory>
         <resources>
             <resource>
-                <directory>../src/main/resources</directory>
+                <directory>src/main/resources</directory>
                 <filtering>true</filtering>
             </resource>
         </resources>
@@ -99,10 +144,25 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <configuration>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <!-- 配置 webapp 资源目录，如果默认位置不是 src/main/webapp -->
-                    <webappDirectory>../src/main/webapp</webappDirectory>
+                     <webappDirectory>src/main/webapp</webappDirectory>
+                    <warSourceDirectory>src/main/webapp</warSourceDirectory>
                 </configuration>
             </plugin>
+            
+                          <!-- Jetty Plugin -->
+                <plugin>
+    <groupId>org.eclipse.jetty</groupId>
+    <artifactId>jetty-maven-plugin</artifactId>
+    <version>9.4.44.v20210927</version>
+    <configuration>
+        <webApp>
+            <contextPath>/scf</contextPath>
+        </webApp>
+        <httpConnector>
+            <port>8088</port>
+        </httpConnector>
+    </configuration>
+</plugin>
             
             <!-- 测试插件 -->
             <plugin>

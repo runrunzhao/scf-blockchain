@@ -1,6 +1,6 @@
 package com.supplychainfinance.servlet;
 
-import com.google.gson.Gson;
+
 import com.google.gson.JsonObject;
 import com.supplychainfinance.blockchain.service.CTTTokenService;
 
@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class QueryCTTTokensServlet extends HttpServlet {
     private static final Logger logger = Logger.getLogger(QueryCTTTokensServlet.class.getName());
     private final CTTTokenService cttTokenService = new CTTTokenService();
-    private final Gson gson = new Gson();
+   // private final Gson gson = new Gson();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) 
