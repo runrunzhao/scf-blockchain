@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.326" tests="14" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="awt.toolkit" value="sun.awt.X11.XToolkit"/>
+    <property name="java.specification.version" value="11"/>
+    <property name="sun.cpu.isalist" value=""/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/workspaces/scf-java/scf-chaincode/target/test-classes:/workspaces/scf-java/scf-chaincode/target/classes:/home/codespace/.m2/repository/org/hyperledger/fabric-chaincode-java/fabric-chaincode-shim/2.4.1/fabric-chaincode-shim-2.4.1.jar:/home/codespace/.m2/repository/commons-cli/commons-cli/1.4/commons-cli-1.4.jar:/home/codespace/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/codespace/.m2/repository/org/hyperledger/fabric-chaincode-java/fabric-chaincode-protos/2.4.1/fabric-chaincode-protos-2.4.1.jar:/home/codespace/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar:/home/codespace/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.70/bcpkix-jdk15on-1.70.jar:/home/codespace/.m2/repository/org/bouncycastle/bcutil-jdk15on/1.70/bcutil-jdk15on-1.70.jar:/home/codespace/.m2/repository/org/bouncycastle/bcprov-jdk15on/1.62/bcprov-jdk15on-1.62.jar:/home/codespace/.m2/repository/io/github/classgraph/classgraph/4.8.47/classgraph-4.8.47.jar:/home/codespace/.m2/repository/com/github/everit-org/json-schema/org.everit.json.schema/1.12.1/org.everit.json.schema-1.12.1.jar:/home/codespace/.m2/repository/commons-validator/commons-validator/1.6/commons-validator-1.6.jar:/home/codespace/.m2/repository/commons-digester/commons-digester/1.8.1/commons-digester-1.8.1.jar:/home/codespace/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar:/home/codespace/.m2/repository/com/damnhandy/handy-uri-templates/2.1.8/handy-uri-templates-2.1.8.jar:/home/codespace/.m2/repository/joda-time/joda-time/2.10.2/joda-time-2.10.2.jar:/home/codespace/.m2/repository/com/google/re2j/re2j/1.3/re2j-1.3.jar:/home/codespace/.m2/repository/org/json/json/20230227/json-20230227.jar:/home/codespace/.m2/repository/com/google/protobuf/protobuf-java-util/3.11.1/protobuf-java-util-3.11.1.jar:/home/codespace/.m2/repository/io/opentelemetry/instrumentation/opentelemetry-grpc-1.6/1.5.3-alpha/opentelemetry-grpc-1.6-1.5.3-alpha.jar:/home/codespace/.m2/repository/io/opentelemetry/instrumentation/opentelemetry-instrumentation-api/1.5.3-alpha/opentelemetry-instrumentation-api-1.5.3-alpha.jar:/home/codespace/.m2/repository/io/grpc/grpc-netty-shaded/1.53.0/grpc-netty-shaded-1.53.0.jar:/home/codespace/.m2/repository/com/google/guava/guava/31.1-android/guava-31.1-android.jar:/home/codespace/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar:/home/codespace/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/codespace/.m2/repository/org/checkerframework/checker-qual/3.12.0/checker-qual-3.12.0.jar:/home/codespace/.m2/repository/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3.jar:/home/codespace/.m2/repository/com/google/errorprone/error_prone_annotations/2.14.0/error_prone_annotations-2.14.0.jar:/home/codespace/.m2/repository/io/perfmark/perfmark-api/0.25.0/perfmark-api-0.25.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-core/1.53.0/grpc-core-1.53.0.jar:/home/codespace/.m2/repository/com/google/android/annotations/4.1.1.4/annotations-4.1.1.4.jar:/home/codespace/.m2/repository/org/codehaus/mojo/animal-sniffer-annotations/1.21/animal-sniffer-annotations-1.21.jar:/home/codespace/.m2/repository/io/grpc/grpc-protobuf/1.53.0/grpc-protobuf-1.53.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-api/1.53.0/grpc-api-1.53.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-context/1.53.0/grpc-context-1.53.0.jar:/home/codespace/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/home/codespace/.m2/repository/com/google/protobuf/protobuf-java/3.21.7/protobuf-java-3.21.7.jar:/home/codespace/.m2/repository/com/google/api/grpc/proto-google-common-protos/2.9.0/proto-google-common-protos-2.9.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-protobuf-lite/1.53.0/grpc-protobuf-lite-1.53.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-stub/1.53.0/grpc-stub-1.53.0.jar:/home/codespace/.m2/repository/com/owlike/genson/1.6/genson-1.6.jar:/home/codespace/.m2/repository/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar:/home/codespace/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/home/codespace/.m2/repository/ch/qos/logback/logback-classic/1.2.11/logback-classic-1.2.11.jar:/home/codespace/.m2/repository/ch/qos/logback/logback-core/1.2.11/logback-core-1.2.11.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter/5.8.2/junit-jupiter-5.8.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/home/codespace/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/home/codespace/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/home/codespace/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.8.2/junit-jupiter-params-5.8.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/home/codespace/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:/home/codespace/.m2/repository/org/mockito/mockito-core/4.5.1/mockito-core-4.5.1.jar:/home/codespace/.m2/repository/net/bytebuddy/byte-buddy/1.12.9/byte-buddy-1.12.9.jar:/home/codespace/.m2/repository/net/bytebuddy/byte-buddy-agent/1.12.9/byte-buddy-agent-1.12.9.jar:/home/codespace/.m2/repository/org/objenesis/objenesis/3.2/objenesis-3.2.jar:/home/codespace/.m2/repository/org/mockito/mockito-junit-jupiter/4.5.1/mockito-junit-jupiter-4.5.1.jar:"/>
+    <property name="java.vm.vendor" value="Microsoft"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://www.microsoft.com"/>
+    <property name="user.timezone" value="Etc/UTC"/>
+    <property name="java.vm.specification.version" value="11"/>
+    <property name="os.name" value="Linux"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="/opt/java/11.0.14/lib"/>
+    <property name="sun.java.command" value="/workspaces/scf-java/scf-chaincode/target/surefire/surefirebooter-20250321110154181_3.jar /workspaces/scf-java/scf-chaincode/target/surefire 2025-03-21T11-01-54_061-jvmRun1 surefire-20250321110154181_1tmp surefire_0-20250321110154181_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/workspaces/scf-java/scf-chaincode/target/test-classes:/workspaces/scf-java/scf-chaincode/target/classes:/home/codespace/.m2/repository/org/hyperledger/fabric-chaincode-java/fabric-chaincode-shim/2.4.1/fabric-chaincode-shim-2.4.1.jar:/home/codespace/.m2/repository/commons-cli/commons-cli/1.4/commons-cli-1.4.jar:/home/codespace/.m2/repository/commons-logging/commons-logging/1.2/commons-logging-1.2.jar:/home/codespace/.m2/repository/org/hyperledger/fabric-chaincode-java/fabric-chaincode-protos/2.4.1/fabric-chaincode-protos-2.4.1.jar:/home/codespace/.m2/repository/javax/annotation/javax.annotation-api/1.3.2/javax.annotation-api-1.3.2.jar:/home/codespace/.m2/repository/org/bouncycastle/bcpkix-jdk15on/1.70/bcpkix-jdk15on-1.70.jar:/home/codespace/.m2/repository/org/bouncycastle/bcutil-jdk15on/1.70/bcutil-jdk15on-1.70.jar:/home/codespace/.m2/repository/org/bouncycastle/bcprov-jdk15on/1.62/bcprov-jdk15on-1.62.jar:/home/codespace/.m2/repository/io/github/classgraph/classgraph/4.8.47/classgraph-4.8.47.jar:/home/codespace/.m2/repository/com/github/everit-org/json-schema/org.everit.json.schema/1.12.1/org.everit.json.schema-1.12.1.jar:/home/codespace/.m2/repository/commons-validator/commons-validator/1.6/commons-validator-1.6.jar:/home/codespace/.m2/repository/commons-digester/commons-digester/1.8.1/commons-digester-1.8.1.jar:/home/codespace/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2.jar:/home/codespace/.m2/repository/com/damnhandy/handy-uri-templates/2.1.8/handy-uri-templates-2.1.8.jar:/home/codespace/.m2/repository/joda-time/joda-time/2.10.2/joda-time-2.10.2.jar:/home/codespace/.m2/repository/com/google/re2j/re2j/1.3/re2j-1.3.jar:/home/codespace/.m2/repository/org/json/json/20230227/json-20230227.jar:/home/codespace/.m2/repository/com/google/protobuf/protobuf-java-util/3.11.1/protobuf-java-util-3.11.1.jar:/home/codespace/.m2/repository/io/opentelemetry/instrumentation/opentelemetry-grpc-1.6/1.5.3-alpha/opentelemetry-grpc-1.6-1.5.3-alpha.jar:/home/codespace/.m2/repository/io/opentelemetry/instrumentation/opentelemetry-instrumentation-api/1.5.3-alpha/opentelemetry-instrumentation-api-1.5.3-alpha.jar:/home/codespace/.m2/repository/io/grpc/grpc-netty-shaded/1.53.0/grpc-netty-shaded-1.53.0.jar:/home/codespace/.m2/repository/com/google/guava/guava/31.1-android/guava-31.1-android.jar:/home/codespace/.m2/repository/com/google/guava/failureaccess/1.0.1/failureaccess-1.0.1.jar:/home/codespace/.m2/repository/com/google/guava/listenablefuture/9999.0-empty-to-avoid-conflict-with-guava/listenablefuture-9999.0-empty-to-avoid-conflict-with-guava.jar:/home/codespace/.m2/repository/org/checkerframework/checker-qual/3.12.0/checker-qual-3.12.0.jar:/home/codespace/.m2/repository/com/google/j2objc/j2objc-annotations/1.3/j2objc-annotations-1.3.jar:/home/codespace/.m2/repository/com/google/errorprone/error_prone_annotations/2.14.0/error_prone_annotations-2.14.0.jar:/home/codespace/.m2/repository/io/perfmark/perfmark-api/0.25.0/perfmark-api-0.25.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-core/1.53.0/grpc-core-1.53.0.jar:/home/codespace/.m2/repository/com/google/android/annotations/4.1.1.4/annotations-4.1.1.4.jar:/home/codespace/.m2/repository/org/codehaus/mojo/animal-sniffer-annotations/1.21/animal-sniffer-annotations-1.21.jar:/home/codespace/.m2/repository/io/grpc/grpc-protobuf/1.53.0/grpc-protobuf-1.53.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-api/1.53.0/grpc-api-1.53.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-context/1.53.0/grpc-context-1.53.0.jar:/home/codespace/.m2/repository/com/google/code/findbugs/jsr305/3.0.2/jsr305-3.0.2.jar:/home/codespace/.m2/repository/com/google/protobuf/protobuf-java/3.21.7/protobuf-java-3.21.7.jar:/home/codespace/.m2/repository/com/google/api/grpc/proto-google-common-protos/2.9.0/proto-google-common-protos-2.9.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-protobuf-lite/1.53.0/grpc-protobuf-lite-1.53.0.jar:/home/codespace/.m2/repository/io/grpc/grpc-stub/1.53.0/grpc-stub-1.53.0.jar:/home/codespace/.m2/repository/com/owlike/genson/1.6/genson-1.6.jar:/home/codespace/.m2/repository/com/google/code/gson/gson/2.10.1/gson-2.10.1.jar:/home/codespace/.m2/repository/org/slf4j/slf4j-api/1.7.36/slf4j-api-1.7.36.jar:/home/codespace/.m2/repository/ch/qos/logback/logback-classic/1.2.11/logback-classic-1.2.11.jar:/home/codespace/.m2/repository/ch/qos/logback/logback-core/1.2.11/logback-core-1.2.11.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter/5.8.2/junit-jupiter-5.8.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-api/5.9.2/junit-jupiter-api-5.9.2.jar:/home/codespace/.m2/repository/org/opentest4j/opentest4j/1.2.0/opentest4j-1.2.0.jar:/home/codespace/.m2/repository/org/junit/platform/junit-platform-commons/1.9.2/junit-platform-commons-1.9.2.jar:/home/codespace/.m2/repository/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-params/5.8.2/junit-jupiter-params-5.8.2.jar:/home/codespace/.m2/repository/org/junit/jupiter/junit-jupiter-engine/5.9.2/junit-jupiter-engine-5.9.2.jar:/home/codespace/.m2/repository/org/junit/platform/junit-platform-engine/1.9.2/junit-platform-engine-1.9.2.jar:/home/codespace/.m2/repository/org/mockito/mockito-core/4.5.1/mockito-core-4.5.1.jar:/home/codespace/.m2/repository/net/bytebuddy/byte-buddy/1.12.9/byte-buddy-1.12.9.jar:/home/codespace/.m2/repository/net/bytebuddy/byte-buddy-agent/1.12.9/byte-buddy-agent-1.12.9.jar:/home/codespace/.m2/repository/org/objenesis/objenesis/3.2/objenesis-3.2.jar:/home/codespace/.m2/repository/org/mockito/mockito-junit-jupiter/4.5.1/mockito-junit-jupiter-4.5.1.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/home/codespace"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2022-02-08"/>
+    <property name="java.home" value="/opt/java/11.0.14"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/workspaces/scf-java/scf-chaincode"/>
+    <property name="java.vm.compressedOopsMode" value="32-bit"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
+    <property name="surefire.real.class.path" value="/workspaces/scf-java/scf-chaincode/target/surefire/surefirebooter-20250321110154181_3.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="11.0.14.1+1-LTS"/>
+    <property name="user.name" value="codespace"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="6.8.0-1021-azure"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Microsoft-31205"/>
+    <property name="localRepository" value="/home/codespace/.m2/repository"/>
+    <property name="java.vendor.url.bug" value="https://github.com/microsoft/openjdk/issues"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="java.version" value="11.0.14.1"/>
+    <property name="user.dir" value="/workspaces/scf-java/scf-chaincode"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
+    <property name="sun.os.patch.level" value="unknown"/>
+    <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="java.vm.info" value="mixed mode"/>
+    <property name="java.vendor" value="Microsoft"/>
+    <property name="java.vm.version" value="11.0.14.1+1-LTS"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="55.0"/>
+  </properties>
+  <testcase name="testQueryAllTokens" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.166">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode queryAllTokens
+INFO: Querying all tokens
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode queryAllTokens
+INFO: All tokens: [{"amount":100.0,"description":"Test Token","expiryDate":"2023-12-31","issuedDate":"2023-01-01","issuer":"Issuer","owner":"Owner","sourceInvoiceId":"INV-001","state":"ISSUED","tokenId":"CTT"}]
+]]></system-err>
+  </testcase>
+  <testcase name="testBurnCTT_CompleteBurn" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.011">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode burnCTT
+INFO: Burning 100.000000 from token CTT by owner OwnerA
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode burnCTT
+INFO: Token burned successfully: {"amount":0.0,"description":"Test Token","expiryDate":"2023-12-31","issuedDate":"2023-01-01","issuer":"Issuer","owner":"BLACKHOLE_ADDRESS","sourceInvoiceId":"INV-001","state":"BURNED","tokenId":"CTT"}
+]]></system-err>
+  </testcase>
+  <testcase name="testQueryCTT_Success" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.009">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode queryCTT
+INFO: Querying token with ID: CTT
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode queryCTT
+INFO: Token found: {"amount":100.0,"description":"Test Token","expiryDate":"2023-12-31","issuedDate":"2023-01-01","issuer":"Issuer","owner":"Owner","sourceInvoiceId":"INV-001","state":"ISSUED","tokenId":"CTT"}
+]]></system-err>
+  </testcase>
+  <testcase name="testInitLedger" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.006">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode initLedger
+INFO: Initializing CTT Token Chaincode
+]]></system-err>
+  </testcase>
+  <testcase name="testTransferCTT_UnauthorizedOwner" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.007">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode transferCTT
+INFO: Transferring token CTT from FakeOwner to NewOwner
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode transferCTT
+SEVERE: Token CTT is not owned by FakeOwner
+]]></system-err>
+  </testcase>
+  <testcase name="testTransferCTT_Success" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.008">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode transferCTT
+INFO: Transferring token CTT from OwnerA to OwnerB
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode transferCTT
+INFO: Token transferred successfully: {"amount":100.0,"description":"Test Token","expiryDate":"2023-12-31","issuedDate":"2023-01-01","issuer":"Issuer","owner":"OwnerB","sourceInvoiceId":"INV-001","state":"TRANSFERRED","tokenId":"CTT"}
+]]></system-err>
+  </testcase>
+  <testcase name="testBurnCTT_InsufficientAmount" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.004">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode burnCTT
+INFO: Burning 100.000000 from token CTT by owner OwnerA
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode burnCTT
+SEVERE: Burn amount 100.000000 exceeds token amount 50.000000
+]]></system-err>
+  </testcase>
+  <testcase name="testQueryTokensByOwner" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.02">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode queryTokensByOwner
+INFO: Querying tokens for owner: Owner
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode queryTokensByOwner
+INFO: Found tokens: [{"amount":100.0,"description":"Test Token","expiryDate":"2023-12-31","issuedDate":"2023-01-01","issuer":"Issuer","owner":"Owner","sourceInvoiceId":"INV-001","state":"ISSUED","tokenId":"CTT"}]
+]]></system-err>
+  </testcase>
+  <testcase name="testGenCTT_TokenExists" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.01">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode genCTT
+INFO: Generating new CTT token with ID: CTT
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode genCTT
+SEVERE: Token CTT already exists
+]]></system-err>
+  </testcase>
+  <testcase name="testTransferCTT_TokenNotFound" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.008">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode transferCTT
+INFO: Transferring token CTT from OwnerA to OwnerB
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode transferCTT
+SEVERE: Token CTT does not exist
+]]></system-err>
+  </testcase>
+  <testcase name="testRedeemCTT_Success" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.012">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode redeemCTT
+INFO: Redeeming token CTT by owner OwnerA
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode redeemCTT
+INFO: Token redeemed successfully: {"amount":100.0,"description":"Test Token","expiryDate":"2023-12-31","issuedDate":"2023-01-01","issuer":"Issuer","owner":"OwnerA","sourceInvoiceId":"INV-001","state":"REDEEMED","tokenId":"CTT"}
+]]></system-err>
+  </testcase>
+  <testcase name="testGenCTT_Success" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.008">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode genCTT
+INFO: Generating new CTT token with ID: CTT
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode genCTT
+INFO: Token generated successfully: {"amount":100.0,"description":"Test Token","expiryDate":"2023-12-31","issuedDate":"2023-01-01","issuer":"Issuer","owner":"Owner","sourceInvoiceId":"INV-001","state":"ISSUED","tokenId":"CTT"}
+]]></system-err>
+  </testcase>
+  <testcase name="testBurnCTT_PartialBurn" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.019">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode burnCTT
+INFO: Burning 30.000000 from token CTT by owner OwnerA
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode burnCTT
+INFO: Token burned successfully: {"amount":70.0,"description":"Test Token","expiryDate":"2023-12-31","issuedDate":"2023-01-01","issuer":"Issuer","owner":"OwnerA","sourceInvoiceId":"INV-001","state":"ISSUED","tokenId":"CTT"}
+]]></system-err>
+  </testcase>
+  <testcase name="testRedeemCTT_AlreadyRedeemed" classname="com.supplychainfinance.chaincode.CTTTokenChaincodeTest" time="0.004">
+    <system-err><![CDATA[Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode redeemCTT
+INFO: Redeeming token CTT by owner OwnerA
+Mar 21, 2025 11:01:56 AM com.supplychainfinance.chaincode.CTTTokenChaincode redeemCTT
+SEVERE: Token CTT has already been redeemed
+]]></system-err>
+  </testcase>
+</testsuite>

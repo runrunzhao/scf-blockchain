@@ -1,4 +1,3 @@
-webapp/CTTinfo.jsp
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <!DOCTYPE html>
 <html lang="en">
@@ -231,7 +230,7 @@ webapp/CTTinfo.jsp
                                 <tbody>
                                     <tr>
                                         <th>Token Name</th>
-                                        <td>Supply Chain Finance Token (CTT)</td>
+                                        <td>Credit Transfer Token (CTT)</td>
                                     </tr>
                                     <tr>
                                         <th>Contract Address</th>

@@ -1,1 +1,5 @@
-select  user_id from users ；
+select * from users ;
+
+SELECT user_id FROM users;
+
+select * from users WHERE user_id=2;

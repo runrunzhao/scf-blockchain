@@ -156,7 +156,7 @@
     <version>9.4.44.v20210927</version>
     <configuration>
         <webApp>
-            <contextPath>/scf</contextPath>
+            <contextPath>/</contextPath>
         </webApp>
         <httpConnector>
             <port>8088</port>

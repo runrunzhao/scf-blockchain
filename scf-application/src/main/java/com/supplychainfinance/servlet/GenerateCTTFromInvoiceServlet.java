@@ -1,6 +1,5 @@
 package com.supplychainfinance.servlet;
 
-import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.supplychainfinance.blockchain.service.InvoiceBlockchainService;
 import com.supplychainfinance.util.ServletUtils;

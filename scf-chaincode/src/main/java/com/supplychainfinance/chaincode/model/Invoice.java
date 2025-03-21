@@ -110,12 +110,6 @@ public class Invoice {
     public String getTokenId() { return tokenId; }
     public void setTokenId(String tokenId) { this.tokenId = tokenId; }
     
-    // 兼容旧代码的 getter/setter - 如果需要的话
-    public String getInvoiceID() { return invoiceId; }
-    public void setInvoiceID(String invoiceID) { this.invoiceId = invoiceID; }
-    
-    public String getContractID() { return contractId; }
-    public void setContractID(String contractID) { this.contractId = contractID; }
     
     public String getMemo() { return description; }
     public void setMemo(String memo) { this.description = memo; }
