@@ -180,6 +180,7 @@
                         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="userStatusDropdown">
                             <a class="dropdown-item" href="profile.jsp"><i class="fas fa-id-card mr-2"></i>Profile</a>
                             <a class="dropdown-item" href="settings.jsp"><i class="fas fa-cog mr-2"></i>Settings</a>
+                            <a class="dropdown-item" href="myWallet.jsp"><i class="fas fa-wallet mr-2"></i>My Wallet</a>
                             <div class="dropdown-divider"></div>
                             <a class="dropdown-item" href="logout"><i class="fas fa-sign-out-alt mr-2"></i>Logout</a>
                         </div>

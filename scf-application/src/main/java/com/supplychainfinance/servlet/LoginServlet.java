@@ -47,6 +47,7 @@ public class LoginServlet extends HttpServlet {
         System.out.println("User found. Username: " + user.getUsername());
         System.out.println("Input password: " + password);
         System.out.println("Stored password in DB: " + user.getPassword());
+        System.out.println("Stored password in DB: " + user.getEmail());
         
         boolean passwordMatches = false;
 
@@ -66,6 +67,7 @@ public class LoginServlet extends HttpServlet {
 
         // 登录成功
         System.out.println("Login successful for user: " + username);
+        
 
         // Update last login time
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
@@ -74,10 +76,11 @@ public class LoginServlet extends HttpServlet {
 
         // Create session and store user information
         HttpSession session = request.getSession();
-        session.setAttribute("currentUser", user);
+        session.setAttribute("user", user);
         session.setAttribute("isLoggedIn", true);
         session.setAttribute("username", user.getUsername());
         session.setAttribute("userId", user.getUserId());
+        session.setAttribute("email", user.getEmail());
 
         // Redirect to contract page instead of index
         System.out.println("Redirecting to contract.jsp");
