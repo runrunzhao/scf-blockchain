@@ -201,13 +201,26 @@
                         try {
                             const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
                             const walletAddress = accounts[0];
+
+                            // Update wallet address display
                             document.getElementById('walletAddress').innerText = walletAddress;
+
+                            // Get and update balance
                             const balanceHex = await ethereum.request({
                                 method: 'eth_getBalance',
                                 params: [walletAddress, 'latest']
                             });
                             const balance = parseFloat(parseInt(balanceHex, 16) / Math.pow(10, 18)).toFixed(4);
                             document.getElementById('walletBalance').innerText = balance + " POL";
+
+                            // Change the connect button style directly
+                            const connectButton = document.querySelector('.btn.btn-primary[onclick="connectWallet()"]');
+                            if (connectButton) {
+                                connectButton.innerText = "Wallet Connected";
+                                connectButton.classList.remove('btn-primary');
+                                connectButton.classList.add('btn-success');
+                            }
+
                         } catch (error) {
                             console.error("Failed to connect wallet:", error);
                             alert("Failed to connect wallet: " + error.message);
@@ -216,7 +229,6 @@
                         alert("MetaMask is not installed. Please install it to use this feature.");
                     }
                 }
-
                 async function showTokenBalance() {
                     const tokenAddress = "0x0000000000000000000000000000000000001010"; // 替换为实际代币地址
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
