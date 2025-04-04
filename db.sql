@@ -81,6 +81,20 @@ CREATE TABLE invoice (
     FOREIGN KEY (contractID) REFERENCES contract(contractID) -- Foreign key to contract table
 );
 
+--0404 1720 add table SCToken
+CREATE TABLE SCToken (
+    tokenID INT AUTO_INCREMENT PRIMARY KEY,
+    owerAddr CHAR(42) NOT NULL,
+    tokenName  CHAR(64) NOT NULL ，
+    tokenSymbol CHAR(32) NOT NULL,
+    scexpireDate TIMESTAMP NOT NULL,
+    genContractAddr CHAR(42) NOT NULL,
+    sccreateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    );
+
+
+
+
 docker run --name scf-mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=SCFDB -p 3306:3306 -d mysql:5.7
 -- Step 1: Create the database
 CREATE DATABASE SCFDB;
