@@ -123,14 +123,8 @@
                             <label for="recipientAddress">Recipient Address:</label>
                             <input type="text" class="form-control" id="recipientAddress" name="recipientAddress"
                                 placeholder="Enter Ethereum Address (0x...)" required>
-                            
-                                <label for="contractAddressDisplay"><strong>Contract Address:</strong></label>
-                                <div class="input-group">
-                                    <input type="text" class="form-control" id="contractAddressDisplay" readonly>
-                                </div>
                         </div>
-                  
-                    
+
                         <!-- Token Name and Symbol on the same row -->
                         <div class="form-row">
                             <div class="form-group col-md-6">
@@ -147,22 +141,24 @@
 
                         <!-- Amount and Invalid Date on the same row -->
                         <div class="form-row">
-                            <div class="form-group col-md-6">
+                              <div class="form-group col-md-6">
                                 <label for="invalidDate">Invalid Date:</label>
                                 <input type="date" class="form-control" id="invalidDate" name="invalidDate" required>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="amount">Amount:</label>
-                                <input type="number" class="form-control" id="amount" name="amount"
-                                    placeholder="Enter Amount" required>
                             </div>
                         </div>
 
                         <!-- Two buttons side by side -->
                         <div class="form-row">
-                             <div class="col-md-6">
-                                <button type="submit" class="btn btn-generate btn-block">Generate Token</button>
+                            <div class="col-md-6">
+                                <button type="button" id="saveContractBtn" class="btn btn-generate btn-block">Save
+                                    Contract</button>
                             </div>
+
+                            <div class="col-md-6">
+                                <button type="button" id="signContractBtn" class="btn btn-warning btn-block">Sign
+                                    Contract</button>
+                            </div>
+                           
                         </div>
                     </form>
                 </div>
@@ -171,7 +167,7 @@
             <div class="form-group">
                 <label for="contractAddressDisplay"><strong>Contract Address:</strong></label>
                 <div class="input-group">
-                    <input type="text" class="form-control" id="contractAddressDisplay2" readonly>
+                    <input type="text" class="form-control" id="contractAddressDisplay" readonly>
                     <div class="input-group-append">
                         <button class="btn btn-outline-primary" type="button" onclick="refreshContractAddress()">
                             <i class="fas fa-sync-alt"></i> Refresh
@@ -1056,7 +1052,6 @@
 
                                     console.log(`Found contract: ${contractAddress} created at block ${latestTx.blockNumber}`);
                                     document.getElementById('contractAddressDisplay').value = contractAddress;
-                                    document.getElementById('contractAddressDisplay2').value = contractAddress;
                                     showStatus(`Found contract: ${contractAddress} (Block: ${latestTx.blockNumber})`);
 
                                     // Create contract instance

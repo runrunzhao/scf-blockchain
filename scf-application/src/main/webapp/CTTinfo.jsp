@@ -157,16 +157,18 @@
                 </div>
             </div>
             
-            <!-- CTT menu -->
-            <div class="dropdown d-inline-block">
+             <!-- CTT menu -->
+             <div class="dropdown d-inline-block">
                 <a class="dropdown-toggle" href="#" role="button" id="cttDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                     CTT
                 </a>
                 <div class="dropdown-menu" aria-labelledby="cttDropdown">
+                    <a class="dropdown-item" href="signSC.jsp">Sing SC</a>
                     <a class="dropdown-item" href="TGE.jsp">TGE</a>
                     <a class="dropdown-item" href="CTTinfo.jsp">Detail</a>
                 </div>
             </div>
+            
         </div>
     </div>
 
