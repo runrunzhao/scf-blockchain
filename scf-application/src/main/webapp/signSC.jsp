@@ -141,31 +141,38 @@
 
                         <!-- Amount and Invalid Date on the same row -->
                         <div class="form-row">
-                              <div class="form-group col-md-6">
+                            <div class="form-group col-md-6">
                                 <label for="invalidDate">Invalid Date:</label>
                                 <input type="date" class="form-control" id="invalidDate" name="invalidDate" required>
                             </div>
+                            <div class="form-group col-md-6" id="creationTimeContainer" style="display:none">
+                                <label for="creationTime">Creation Time:</label>
+                                <input type="text" class="form-control" id="creationTime" name="creationTime" readonly>
+                            </div>
                         </div>
 
-                        <!-- Two buttons side by side -->
+                        <input type="hidden" id="tokenID" name="tokenID">
+                        <!-- Three buttons in a single row -->
                         <div class="form-row">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <button type="button" id="searchSCBtn" class="btn btn-success btn-block">Search
+                                    Latest SC</button>
+                            </div>
+                            <div class="col-md-4">
                                 <button type="button" id="saveContractBtn" class="btn btn-generate btn-block">Save
-                                    Contract</button>
+                                    SC</button>
                             </div>
-
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <button type="button" id="signContractBtn" class="btn btn-warning btn-block">Sign
-                                    Contract</button>
+                                    SC</button>
                             </div>
-                           
                         </div>
                     </form>
                 </div>
             </div>
 
             <div class="form-group">
-                <label for="contractAddressDisplay"><strong>Contract Address:</strong></label>
+                <label for="contractAddressDisplay"><strong>Contract On BlockChain:</strong></label>
                 <div class="input-group">
                     <input type="text" class="form-control" id="contractAddressDisplay" readonly>
                     <div class="input-group-append">
@@ -174,6 +181,9 @@
                         </button>
                         <button class="btn btn-outline-secondary" type="button" onclick="copyContractAddress()">
                             <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button class="btn btn-outline-success" type="button" onclick="saveSCAddress2DB()">
+                            <i class="fas fa-save"></i> Save
                         </button>
                     </div>
                 </div>
@@ -659,6 +669,11 @@
                     // 在 DOMContentLoaded 事件监听器内添加这行代码 
                     document.getElementById('signContractBtn').addEventListener('click', deployCustomTokenContract);
 
+                    // Add to your DOMContentLoaded event listener
+                    document.getElementById('saveContractBtn').addEventListener('click', saveContractToDatabase);
+                    document.getElementById('searchSCBtn').addEventListener('click', searchSCFromDB);
+
+
                     // 处理表单提交
                     document.getElementById('mintForm').addEventListener('submit', async function (e) {
                         e.preventDefault();
@@ -773,6 +788,142 @@
                 }
 
 
+                function searchSCFromDB() {
+                    // Show loading status
+                    showStatus("Searching for latest contract...");
+
+                    // Get wallet address if connected
+                    const walletAddress = userAddress || '';
+
+                    // Create URL with query parameter if wallet is connected
+                    let url = 'searchToken';
+                    if (walletAddress) {
+                        url += '?walletAddress=' + encodeURIComponent(walletAddress);
+                    }
+
+                    // Fetch the latest contract from server
+                    fetch(url)
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                // Display the result
+                                const token = data.token;
+
+                                document.getElementById('tokenID').value = token.tokenID;
+                                document.getElementById('tokenName').value = token.tokenName;
+                                document.getElementById('tokenSymbol').value = token.tokenSymbol;
+                                document.getElementById('invalidDate').value = token.scexpireDate;
+
+                                // Display creation time if available
+                                if (token.sccreateTime) {
+                                    document.getElementById('creationTime').value = token.sccreateTime;
+                                    // Make the creation time field visible
+                                    const creationTimeContainer = document.getElementById('creationTimeContainer');
+                                    if (creationTimeContainer) {
+                                        creationTimeContainer.style.display = 'block';
+                                    }
+                                }
+
+                                // Update contract address if available
+                                if (token.genContractAddr) {
+                                    document.getElementById('contractAddressDisplay').value = token.genContractAddr;
+                                    // Make the contract address field visible
+                                    const addressContainer = document.getElementById('contractAddressDisplay').parentElement;
+                                    if (addressContainer) {
+                                        addressContainer.style.display = 'flex';
+                                    }
+                                }
+
+                                showStatus("Latest contract loaded successfully");
+                            } else {
+                                // Show the message that allows manual creation
+                                showStatus(data.message);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error searching contract:', error);
+                            showStatus("Failed to search contract: " + error.message, true);
+                        });
+                }
+
+
+                function saveContractToDatabase() {
+                    if (!userAddress) {
+                        showStatus("Please connect wallet   first", true);
+                        return;
+                    }
+
+                    // Get form data
+                    const tokenName = document.getElementById('tokenName').value;
+                    const tokenSymbol = document.getElementById('tokenSymbol').value;
+                    const contractAddress = document.getElementById('contractAddressDisplay').value;
+                    const invalidDate = document.getElementById('invalidDate').value;
+                    const amount = document.getElementById('amount').value || '0'; // Default to 0 if empty
+                    const memo = document.getElementById('memo') ? document.getElementById('memo').value : '';
+
+                    // Add debugging
+                    console.log("userAddress:", userAddress);
+                    console.log("tokenName:", tokenName);
+                    console.log("tokenSymbol:", tokenSymbol);
+                    console.log("invalidDate:", invalidDate);
+                    console.log("contractAddress:", contractAddress);
+                    console.log("amount:", amount);
+
+
+                    // Validate required fields
+                    if (!tokenName || !tokenSymbol || !invalidDate) {
+                        showStatus("The fields are required to save contract", true);
+                        return;
+                    }
+
+                    const confirmSave = confirm("Are you sure  to savthis contract to the database?");
+                    if (!confirmSave) {
+                        showStatus("Save operation cancelled", true);
+                        return; // Exit the function if user cancels
+                    }
+                    showStatus("Saving contract to database...");
+
+                    const params = new URLSearchParams();
+                    params.append("owerAddr", userAddress);
+                    params.append("tokenName", tokenName);
+                    params.append("tokenSymbol", tokenSymbol);
+                    params.append("scexpireDate", invalidDate);
+                    params.append("genContractAddr", contractAddress || '');
+                    params.append("tokenAmout", amount);
+                    params.append("memo", memo || '');
+
+                    console.log("Sending data:", Object.fromEntries(params));
+                    fetch('saveToken', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: params.toString()  // Convert to string - important!
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                showStatus("Contract saved to database successfully!");
+                            } else {
+                                showStatus("Error saving contract: " + data.message, true);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error saving contract:', error);
+                            showStatus("Failed to save contract: " + error.message, true);
+                        });
+                }
+
                 async function mintToken(recipientAddress, amount) {
                     if (!web3) {
                         showStatus("Wallet not connected. Please connect wallet first.", true);
@@ -789,7 +940,7 @@
                         try {
                             const expirationDate = await contract.methods.expirationDate().call();
                             const currentTimestamp = Math.floor(Date.now() / 1000);
-                         
+
                             if (currentTimestamp > expirationDate) {
                                 showStatus("Error: Token has expired on " + new Date(expirationDate * 1000).toLocaleString(), true);
                                 return false;
@@ -803,8 +954,8 @@
 
                         // 检查当前用户是否是合约所有者
                         const owner = await contract.methods.owner().call();
-                      //  console.log("Contract owner:", owner);
-                     
+                        //  console.log("Contract owner:", owner);
+
 
                         if (owner.toLowerCase() !== userAddress.toLowerCase()) {
                             showStatus("Error: Only the contract owner can mint tokens", true);
@@ -820,7 +971,7 @@
                             console.log("Estimated gas for minting:", gasEstimate);
                         } catch (gasError) {
                             console.error("Gas estimation failed:", gasError);
-                       
+
                             if (gasError.message.includes("execution reverted")) {
                                 showStatus("Transaction would fail: " + (gasError.message.includes(":") ?
                                     gasError.message.split(":")[1] : "Unknown reason"), true);
@@ -1094,6 +1245,65 @@
                     contractAddressEl.select();
                     document.execCommand('copy');
                     showStatus(`Contract address copied: ${address}`);
+                }
+
+
+                function saveSCAddress2DB() {
+                    // Get token ID and contract address
+                    const tokenId = document.getElementById('tokenID').value;
+                    const contractAddress = document.getElementById('contractAddressDisplay').value;
+
+                    // Validate values
+                    if (!tokenId) {
+                        showStatus("No token selected. Please search for a token first.", true);
+                        return;
+                    }
+
+                    if (!contractAddress) {
+                        showStatus("No contract address to save. Please deploy or refresh a contract first.", true);
+                        return;
+                    }
+
+                    // Ask for confirmation
+                    const confirmSave = confirm("Are you sure you want to update this contract address in the database?");
+                    if (!confirmSave) {
+                        showStatus("Update operation cancelled", true);
+                        return;
+                    }
+
+                    // Show saving status
+                    showStatus("Updating contract address in database...");
+
+                    // Create form data
+                    const params = new URLSearchParams();
+                    params.append("tokenId", tokenId);
+                    params.append("contractAddress", contractAddress);
+
+                    // Send update request
+                    fetch('updateSCAddress', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded'
+                        },
+                        body: params.toString()
+                    })
+                        .then(response => {
+                            if (!response.ok) {
+                                throw new Error('Network response was not ok');
+                            }
+                            return response.json();
+                        })
+                        .then(data => {
+                            if (data.success) {
+                                showStatus("Contract address updated successfully!");
+                            } else {
+                                showStatus("Error updating contract address: " + data.message, true);
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error updating contract address:', error);
+                            showStatus("Failed to update contract address: " + error.message, true);
+                        });
                 }
 
             </script>

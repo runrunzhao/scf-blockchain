@@ -43,12 +43,7 @@ public class LoginServlet extends HttpServlet {
             return;
         }
 
-        // 增强调试输出
-        System.out.println("User found. Username: " + user.getUsername());
-        System.out.println("Input password: " + password);
-        System.out.println("Stored password in DB: " + user.getPassword());
-        System.out.println("Stored password in DB: " + user.getEmail());
-        
+      
         boolean passwordMatches = false;
 
         String hashedInputPassword = PasswordUtil.hashPassword(password);
@@ -83,7 +78,7 @@ public class LoginServlet extends HttpServlet {
         session.setAttribute("email", user.getEmail());
 
         // Redirect to contract page instead of index
-        System.out.println("Redirecting to contract.jsp");
-        response.sendRedirect("contract.jsp");
+
+        response.sendRedirect("index.jsp");
     }
 }

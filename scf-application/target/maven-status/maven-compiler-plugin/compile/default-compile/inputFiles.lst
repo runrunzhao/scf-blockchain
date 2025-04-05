@@ -6,9 +6,12 @@
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/controller/MainController.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/blockchain/connection/FabricGatewayManager.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/EnterpriseRelationController.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SaveTokenServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/LogoutServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/blockchain/service/CTTTokenService.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SearchTokenServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetEnterpriseServlet.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateSCAddressServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/model/Enterprise.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetSingleInvoiceServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/util/DBTest.java

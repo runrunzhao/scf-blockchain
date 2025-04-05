@@ -1,5 +1,2 @@
-select * from users ;
+SELECT * from SCToken ；
 
-SELECT user_id FROM users;
-
-select * from users WHERE user_id=2;

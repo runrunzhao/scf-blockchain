@@ -1,8 +1,11 @@
 mvn jetty:run
 docker ps -a | grep scf-mysql
 docker start scf-mysql
-
 docker exec -it scf-mysql bash ;
+
+git add .                        
+git commit -m "02261824"     
+git push origin main    
 
 select * from  users;
 -- 用户表 - 存储注册用户信息
@@ -85,11 +88,14 @@ CREATE TABLE invoice (
 CREATE TABLE SCToken (
     tokenID INT AUTO_INCREMENT PRIMARY KEY,
     owerAddr CHAR(42) NOT NULL,
-    tokenName  CHAR(64) NOT NULL ，
+    tokenName  CHAR(64) NOT NULL ,
     tokenSymbol CHAR(32) NOT NULL,
     scexpireDate TIMESTAMP NOT NULL,
-    genContractAddr CHAR(42) NOT NULL,
-    sccreateTime TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    genContractAddr CHAR(42) ,
+    sccreateTime TIMESTAMP ,
+    tokenAmout DECIMAL(15, 2) ,
+    tokencreateTime TIMESTAMP ,
+    memo VARCHAR(128) 
     );
 
 
@@ -104,9 +110,7 @@ USE SCFDB;
 
 --git pull origin 
 
-git add .                        
-git commit -m "02261824"     
-git push origin main             
+         
 
 
 docker ps -a | grep scf-mysql

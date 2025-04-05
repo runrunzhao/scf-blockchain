@@ -252,7 +252,7 @@
                     CTT
                 </a>
                 <div class="dropdown-menu" aria-labelledby="cttDropdown">
-                    <a class="dropdown-item" href="signSC.jsp">Sing SC</a>
+                    <a class="dropdown-item" href="signSC.jsp">Sign SC</a>
                     <a class="dropdown-item" href="TGE.jsp">TGE</a>
                     <a class="dropdown-item" href="CTTinfo.jsp">Detail</a>
                 </div>
