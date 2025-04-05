@@ -87,17 +87,16 @@ CREATE TABLE invoice (
 --0404 1720 add table SCToken
 CREATE TABLE SCToken (
     tokenID INT AUTO_INCREMENT PRIMARY KEY,
-    owerAddr CHAR(42) NOT NULL,
-    tokenName  CHAR(64) NOT NULL ,
-    tokenSymbol CHAR(32) NOT NULL,
-    scexpireDate TIMESTAMP NOT NULL,
-    genContractAddr CHAR(42) ,
-    sccreateTime TIMESTAMP ,
-    tokenAmout DECIMAL(15, 2) ,
-    tokencreateTime TIMESTAMP ,
-    memo VARCHAR(128) 
-    );
-
+    owerAddr VARCHAR(42) NOT NULL,
+    tokenName VARCHAR(64) NOT NULL,
+    tokenSymbol VARCHAR(16) NOT NULL,
+    scexpireDate DATE NOT NULL,
+    genContractAddr VARCHAR(42),
+    scCreateTime DATETIME,
+    tokenAmount DECIMAL(15, 2),
+    tokenCreateTime DATETIME,
+    memo VARCHAR(64)
+);
 
 
 

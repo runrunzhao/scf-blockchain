@@ -5,7 +5,6 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -34,11 +33,8 @@ public class SaveTokenServlet extends HttpServlet {
             String tokenSymbol = request.getParameter("tokenSymbol");
             String scexpireDateStr = request.getParameter("scexpireDate");
             String genContractAddr = request.getParameter("genContractAddr");
-            String tokenAmountStr = request.getParameter("tokenAmout");
-            String memo = request.getParameter("memo");
-
-    
-            // Replace the if condition with this:
+            
+            // Validate required parameters
             if (ownerAddr == null || ownerAddr.trim().isEmpty() ||
                     tokenName == null || tokenName.trim().isEmpty() ||
                     tokenSymbol == null || tokenSymbol.trim().isEmpty() ||
@@ -46,32 +42,36 @@ public class SaveTokenServlet extends HttpServlet {
 
                 jsonResponse.put("success", false);
                 jsonResponse.put("message", "Missing required parameters");
+                out.print(jsonResponse.toString());
                 return;
             }
 
-            // Parse expiration date
+            // Parse expiration date - use java.sql.Date instead of Timestamp
             SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date expireDate = dateFormat.parse(scexpireDateStr);
-            Timestamp scexpireDate = new Timestamp(expireDate.getTime());
+            java.sql.Date scexpireDate = new java.sql.Date(expireDate.getTime());
+            
+            // Create current timestamp for scCreateTime
+            java.sql.Timestamp currentTime = new java.sql.Timestamp(System.currentTimeMillis());
 
             // Parse token amount
-            double tokenAmount = Double.parseDouble(tokenAmountStr);
+            double tokenAmount = 0;
 
             // Get database connection
             Connection conn = DBUtil.getConnection();
 
-            // Prepare SQL statement
+            // Prepare SQL statement with correct column names and adding scCreateTime
             String sql = "INSERT INTO SCToken (owerAddr, tokenName, tokenSymbol, scexpireDate, " +
-                    "genContractAddr, tokenAmout, memo) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                    "genContractAddr, scCreateTime, tokenAmount) VALUES (?, ?, ?, ?, ?, ?, ?)";
 
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, ownerAddr);
             pstmt.setString(2, tokenName);
             pstmt.setString(3, tokenSymbol);
-            pstmt.setTimestamp(4, scexpireDate);
+            pstmt.setDate(4, scexpireDate);
             pstmt.setString(5, genContractAddr);
-            pstmt.setDouble(6, tokenAmount);
-            pstmt.setString(7, memo);
+            pstmt.setTimestamp(6, currentTime); // Add current timestamp for scCreateTime
+            pstmt.setDouble(7, tokenAmount);
 
             // Execute the insert
             int rowsAffected = pstmt.executeUpdate();
@@ -92,6 +92,7 @@ public class SaveTokenServlet extends HttpServlet {
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Database error: " + e.getMessage());
             e.printStackTrace();
+            System.out.println("SQL State: " + e.getSQLState() + ", Error Code: " + e.getErrorCode());
         } catch (ParseException e) {
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Date parsing error: " + e.getMessage());
