@@ -15,6 +15,7 @@ public class User {
     private Timestamp lastLogin;
     private String accountStatus;
     private String memo;
+    private String walletAddr;
     
     // Default constructor
     public User() {
@@ -120,4 +121,13 @@ public class User {
     public void setMemo(String memo) {
         this.memo = memo;
     }
+
+    public String getWalletAddr() {
+        return walletAddr;
+    }
+
+    public void setWalletAddr(String walletAddr) {
+        this.walletAddr = walletAddr;
+    }
+
 }

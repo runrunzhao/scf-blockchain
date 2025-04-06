@@ -216,4 +216,13 @@
     <url-pattern>/updateSCAddress</url-pattern>
 </servlet-mapping>
 
+<servlet>
+    <servlet-name>UpdateSettingsServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.UpdateSettingsServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UpdateSettingsServlet</servlet-name>
+    <url-pattern>/updateSettings</url-pattern>
+</servlet-mapping>
+
 </web-app>

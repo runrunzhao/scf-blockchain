@@ -24,6 +24,8 @@ CREATE TABLE  users (
     
 );
 
+ALTER TABLE users ADD COLUMN walletAddr VARCHAR(42);
+
 -- 用户角色表 - 用于权限管理
 CREATE TABLE IF NOT EXISTS user_roles (
     role_id INT AUTO_INCREMENT PRIMARY KEY,

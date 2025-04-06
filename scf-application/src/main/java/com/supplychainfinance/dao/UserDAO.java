@@ -109,6 +109,7 @@ public class UserDAO {
                     user.setLastLogin(rs.getTimestamp("last_login"));
                     user.setAccountStatus(rs.getString("account_status"));
                     user.setMemo(rs.getString("memo"));
+                    user.setWalletAddr(rs.getString("walletAddr")); 
                     return user;
                 }
             }

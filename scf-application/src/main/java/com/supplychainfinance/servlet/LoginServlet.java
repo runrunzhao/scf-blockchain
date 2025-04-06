@@ -68,6 +68,8 @@ public class LoginServlet extends HttpServlet {
         Timestamp currentTime = new Timestamp(System.currentTimeMillis());
         user.setLastLogin(currentTime);
         userDAO.updateLastLogin(user.getUserId(), currentTime);
+        System.out.println(user.getWalletAddr());
+        System.out.println(user.getEmail());
 
         // Create session and store user information
         HttpSession session = request.getSession();
@@ -76,7 +78,7 @@ public class LoginServlet extends HttpServlet {
         session.setAttribute("username", user.getUsername());
         session.setAttribute("userId", user.getUserId());
         session.setAttribute("email", user.getEmail());
-
+        session.setAttribute("walletAddr", user.getWalletAddr());
         // Redirect to contract page instead of index
 
         response.sendRedirect("index.jsp");

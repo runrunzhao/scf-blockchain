@@ -1,6 +1,7 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -14,9 +15,11 @@
             font-family: Arial, sans-serif;
             background-color: #f4f7fa;
         }
+
         .container {
             margin-top: 30px;
         }
+
         .header {
             background-color: #007bff;
             padding: 15px;
@@ -26,17 +29,21 @@
             border-radius: 10px;
             margin-bottom: 30px;
         }
+
         .menu {
             margin-bottom: 30px;
         }
+
         .menu a {
             color: #fff;
             font-size: 18px;
             margin: 0 15px;
         }
+
         .menu a:hover {
             text-decoration: underline;
         }
+
         .footer {
             text-align: center;
             margin-top: 50px;
@@ -45,6 +52,7 @@
         }
     </style>
 </head>
+
 <body>
     <!-- Header and Navigation Menu -->
     <div class="header">
@@ -53,7 +61,8 @@
             <a href="index.jsp">Home</a>
             <!-- 用户菜单 -->
             <div class="dropdown d-inline-block">
-                <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <a class="dropdown-toggle" href="#" role="button" id="userDropdown" data-toggle="dropdown"
+                    aria-haspopup="true" aria-expanded="false">
                     User
                 </a>
                 <div class="dropdown-menu" aria-labelledby="userDropdown">
@@ -65,91 +74,144 @@
             </div>
         </div>
     </div>
-    
+
+    <!-- Debug section to help troubleshoot -->
+    <div class="container">
+        <div class="row mb-4" style="display:none;">
+            <div class="col">
+                <div class="card">
+                    <div class="card-header">Debug Info</div>
+                    <div class="card-body">
+                        <p>Username from session: <%= session.getAttribute("username") %></p>
+                        <p>Wallet address from session: <%= session.getAttribute("walletAddr") %></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Main Container -->
     <div class="container">
         <h2>Account Settings</h2>
         <hr>
-        <!-- 修改用户基本信息的表单 -->
-        <form method="post" action="updateSettings">
+
+        <!-- Show success message if present -->
+        <% if (session.getAttribute("message") != null) { %>
+        <div class="alert alert-success">
+            <%= session.getAttribute("message") %>
+            <% session.removeAttribute("message"); %>
+        </div>
+        <% } %>
+
+        <!-- Alert for demo form submission -->
+        <div id="formSuccessMessage" class="alert alert-success" style="display: none;">
+            Settings saved successfully!
+        </div>
+
+        <!-- Form should submit to a servlet endpoint -->
+        <form id="settingsForm" method="post" action="updateSettings" onsubmit="return validateForm()">
             <div class="form-group">
                 <label for="email">Email address</label>
-                <!-- Email 从数据库查询后传入，此处假设后台将 user 对象放入 request 范围 -->
-                <input type="email" class="form-control" id="email" name="email" value="${user.email}">
+                <input type="email" class="form-control" id="email" name="email" readonly
+                    value="${user.email}">
             </div>
             <div class="form-group">
-                <label for="fullname">Full Name</label>
-                <input type="text" class="form-control" id="fullname" name="fullname" 
-                       value="<%= session.getAttribute("fullname") != null ? session.getAttribute("fullname") : "" %>">
+                <label for="username">User Name</label>
+                <input type="text" class="form-control" id="username" name="username" readonly
+                    value="<%= session.getAttribute("username") != null ? session.getAttribute("username") : "" %>">
             </div>
+
+            <!-- Change name to match database field -->
             <div class="form-group">
-                <label for="password">Change Password</label>
-                <input type="password" class="form-control" id="password" name="password" placeholder="Enter new password">
-            </div>
-            
-            <!-- 新增：Wallet Address 输入框和Confirm按钮 -->
-            <div class="form-group">
-                <label for="walletAddress">Wallet Address:</label>
+                <label for="walletAddr">Wallet Address:</label>
                 <div class="input-group">
-                    <input type="text" class="form-control" id="walletAddress" name="walletAddress" placeholder="Enter your ETH address">
+                    <input type="text" class="form-control" id="walletAddr" name="walletAddr"
+                        placeholder="Enter your ETH address" 
+                        value="<%= session.getAttribute("walletAddr") != null ? session.getAttribute("walletAddr") : "" %>">
                     <div class="input-group-append">
                         <button type="button" class="btn btn-secondary" onclick="confirmWallet()">Confirm</button>
                     </div>
                 </div>
+                <small id="walletStatus" class="form-text text-muted">Please verify your wallet address before saving changes.</small>
+                <input type="hidden" id="walletVerified" name="walletVerified" value="false">
             </div>
-            
-            <button type="submit" class="btn btn-primary">Save Changes</button>
+
+            <button type="submit" class="btn btn-primary">Save Wallet Address</button>
         </form>
     </div>
-    
+
     <!-- Footer -->
     <div class="footer">
         <p>&copy; 2025 Supply Chain Finance Platform | All rights reserved.</p>
     </div>
-    
+
     <!-- Bootstrap and jQuery JS -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
-    
+
     <!-- MetaMask Interaction Script -->
     <script>
         async function confirmWallet() {
             if (typeof window.ethereum !== 'undefined') {
                 try {
-                    // 请求账户访问
+                    // Request account access
                     await ethereum.request({ method: 'eth_requestAccounts' });
                     const accounts = await ethereum.request({ method: 'eth_accounts' });
-                    
-                    // 获取用户输入的目标钱包地址
-                    const walletAddress = document.getElementById('walletAddress').value;
-                    if (!walletAddress) {
+
+                    // Get user input wallet address - FIXED: use walletAddr not walletAddress
+                    const walletAddr = document.getElementById('walletAddr').value;
+                    if (!walletAddr) {
                         alert("Please enter a wallet address.");
                         return;
                     }
-                    
-                    // 构造交易参数，可以根据具体业务调整
-                    const txParameters = {
-                        from: accounts[0],
-                        to: walletAddress,
-                        value: '0x0', // 发送0以太币，仅作为确认操作
-                        gas: '0x5208' // 21000 gas
-                    };
-                    
-                    // 发送交易请求到 MetaMask
-                    const txHash = await ethereum.request({
-                        method: 'eth_sendTransaction',
-                        params: [txParameters],
+
+                    // Check if input address matches connected wallet
+                    if (walletAddr.toLowerCase() !== accounts[0].toLowerCase()) {
+                        alert("The address you entered doesn't match your connected wallet address.\n\nEntered: " + walletAddr + "\nConnected: " + accounts[0]);
+                        return;
+                    }
+
+                    // Create a message for signing
+                    const message = `Verify wallet ownership: ${walletAddr}`;
+
+                    // Ask user to sign the message (no gas fees, just signature)
+                    const signature = await ethereum.request({
+                        method: 'personal_sign',
+                        params: [message, accounts[0]],
                     });
-                    alert('Transaction submitted with hash: ' + txHash);
+
+                    // If we get here, signature was successful
+                    document.getElementById('walletVerified').value = "true";
+                    document.getElementById('walletStatus').innerHTML =
+                        '<span class="text-success">✓ Wallet verified successfully! Your address has been confirmed.</span>';
+
                 } catch (error) {
-                    console.error('Error submitting transaction:', error);
-                    alert('Transaction failed: ' + error.message);
+                    console.error('Error verifying wallet:', error);
+                    alert('Verification failed: ' + error.message);
                 }
             } else {
                 alert('MetaMask is not installed. Please install MetaMask and try again.');
             }
         }
+
+        function validateForm() {
+            const walletAddr = document.getElementById('walletAddr').value;
+            const walletVerified = document.getElementById('walletVerified').value;
+
+            if (walletAddr && walletVerified !== "true") {
+                alert("Please verify your wallet address before saving changes.");
+                return false;
+            }
+            return true;
+        }
+
+        // Debug function - uncomment to help troubleshoot
+        // $(document).ready(function() {
+        //     console.log("Session attributes available:");
+        //     console.log("Username: " + "<%= session.getAttribute("username") %>");
+        //     console.log("Wallet Address: " + "<%= session.getAttribute("walletAddr") %>");
+        // });
     </script>
 </body>
 </html>

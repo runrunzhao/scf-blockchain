@@ -18,6 +18,7 @@
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/util/ServletUtils.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/dao/DBConnectionManager.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetInvoicesServlet.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateSettingsServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SearchContractServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetContractServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetContractDetailsServlet.java
