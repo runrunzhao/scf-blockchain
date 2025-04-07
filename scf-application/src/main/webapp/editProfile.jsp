@@ -124,8 +124,8 @@
                             </div>
                             <div class="form-group">
                                 <label for="enterpriseId">Enterprise ID</label>
-                                <input type="text" class="form-control" id="enterpriseId" name="enterpriseId" value="${user.enterprise_Id}" required>
-                                <small class="form-text text-muted">Enter your Enterprise ID for supply chain integration.</small>
+                                <input type="text" class="form-control" id="enterpriseId" name="enterpriseId" value="${user.enterpriseId}" required>
+                                <small class="form-text text-muted">Enter your your Enterprise ID .</small>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">Save Changes</button>

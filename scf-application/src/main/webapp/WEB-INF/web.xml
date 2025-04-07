@@ -225,4 +225,13 @@
     <url-pattern>/updateSettings</url-pattern>
 </servlet-mapping>
 
+<servlet>
+    <servlet-name>UpdateProfileServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.UpdateProfileServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UpdateProfileServlet</servlet-name>
+    <url-pattern>/updateProfile</url-pattern>
+</servlet-mapping>
+
 </web-app>

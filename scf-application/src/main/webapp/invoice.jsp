@@ -167,6 +167,20 @@
                     <div class="dropdown-menu" aria-labelledby="invoiceDropdown">
                         <a class="dropdown-item" href="invoice.jsp">Search Invoices</a>
                         <a class="dropdown-item" href="invoiceDetail.jsp?mode=add">Add New Invoice</a>
+
+                    </div>
+                </div>
+
+                <!-- CTT menu -->
+                <div class="dropdown d-inline-block">
+                    <a class="dropdown-toggle" href="#" role="button" id="cttDropdown" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false"> CTT
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="cttDropdown">
+                        <a class="dropdown-item" href="signSC.jsp">Sign SC</a>
+                        <a class="dropdown-item" href="TGE.jsp">TGE</a>
+                        <a class="dropdown-item" href="CTTinfo.jsp">Detail</a>
+                        <a class="dropdown-item" href="AutoPayInvoice.jsp">AutoPay Invoice</a>
                     </div>
                 </div>
             </div>
@@ -247,6 +261,7 @@
                                         <th>Amount</th>
                                         <th>Date</th>
                                         <th>Status</th>
+                                        <th>Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody id="resultsBody">
@@ -362,10 +377,28 @@
                     statusCell.textContent = invoice.status;
                     row.appendChild(statusCell);
 
+                    // 添加SC AutoPay按钮
+                    const actionCell = document.createElement('td');
+                    const autoPayButton = document.createElement('button');
+                    autoPayButton.textContent = 'SC AutoPay';
+                    autoPayButton.className = 'btn btn-sm btn-primary';
+                    autoPayButton.addEventListener('click', function (e) {
+                        e.stopPropagation(); // 防止触发行的双击事件
+                        handleAutoPay(invoice.invoiceID);
+                    });
+                    actionCell.appendChild(autoPayButton);
+                    row.appendChild(actionCell);
+
                     tbody.appendChild(row);
                 });
             }
 
+
+            // 处理AutoPay按钮点击
+            function handleAutoPay(invoiceId) {
+                // 跳转到AutoPay处理页面，传递发票ID参数
+                window.location.href = 'autoPayInvoice.jsp?invoiceId=' + invoiceId;
+            }
             // 格式化货币显示
             function formatCurrency(amount) {
                 return new Intl.NumberFormat('en-US', {

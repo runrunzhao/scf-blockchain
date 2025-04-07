@@ -190,8 +190,7 @@ public List<Enterprise> searchEnterprises(String id, String name, String type) {
         }
         
         ResultSet rs = stmt.executeQuery();
-        System.out.println("Query executed");
-        
+              
         // Process results
         while (rs.next()) {
             Enterprise enterprise = new Enterprise();
@@ -203,7 +202,7 @@ public List<Enterprise> searchEnterprises(String id, String name, String type) {
             enterprise.setMemo(rs.getString("memo"));
             enterprise.setTier(rs.getInt("tier")); // 添加这行
             enterprises.add(enterprise);
-            System.out.println("Found enterprise: " + enterprise.getEnterpriseID() + " - " + enterprise.getEnterpriseName());
+           // System.out.println("Found enterprise: " + enterprise.getEnterpriseID() + " - " + enterprise.getEnterpriseName());
         }
         
         System.out.println("Total enterprises found: " + enterprises.size());

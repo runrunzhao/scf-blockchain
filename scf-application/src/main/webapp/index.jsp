@@ -205,7 +205,7 @@
                 <div class="dropdown-menu" aria-labelledby="userDropdown">
                     <% if(session != null && session.getAttribute("isLoggedIn") != null && (Boolean)session.getAttribute("isLoggedIn")) { %>
                         <a class="dropdown-item" href="profile.jsp">My Profile</a>
-                        <a class="dropdown-item" href="settings.jsp">Account Settings</a>
+                        <a class="dropdown-item" href="settings.jsp">My Settings</a>
                     <% } else { %>
                         <a class="dropdown-item" href="login.jsp">Login</a>
                         <a class="dropdown-item" href="register.jsp">Register</a>
@@ -255,6 +255,7 @@
                     <a class="dropdown-item" href="signSC.jsp">Sign SC</a>
                     <a class="dropdown-item" href="TGE.jsp">TGE</a>
                     <a class="dropdown-item" href="CTTinfo.jsp">Detail</a>
+                    <a class="dropdown-item" href="invoice.jsp"">AutoPay Invoice</a>
                 </div>
             </div>
 

@@ -40,5 +40,6 @@
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/model/Contract.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/dao/UserDAO.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/util/PasswordUtil.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateProfileServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/dao/ContractDAO.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SaveContractServlet.java
