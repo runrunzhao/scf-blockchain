@@ -9,7 +9,8 @@ public class Invoice {
     private Date payDate;
     private String status;
     private String memo;
-    
+    private String paymentMethod;
+  
     // Constructors
     public Invoice() {
     }
@@ -21,6 +22,7 @@ public class Invoice {
         this.payDate = payDate;
         this.status = status;
         this.memo = memo;
+        this.paymentMethod = "CTT"; // Default payment method
     }
     
     // Getters and setters
@@ -70,6 +72,14 @@ public class Invoice {
     
     public void setMemo(String memo) {
         this.memo = memo;
+    }
+
+    public String getPaymentMethod() {
+        return paymentMethod;
+    }
+
+    public void setPaymentMethod(String paymentMethod) {
+        this.paymentMethod = paymentMethod;
     }
     
     @Override

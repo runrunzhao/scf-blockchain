@@ -34,8 +34,8 @@ public class InvoiceDAO {
         
         try {
             conn = DBUtil.getConnection();
-            String sql = "INSERT INTO invoice (invoiceID, contractID, amount, PayDate, status, memo) " +
-                         "VALUES (?, ?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO invoice (invoiceID, contractID, amount, PayDate, status, memo,paymentMethod) " +
+                         "VALUES (?, ?, ?, ?, ?, ?,?)";
             pstmt = conn.prepareStatement(sql);
             pstmt.setString(1, invoice.getInvoiceID());
             pstmt.setString(2, invoice.getContractID());
@@ -43,7 +43,7 @@ public class InvoiceDAO {
             pstmt.setDate(4, new java.sql.Date(invoice.getPayDate().getTime()));
             pstmt.setString(5, invoice.getStatus());
             pstmt.setString(6, invoice.getMemo());
-            
+            pstmt.setString(7, invoice.getPaymentMethod());
             int rowsAffected = pstmt.executeUpdate();
             success = (rowsAffected > 0);
         } catch (SQLException e) {
@@ -300,6 +300,7 @@ public Invoice getInvoiceById(String invoiceId) {
             invoice.setPayDate(rs.getDate("PayDate"));
             invoice.setStatus(rs.getString("status"));
             invoice.setMemo(rs.getString("memo"));
+            invoice.setPaymentMethod(rs.getString("paymentMethod"));
         }
     } catch (SQLException e) {
         e.printStackTrace();

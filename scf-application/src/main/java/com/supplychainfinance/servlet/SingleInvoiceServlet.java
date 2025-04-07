@@ -20,7 +20,7 @@ import java.util.Map;
 public class SingleInvoiceServlet extends HttpServlet {
     private InvoiceDAO invoiceDAO;
     private Gson gson = new Gson();
-    
+
     @Override
     public void init() {
         invoiceDAO = new InvoiceDAO();
@@ -30,11 +30,11 @@ public class SingleInvoiceServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        
+
         if (action == null) {
             action = "list";
         }
-        
+
         switch (action) {
             case "get":
                 getSingleInvoice(request, response);
@@ -54,11 +54,11 @@ public class SingleInvoiceServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         String action = request.getParameter("action");
-        
+
         if (action == null) {
             action = "add";
         }
-        
+
         switch (action) {
             case "add":
                 addInvoice(request, response);
@@ -76,7 +76,7 @@ public class SingleInvoiceServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         Map<String, Object> result = new HashMap<>();
-        
+
         try {
             // Get parameters from request
             String contractID = request.getParameter("contractID");
@@ -86,7 +86,7 @@ public class SingleInvoiceServlet extends HttpServlet {
                 out.print(gson.toJson(result));
                 return;
             }
-            
+
             double amount;
             try {
                 amount = Double.parseDouble(request.getParameter("amount"));
@@ -102,7 +102,7 @@ public class SingleInvoiceServlet extends HttpServlet {
                 out.print(gson.toJson(result));
                 return;
             }
-            
+
             String payDateStr = request.getParameter("payDate");
             if (payDateStr == null || payDateStr.isEmpty()) {
                 result.put("success", false);
@@ -110,10 +110,12 @@ public class SingleInvoiceServlet extends HttpServlet {
                 out.print(gson.toJson(result));
                 return;
             }
-            
-           // String paymentMethod = request.getParameter("paymentMethod");
+
+           String paymentMethod = request.getParameter("paymentMethod");
+
+            String status = request.getParameter("status"); // Add this line
             String memo = request.getParameter("memo");
-            
+
             // Parse date
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             Date payDate;
@@ -125,22 +127,30 @@ public class SingleInvoiceServlet extends HttpServlet {
                 out.print(gson.toJson(result));
                 return;
             }
-            
+
+            System.out.println("Debug - Invoice Parameters:");
+System.out.println("ContractID: " + contractID);
+System.out.println("Amount: " + amount);
+System.out.println("PayDate: " + payDateStr);
+System.out.println("PaymentMethod: " + paymentMethod);
+System.out.println("Status: " + status);
+System.out.println("Memo: " + memo);
+
             // Generate invoice ID
             String invoiceID = invoiceDAO.generateInvoiceID();
-            
+
             // Create invoice object
             Invoice invoice = new Invoice();
             invoice.setInvoiceID(invoiceID);
             invoice.setContractID(contractID);
             invoice.setAmount(amount);
             invoice.setPayDate(payDate);
-                 invoice.setMemo(memo);
-            invoice.setStatus("Draft"); // Default status
-                      
-            // Save invoice to database using the correct method name
+            invoice.setMemo(memo);
+            invoice.setStatus(status); // Default status
+            invoice.setPaymentMethod(paymentMethod);
+          
             boolean success = invoiceDAO.createInvoice(invoice);
-            
+
             if (success) {
                 result.put("success", true);
                 result.put("message", "Invoice added successfully");
@@ -154,63 +164,63 @@ public class SingleInvoiceServlet extends HttpServlet {
             result.put("message", "Error: " + e.getMessage());
             e.printStackTrace(); // Log the error for debugging
         }
-        
+
         out.print(gson.toJson(result));
         out.flush();
     }
-    
+
     private void addInvoiceBatch(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         Map<String, Object> result = new HashMap<>();
-        
+
         try {
             // In a real application, you'd parse a JSON array of invoices
             // For this example, we'll just create a simple batch
             String contractID = request.getParameter("contractID");
             String[] amountStrings = request.getParameterValues("amount");
             String[] payDateStrings = request.getParameterValues("payDate");
-            
-            if (contractID == null || amountStrings == null || payDateStrings == null || 
-                amountStrings.length != payDateStrings.length) {
+
+            if (contractID == null || amountStrings == null || payDateStrings == null ||
+                    amountStrings.length != payDateStrings.length) {
                 result.put("success", false);
                 result.put("message", "Invalid batch parameters");
                 out.print(gson.toJson(result));
                 return;
             }
-            
+
             List<Invoice> invoices = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            
+
             for (int i = 0; i < amountStrings.length; i++) {
                 try {
                     double amount = Double.parseDouble(amountStrings[i]);
                     Date payDate = sdf.parse(payDateStrings[i]);
-                    
+
                     Invoice invoice = new Invoice();
                     invoice.setInvoiceID(invoiceDAO.generateInvoiceID());
                     invoice.setContractID(contractID);
                     invoice.setAmount(amount);
                     invoice.setPayDate(payDate);
                     invoice.setStatus("Draft");
-                                  
+
                     invoices.add(invoice);
                 } catch (Exception e) {
                     // Skip invalid entries
                     System.err.println("Error creating invoice in batch: " + e.getMessage());
                 }
             }
-            
+
             if (invoices.isEmpty()) {
                 result.put("success", false);
                 result.put("message", "No valid invoices found in batch");
                 out.print(gson.toJson(result));
                 return;
             }
-            
+
             boolean success = invoiceDAO.createInvoicesBatch(invoices);
-            
+
             if (success) {
                 result.put("success", true);
                 result.put("message", "Batch invoices added successfully");
@@ -224,7 +234,7 @@ public class SingleInvoiceServlet extends HttpServlet {
             result.put("message", "Error: " + e.getMessage());
             e.printStackTrace();
         }
-        
+
         out.print(gson.toJson(result));
         out.flush();
     }
@@ -234,7 +244,7 @@ public class SingleInvoiceServlet extends HttpServlet {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         Map<String, Object> result = new HashMap<>();
-        
+
         try {
             String invoiceId = request.getParameter("invoiceId");
             if (invoiceId != null && !invoiceId.isEmpty()) {
@@ -259,13 +269,13 @@ public class SingleInvoiceServlet extends HttpServlet {
         }
         out.flush();
     }
-    
+
     private void getInvoicesByContract(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
         Map<String, Object> result = new HashMap<>();
-        
+
         try {
             String contractId = request.getParameter("contractId");
             if (contractId != null && !contractId.isEmpty()) {
@@ -289,14 +299,14 @@ public class SingleInvoiceServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("application/json");
         PrintWriter out = response.getWriter();
-        
+
         try {
             // Get search parameters
             String invoiceId = request.getParameter("invoiceId");
             String contractId = request.getParameter("contractId");
             String enterpriseName = request.getParameter("enterpriseName");
             String status = request.getParameter("status");
-            
+
             // Use the DAO's searchInvoices with all parameters
             List<Invoice> invoices = invoiceDAO.searchInvoices(invoiceId, contractId, enterpriseName, status);
             out.print(gson.toJson(invoices));

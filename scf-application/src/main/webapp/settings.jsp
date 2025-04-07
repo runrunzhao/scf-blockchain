@@ -121,7 +121,14 @@
                     value="<%= session.getAttribute("username") != null ? session.getAttribute("username") : "" %>">
             </div>
 
-            <!-- Change name to match database field -->
+            <div class="form-group">
+                <label for="enterpriseId">Enterprise ID</label>
+                <input type="text" class="form-control" id="enterpriseId" name="enterpriseId" 
+                       placeholder="Enter your Enterprise ID" 
+                       value="${user.enterpriseId != null ? user.enterpriseId : ''}">
+                <small class="form-text text-muted">Your company's unique identifier in the supply chain system.</small>
+            </div>
+            
             <div class="form-group">
                 <label for="walletAddr">Wallet Address:</label>
                 <div class="input-group">

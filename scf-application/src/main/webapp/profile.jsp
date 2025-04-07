@@ -79,10 +79,10 @@
         <h2>User Profile</h2>
         <hr>
         <p><strong>Username:</strong> <%= session.getAttribute("username") != null ? session.getAttribute("username") : "Anonymous" %></p>
-        <p><strong>Full Name:</strong> <%= session.getAttribute("fullname") != null ? session.getAttribute("fullname") : "Not provided" %></p>
         <p><strong>Email:</strong> ${user.email != null ? user.email : "Not provided"}</p>
-        <p><strong>Role:</strong> <%= session.getAttribute("role") != null ? session.getAttribute("role") : "User" %></p>
-        <a href="editProfile.jsp" class="btn btn-primary">Edit Profile</a>
+        <p><strong>enterpriseID:</strong> ${user.enterpriseId != null ? user.enterpriseId : "Not provided"}</p>
+       
+        <a href="index.jsp" class="btn btn-primary">Return Home  </a>
     </div>
     
     <!-- Footer -->

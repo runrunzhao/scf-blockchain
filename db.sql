@@ -86,6 +86,9 @@ CREATE TABLE invoice (
     FOREIGN KEY (contractID) REFERENCES contract(contractID) -- Foreign key to contract table
 );
 
+ALTER TABLE invoice
+ADD paymentMethod ENUM('Bank Transfer', 'Credit Card', 'Check', 'CTT') DEFAULT NULL;
+
 --0404 1720 add table SCToken
 CREATE TABLE SCToken (
     tokenID INT AUTO_INCREMENT PRIMARY KEY,

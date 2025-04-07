@@ -160,12 +160,12 @@
                                             <p id="contractRealNo">-</p>
                                         </div>
                                         <div class="form-group">
-                                            <label><strong>Contract Amount:</strong></label>
-                                            <p id="contractAmount">-</p>
-                                        </div>
-                                        <div class="form-group">
                                             <label><strong>Contract Status:</strong></label>
                                             <p id="contractStatus">-</p>
+                                        </div>
+                                        <div class="form-group">
+                                            <label><strong>Contract Amount:</strong></label>
+                                            <p id="contractAmount">-</p>
                                         </div>
                                     </div>
                                 </div>
@@ -180,16 +180,24 @@
                                             <label><strong>Invoice Date:</strong></label>
                                             <p id="invoiceDate">-</p>
                                         </div>
+                                        <div class="form-group">
+                                            <label><strong>Payment Method:</strong></label>
+                                            <p id="paymentMethod">-</p>
+                                        </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label><strong>Invoice Amount:</strong></label>
                                             <p id="invoiceAmount">-</p>
                                         </div>
+                                        <div class="form-group">
+                                            <label><strong>Status:</strong></label>
+                                            <p id="invoiceStatus">-</p>
+                                        </div>
                                     </div>
                                 </div>
                                 <div class="row">
-                                    <div class="col-12">
+                                    <div class="col-md-12">
                                         <div class="form-group">
                                             <label><strong>Memo:</strong></label>
                                             <p id="memo">-</p>
@@ -278,11 +286,24 @@
                                                     <option value="Bank Transfer">Bank Transfer</option>
                                                     <option value="Credit Card">Credit Card</option>
                                                     <option value="Check">Check</option>
-                                                    <option value="Cash">Cash</option>
+                                                    <option value="CTT">CTT</option>
                                                 </select>
                                             </div>
                                         </div>
                                         <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="add_status">Status</label>
+                                                <select class="form-control" id="add_status" name="status" required>
+                                                    <option value="">Select status</option>
+                                                    <option value="Draft">Draft</option>
+                                                    <option value="Pending">Pending</option>
+                                                    <option value="End">End</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-md-12">
                                             <div class="form-group">
                                                 <label for="add_memo">Memo</label>
                                                 <textarea class="form-control" id="add_memo" name="memo"
@@ -439,6 +460,12 @@
                             $('#invoiceDate').text(formatDate(invoice.payDate));
                             $('#memo').text(invoice.memo || '-');
                             $('#invoiceAmount').text('$' + invoice.amount.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+                            // Add these lines to display status and payment method
+                            $('#invoiceStatus').text(invoice.status || '-');
+
+                            // Add this line for payment method
+                            $('#paymentMethod').text(invoice.paymentMethod || '-');
+                            console.log("Payment method in response:", invoice.paymentMethod);
 
                             // Load contract details
                             $.ajax({
@@ -590,12 +617,14 @@
                     return;
                 }
 
+
                 // Get form data
                 const invoiceData = {
                     contractID: $('#add_contractId').val(),
                     amount: $('#add_amount').val(),
                     payDate: $('#add_invoiceDate').val(),
                     paymentMethod: $('#add_paymentMethod').val(),
+                    status: $('#add_status').val(),
                     memo: $('#add_memo').val()
                 };
 
@@ -658,6 +687,12 @@
                 // Check invoice date
                 if (!$('#add_invoiceDate').val()) {
                     showAlert('Please select an invoice date', 'warning');
+                    isValid = false;
+                }
+
+                // Check status
+                if (!$('#add_status').val()) {
+                    showAlert('Please select an invoice status', 'warning');
                     isValid = false;
                 }
 

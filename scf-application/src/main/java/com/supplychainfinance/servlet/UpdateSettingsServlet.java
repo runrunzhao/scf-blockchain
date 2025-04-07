@@ -20,13 +20,36 @@ public class UpdateSettingsServlet extends HttpServlet {
         HttpSession session = request.getSession();
         String username = (String) session.getAttribute("username");
         
-        // Get the verified wallet address
+        // Get form parameters
         String walletAddr = request.getParameter("walletAddr");
         String walletVerified = request.getParameter("walletVerified");
+        String enterpriseId = request.getParameter("enterpriseId"); // Add enterprise ID parameter
         
-        // Only update if wallet is verified
+        boolean settingsUpdated = false;
+        
+        // Update enterprise ID (no verification required)
+        if (username != null && enterpriseId != null) {
+            try (Connection conn = DBUtil.getConnection()) {
+                String sql = "UPDATE users SET enterprise_id = ? WHERE username = ?";
+                PreparedStatement stmt = conn.prepareStatement(sql);
+                stmt.setString(1, enterpriseId);
+                stmt.setString(2, username);
+                
+                int rowsUpdated = stmt.executeUpdate();
+                if (rowsUpdated > 0) {
+                    session.setAttribute("enterpriseId", enterpriseId);
+                    settingsUpdated = true;
+                }
+                stmt.close();
+            } catch (Exception e) {
+                e.printStackTrace();
+                session.setAttribute("message", "Error updating enterprise ID: " + e.getMessage());
+            }
+        }
+        
+        // Only update wallet if wallet is verified (keep original logic)
         if (username != null && walletAddr != null && "true".equals(walletVerified)) {
-            try (Connection  conn = DBUtil.getConnection();) {
+            try (Connection conn = DBUtil.getConnection()) {
                 // Update walletAddr in users table
                 String sql = "UPDATE users SET walletAddr = ? WHERE username = ?";
                 PreparedStatement stmt = conn.prepareStatement(sql);
@@ -36,7 +59,7 @@ public class UpdateSettingsServlet extends HttpServlet {
                 int rowsUpdated = stmt.executeUpdate();
                 if (rowsUpdated > 0) {
                     session.setAttribute("walletAddr", walletAddr);
-                    session.setAttribute("message", "Wallet address saved successfully!");
+                    settingsUpdated = true;
                 } else {
                     session.setAttribute("message", "Failed to save wallet address. User not found.");
                 }
@@ -45,8 +68,13 @@ public class UpdateSettingsServlet extends HttpServlet {
                 e.printStackTrace();
                 session.setAttribute("message", "Error saving wallet address: " + e.getMessage());
             }
-        } else {
+        } else if (walletAddr != null && !"true".equals(walletVerified)) {
             session.setAttribute("message", "Wallet address must be verified before saving.");
+        }
+        
+        // Set success message if any settings were updated
+        if (settingsUpdated && session.getAttribute("message") == null) {
+            session.setAttribute("message", "Settings updated successfully!");
         }
         
         // Redirect back to the settings page

@@ -181,8 +181,8 @@
                         <form id="invoiceSearchForm">
                             <div class="form-row">
                                 <div class="form-group col-md-6">
-                                    <label for="invoiceId">Invoice ID</label>
-                                    <input type="text" class="form-control" id="invoiceId"
+                                    <label for="invoiceID">Invoice ID</label>
+                                    <input type="text" class="form-control" id="invoiceID"
                                         placeholder="Enter Invoice ID">
                                 </div>
                                 <div class="form-group col-md-6">
@@ -274,12 +274,12 @@
 
         <script>
             function searchInvoices() {
-                const invoiceId = document.getElementById('invoiceId').value;
+                const invoiceID = document.getElementById('invoiceID').value;
                 const contractId = document.getElementById('contractId').value;
                 const enterpriseName = document.getElementById('enterpriseName').value;
                 const invoiceStatus = document.getElementById('invoiceStatus').value;
 
-                console.log("Searching invoices with params - Invoice ID:", invoiceId,
+                console.log("Searching invoices with params - Invoice ID:", invoiceID,
                     "Contract ID:", contractId,
                     "Enterprise:", enterpriseName,
                     "Status:", invoiceStatus);
@@ -294,7 +294,7 @@
                     url: 'getInvoices',  // 后端搜索API端点
                     type: 'GET',
                     data: {
-                        invoiceId: invoiceId,
+                        invoiceID: invoiceID,
                         contractId: contractId,
                         enterpriseName: enterpriseName,
                         status: invoiceStatus

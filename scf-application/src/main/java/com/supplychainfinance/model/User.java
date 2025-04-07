@@ -10,7 +10,7 @@ public class User {
     private String firstName;
     private String lastName;
     private String email;
-    private String enterpriseId;
+    private String enterprise_id;
     private Date registrationDate;
     private Timestamp lastLogin;
     private String accountStatus;
@@ -29,7 +29,7 @@ public class User {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
-        this.enterpriseId = enterpriseId;
+        this.enterprise_id = enterpriseId;
         this.accountStatus = "active";
     }
     
@@ -83,11 +83,11 @@ public class User {
     }
     
     public String getEnterpriseId() {
-        return enterpriseId;
+        return enterprise_id;
     }
     
     public void setEnterpriseId(String enterpriseId) {
-        this.enterpriseId = enterpriseId;
+        this.enterprise_id = enterpriseId;
     }
     
     public Date getRegistrationDate() {

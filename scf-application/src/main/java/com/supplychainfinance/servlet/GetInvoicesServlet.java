@@ -18,26 +18,24 @@ public class GetInvoicesServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
+        String invoiceId = request.getParameter("invoiceID");
         String contractId = request.getParameter("contractId");
         String enterpriseName = request.getParameter("enterpriseName");
         String status = request.getParameter("status");
         
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
+
+        System.out.println(invoiceId + " " + contractId + " " + enterpriseName + " " + status);
         
         try {
             InvoiceDAO invoiceDAO = new InvoiceDAO();
             List<Invoice> invoices;
             
-            // If contractId is provided, get invoices for that contract
-            if (contractId != null && !contractId.trim().isEmpty()) {
-                invoices = invoiceDAO.getInvoicesByContractID(contractId);
-            } else {
-                // Otherwise use the search function
-                invoices = invoiceDAO.searchInvoices(null, contractId, enterpriseName, status);
-            }
-            
+            // Otherwise use the search function
+            invoices = invoiceDAO.searchInvoices(invoiceId, contractId, enterpriseName, status);
+                  
             Gson gson = new Gson();
             String jsonResponse = gson.toJson(invoices);
             response.getWriter().write(jsonResponse);
