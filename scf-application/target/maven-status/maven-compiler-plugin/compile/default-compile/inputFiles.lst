@@ -12,6 +12,7 @@
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SearchTokenServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetEnterpriseServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateSCAddressServlet.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/ContractPartiesServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/model/Enterprise.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetSingleInvoiceServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/util/DBTest.java

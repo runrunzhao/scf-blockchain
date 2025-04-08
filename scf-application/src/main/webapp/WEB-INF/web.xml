@@ -234,4 +234,14 @@
     <url-pattern>/updateProfile</url-pattern>
 </servlet-mapping>
 
+<!-- Contract Parties Servlet Configuration -->
+<servlet>
+    <servlet-name>ContractPartiesServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.ContractPartiesServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>ContractPartiesServlet</servlet-name>
+    <url-pattern>/getContractParties</url-pattern>
+</servlet-mapping>
+
 </web-app>

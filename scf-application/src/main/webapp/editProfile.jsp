@@ -1,4 +1,33 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="java.sql.*" %>
+<%@ page import="com.supplychainfinance.util.DBUtil" %>
+<%
+    // Get current username from session
+    String username = (String) session.getAttribute("username");
+    String userEmail = "";
+    String enterpriseId = "";
+    String walletAddr = "";
+    
+    // Load fresh data from database
+    if (username != null) {
+        try (Connection conn = DBUtil.getConnection()) {
+            String sql = "SELECT email, enterprise_id, walletAddr FROM users WHERE username = ?";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setString(1, username);
+                try (ResultSet rs = stmt.executeQuery()) {
+                    if (rs.next()) {
+                        userEmail = rs.getString("email");
+                        enterpriseId = rs.getString("enterprise_id") != null ? rs.getString("enterprise_id") : "";
+                        walletAddr = rs.getString("walletAddr") != null ? rs.getString("walletAddr") : "";
+                    }
+                }
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            session.setAttribute("message", "Error loading user data: " + e.getMessage());
+        }
+    }
+%>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -90,7 +119,7 @@
                     <a class="dropdown-item active" href="profile.jsp">Profile</a>
                     <a class="dropdown-item" href="settings.jsp">Settings</a>
                     <a class="dropdown-item" href="myWallet.jsp">My Wallet</a>
-                    <a class="dropdown-item" href="logout.jsp">Logout</a>
+                    <a class="dropdown-item" href="login.jsp">Logout</a>
                 </div>
             </div>
         </div>
@@ -124,8 +153,9 @@
                             </div>
                             <div class="form-group">
                                 <label for="enterpriseId">Enterprise ID</label>
-                                <input type="text" class="form-control" id="enterpriseId" name="enterpriseId" value="${user.enterpriseId}" required>
-                                <small class="form-text text-muted">Enter your your Enterprise ID .</small>
+                                <input type="text" class="form-control" id="enterpriseId" name="enterpriseId" 
+                                       value="<%= enterpriseId %>" required>
+                                <small class="form-text text-muted">Enter your Enterprise ID.</small>
                             </div>
                             <div class="form-group">
                                 <button type="submit" class="btn btn-primary">Save Changes</button>

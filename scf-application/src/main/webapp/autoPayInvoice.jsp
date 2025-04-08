@@ -293,14 +293,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-md-12">
-                                        <div class="form-group">
-                                            <label><strong>Memo:</strong></label>
-                                            <p id="memo">-</p>
-                                        </div>
-                                    </div>
-                                </div>
+
                             </div>
 
 
@@ -352,6 +345,7 @@
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/web3@1.6.0/dist/web3.min.js"></script>
 
         <script>
             // Initialize page when document is ready
@@ -548,14 +542,53 @@
                     },
                     dataType: "json",
                     success: function (contract) {
-                        $('#contractRealNo').text(contract.realNo || '-');
+                        $('#contractRealNo').text(contract.contractName || '-');
                         $('#contractAmount').text('$' + contract.amount.toLocaleString('en-US',
                             { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                         $('#contractStatus').text(contract.status || '-');
+
+                        // Load account information after contract details are loaded
+                        loadAccountInfoInContract(contractId);
+                        
                     },
                     error: function () {
                         $('#contractRealNo').text('Not found');
                         $('#contractStatus').text('Not found');
+                    }
+                });
+            }
+
+            function loadAccountInfoInContract(contractId) {
+                $.ajax({
+                    url: "getContractParties",
+                    type: "GET",
+                    data: {
+                        contractId: contractId
+                    },
+                    dataType: "json",
+                    success: function (data) {
+                        if (data) {
+                            // Update payer information
+                            $('#payerName').text(data.payerName || '-');
+                            $('#payerWallet').text(data.payerWalletAddr || '-');
+
+                            // Update receiver information
+                            $('#receiverName').text(data.receiverName || '-');
+                            $('#receiverWallet').text(data.receiverWalletAddr || '-');
+                        } else {
+                            // No data found
+                            $('#payerName').text('Not found');
+                            $('#payerWallet').text('Not found');
+                            $('#receiverName').text('Not found');
+                            $('#receiverWallet').text('Not found');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        console.error("Error loading account information:", error);
+                        $('#payerName').text('Error');
+                        $('#payerWallet').text('Error');
+                        $('#receiverName').text('Error');
+                        $('#receiverWallet').text('Error');
                     }
                 });
             }
@@ -625,10 +658,9 @@
 
 
             function enableSCAutoPay() {
-                // Get invoice ID from the current page
+
                 const invoiceId = $('#invoiceId').text();
 
-                // Show confirmation dialog
                 if (confirm('Are you sure you want to enable SC AutoPay for this invoice?')) {
                     // Show loading message
                     showAlert('Processing SC AutoPay request...', 'info');
