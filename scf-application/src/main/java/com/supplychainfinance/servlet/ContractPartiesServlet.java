@@ -81,7 +81,7 @@ public class ContractPartiesServlet extends HttpServlet {
                         if (part2 != null && !part2.isEmpty()) {
                             String receiverQuery = 
                                 "SELECT e.enterpriseName, u.walletAddr FROM users u " +
-                                "JOIN enterprise e ON u.enterprise_id = e.enterpriseID" +
+                                "JOIN enterprise e ON u.enterprise_id = e.enterpriseID  " +
                                 "WHERE e.enterpriseID = ?";
                                 
                             try (PreparedStatement receiverStmt = conn.prepareStatement(receiverQuery)) {

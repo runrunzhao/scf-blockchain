@@ -196,47 +196,113 @@
 
             <!-- MetaMask Interaction Script -->
             <script>
-                async function connectWallet() {
-                    if (typeof window.ethereum !== 'undefined') {
-                        try {
-                            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-                            const walletAddress = accounts[0];
 
-                            // Update wallet address display
-                            document.getElementById('walletAddress').innerText = walletAddress;
+               // Fix the connectWallet function that's called by the button
+                    async function connectWallet() {
+                        if (typeof window.ethereum === 'undefined') {
+            alert('MetaMask is not installed. Please install it to use this feature.');
+            return;
+        }
 
-                            // Get and update balance
-                            const balanceHex = await ethereum.request({
-                                method: 'eth_getBalance',
-                                params: [walletAddress, 'latest']
-                            });
-                            const balance = parseFloat(parseInt(balanceHex, 16) / Math.pow(10, 18)).toFixed(4);
-                            document.getElementById('walletBalance').innerText = balance + " POL";
+        try {
+            console.log("Attempting to connect wallet...");
+            
+            // Force MetaMask to show the account selector
+            await ethereum.request({
+                method: 'wallet_requestPermissions',
+                params: [{ eth_accounts: {} }]
+            });
 
-                            // Change the connect button style directly
-                            const connectButton = document.querySelector('.btn.btn-primary[onclick="connectWallet()"]');
-                            if (connectButton) {
-                                connectButton.innerText = "Wallet Connected";
-                                connectButton.classList.remove('btn-primary');
-                                connectButton.classList.add('btn-success');
-                            }
+            const accounts = await ethereum.request({method: 'eth_requestAccounts' });
+            const walletAddress = accounts[0];
+            
+            console.log("Connected to wallet address:", walletAddress);
 
-                        } catch (error) {
-                            console.error("Failed to connect wallet:", error);
-                            alert("Failed to connect wallet: " + error.message);
+            // Update wallet address display
+            document.getElementById('walletAddress').innerText = walletAddress;
+
+            // Get and update balance
+            const balanceHex = await ethereum.request({
+                method: 'eth_getBalance',
+                params: [walletAddress, 'latest']
+            });
+            const balance = parseFloat(parseInt(balanceHex, 16) / Math.pow(10, 18)).toFixed(4);
+            document.getElementById('walletBalance').innerText = balance + " POL";
+
+            // Change the connect button style
+            const connectButton = document.querySelector('.btn.btn-primary[onclick="connectWallet()"]');
+            if (connectButton) {
+                connectButton.innerText = "Wallet Connected";
+                connectButton.classList.remove('btn-primary');
+                connectButton.classList.add('btn-success');
+            }
+
+        } catch (error) {
+            console.error("Failed to connect wallet:", error);
+            alert("Failed to connect wallet: " + error.message);
+        }
+                    
+                    }
+
+                    async function connectMetaMask() {
+                    // Check if MetaMask is installed
+                    if (typeof window.ethereum === 'undefined') {
+                        alert('MetaMask is not installed. Please install MetaMask and try again.');
+                    return;
+                    }
+
+                    console.log("MetaMask detected:", window.ethereum);
+
+                    try {
+
+                        console.log("Forcing MetaMask account selection...");
+
+                    await ethereum.request({
+                        method: 'wallet_requestPermissions',
+                    params: [{eth_accounts: { } }]
+                        });
+
+                    // Now request accounts - this will use the account the user just selected
+                    console.log("Requesting selected account...");
+                    const accounts = await ethereum.request({
+                        method: 'eth_accounts'
+                        });
+
+                    console.log("Connection successful, accounts retrieved:", accounts);
+                    updateConnectionStatus(accounts);
+
+                        if (accounts.length > 0) {
+                        document.getElementById('walletAddr').value = accounts[0];
+                    console.log("Wallet address input updated with account:", accounts[0]);
+
+                    // Show visual confirmation
+                    alert("Connected to MetaMask account: " + accounts[0]);
+                        } else {
+                        alert("No accounts found. Please make sure you have selected an account in MetaMask.");
                         }
-                    } else {
-                        alert("MetaMask is not installed. Please install it to use this feature.");
+                    } catch (error) {
+                        console.error('Error connecting to MetaMask:', error);
+
+                    if (error.code === 4001) {
+                        alert('You rejected the connection request. Please retry and allow the connection in MetaMask.');
+                        } else if (error.code === -32002) {
+                        alert('MetaMask connection request is pending. Please open the MetaMask extension and check pending requests.');
+                        } else {
+                        alert('Connection failed: ' + error.message);
+                        }
                     }
                 }
-                async function showTokenBalance() {
+
+
+
+                    async function showTokenBalance() {
                     const tokenAddress = "0x0000000000000000000000000000000000001010"; // 替换为实际代币地址
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     const signer = provider.getSigner();
                     const userAddress = await signer.getAddress();
                     const tokenABI = [
-                        "function balanceOf(address owner) view returns (uint256)",
-                        "function decimals() view returns (uint8)"
+                    "function balanceOf(address owner) view returns (uint256)",
+                    "function decimals() view returns (uint8)"
                     ];
                     const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
                     const rawBalance = await tokenContract.balanceOf(userAddress);
@@ -246,25 +312,25 @@
                 }
 
 
-                async function showReceiveAddress() {
+                    async function showReceiveAddress() {
                     if (typeof window.ethereum !== 'undefined') {
                         try {
                             const provider = new ethers.providers.Web3Provider(window.ethereum);
-                            const signer = provider.getSigner();
-                            const walletAddress = await signer.getAddress();
+                    const signer = provider.getSigner();
+                    const walletAddress = await signer.getAddress();
 
-                            // 调试信息
-                            console.log("Wallet Address:", walletAddress);
+                    // 调试信息
+                    console.log("Wallet Address:", walletAddress);
 
-                            // 更新钱包地址
-                            document.getElementById('receiveAddress').innerText = walletAddress;
+                    // 更新钱包地址
+                    document.getElementById('receiveAddress').innerText = walletAddress;
 
                             // 确保二维码容器是 <canvas>
-                            const qrCodeCanvas = document.getElementById('qrcode');
-                            if (!qrCodeCanvas || qrCodeCanvas.tagName !== 'CANVAS') {
-                                console.error("QR Code container is not a valid <canvas> element.");
-                                alert("QR Code container is not a valid <canvas> element. Please check the HTML structure.");
-                                return;
+                        const qrCodeCanvas = document.getElementById('qrcode');
+                        if (!qrCodeCanvas || qrCodeCanvas.tagName !== 'CANVAS') {
+                            console.error("QR Code container is not a valid <canvas> element.");
+                        alert("QR Code container is not a valid <canvas> element. Please check the HTML structure.");
+                            return;
                             }
 
                             // 清空之前的二维码
@@ -276,50 +342,50 @@
                                 QRCode.toCanvas(qrCodeCanvas, walletAddress, { width: 200 });
                             } catch (error) {
                                 console.error("QR Code generation failed:", error);
-                                alert("Failed to generate QR Code. Please try again.");
-                                return;
+                            alert("Failed to generate QR Code. Please try again.");
+                            return;
                             }
 
                             // 显示模态框
                             $('#receiveModal').modal('show');
                         } catch (error) {
-                            console.error("Failed to get wallet address:", error);
+                                console.error("Failed to get wallet address:", error);
                             alert("Failed to get wallet address: " + error.message);
                         }
                     } else {
-                        alert("MetaMask is not installed. Please install it to use this feature.");
+                                alert("MetaMask is not installed. Please install it to use this feature.");
                     }
                 }
 
-                function copyAddress() {
+                            function copyAddress() {
                     const address = document.getElementById('receiveAddress').innerText;
                     navigator.clipboard.writeText(address).then(() => {
-                        alert("Address copied to clipboard!");
+                                alert("Address copied to clipboard!");
                     }).catch(err => {
-                        console.error("Failed to copy address:", err);
+                                console.error("Failed to copy address:", err);
                     });
                 }
 
-                function showSendModal() {
-                    $('#sendModal').modal('show'); // 显示发送模态框
+                            function showSendModal() {
+                                $('#sendModal').modal('show'); // 显示发送模态框
                 }
 
-                async function sendTokens() {
+                            async function sendTokens() {
                     const recipientAddress = document.getElementById('recipientAddress').value;
-                    const sendAmount = document.getElementById('sendAmount').value;
+                            const sendAmount = document.getElementById('sendAmount').value;
 
-                    if (!recipientAddress || !sendAmount) {
-                        alert("Please enter recipient address and amount.");
-                        return;
+                            if (!recipientAddress || !sendAmount) {
+                                alert("Please enter recipient address and amount.");
+                            return;
                     }
 
-                    if (typeof window.ethereum !== 'undefined') {
+                            if (typeof window.ethereum !== 'undefined') {
                         try {
                             const provider = new ethers.providers.Web3Provider(window.ethereum);
                             const signer = provider.getSigner();
                             const tokenAddress = "0x0000000000000000000000000000000000001010"; // 替换为实际代币地址
                             const tokenABI = [
-                                "function transfer(address to, uint256 amount) returns (bool)"
+                            "function transfer(address to, uint256 amount) returns (bool)"
                             ];
                             const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
                             const decimals = 18;
@@ -330,11 +396,11 @@
                             alert("Transaction confirmed!");
                             $('#sendModal').modal('hide');
                         } catch (error) {
-                            console.error("Failed to send tokens:", error);
+                                console.error("Failed to send tokens:", error);
                             alert("Failed to send tokens: " + error.message);
                         }
                     } else {
-                        alert("MetaMask is not installed. Please install it to use this feature.");
+                                alert("MetaMask is not installed. Please install it to use this feature.");
                     }
                 }
             </script>
