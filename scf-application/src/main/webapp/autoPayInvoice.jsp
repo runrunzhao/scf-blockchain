@@ -162,7 +162,7 @@
                         <a class="dropdown-item" href="signSC.jsp">Sign SC</a>
                         <a class="dropdown-item" href="TGE.jsp">TGE</a>
                         <a class="dropdown-item" href="CTTinfo.jsp">Detail</a>
-                        <a class="dropdown-item" href="AutoPayInvoice.jsp">AutoPay Invoice</a>
+                        <a class="dropdown-item" href="autoPayInvoice.jsp">AutoPay Invoice</a>
                     </div>
                 </div>
             </div>
@@ -390,13 +390,7 @@
             document.addEventListener('DOMContentLoaded', () => {
                 // 连接钱包按钮
                 document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-                // 在 DOMContentLoaded 事件监听器内添加这行代码 
-                document.getElementById('signContractBtn').addEventListener('click', deployCustomTokenContract);
-                document.getElementById('saveContractBtn').addEventListener('click', saveContractToDatabase);
-                document.getElementById('searchSCBtn').addEventListener('click', searchSCFromDB);
-                // Add this line to automatically load the latest token on page load
-
-
+              
                 // 处理表单提交
                 document.getElementById('mintForm').addEventListener('submit', async function (e) {
                     e.preventDefault();
@@ -473,8 +467,7 @@
                         // Initialize Web3 and save address
                         web3 = new Web3(window.ethereum);
                         userAddress = walletAddress;
-                        document.getElementById('recipientAddress').value = walletAddress;
-
+                      
                     } catch (error) {
                         console.error("Failed to connect wallet:", error);
                         alert("Failed to connect wallet: " + error.message);

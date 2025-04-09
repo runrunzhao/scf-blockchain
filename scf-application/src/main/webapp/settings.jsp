@@ -446,10 +446,21 @@
         updateConnectionStatus(accounts);
 
         if (accounts.length > 0) {
-            document.getElementById('walletAddr').value = accounts[0];
-            console.log("Wallet address input updated with account:", accounts[0]);
+            const oldWalletAddr = document.getElementById('walletAddr').value;
+            const newWalletAddr = accounts[0];
             
-            // Show visual confirmation
+            // Update the wallet address input
+            document.getElementById('walletAddr').value = newWalletAddr;
+           // console.log("New address :", accounts[0]);
+            //console.log("Old address :", oldWalletAddr);
+            
+                        
+            // If wallet address changed, reset verification status
+            if (oldWalletAddr.toLowerCase() !== newWalletAddr.toLowerCase()) {
+                document.getElementById('walletVerified').value = "false";
+                document.getElementById('walletStatus').innerHTML = 
+                '<span class="text-warning">⚠️ New address detected. ' + 'Previous: ' + (oldWalletAddr || 'None') + '</span>';
+            }
             alert("Connected to MetaMask account: " + accounts[0]);
         }
     } catch (error) {
