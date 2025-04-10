@@ -350,23 +350,22 @@
                             <p><strong>Limit:</strong> $1,000,000</p>
                         </div>
                         <div class="col-md-4">
-                            <p><strong>Invalid Date:</strong> Dec 31, 2025</p>
+                            <p><strong>Invalid Date:</strong> Dec 31, 2026</p>
                         </div>
                     </div>
                 </div>
             </div>
 
-
             <div class="card">
                 <div class="card-header">
-                    <i class="fas fa-edit mr-2"></i> Generate Token
+                    <i class="fas fa-edit mr-2"></i>Step1: Generate Util SC (Transfer Contract)
                 </div>
                 <div class="card-body">
-                    <form id="mintForm">
+                    <form id="scTransForm">
                         <div class="form-group">
-                            <label for="recipientAddress">Recipient Address:</label>
-                            <input type="text" class="form-control" id="recipientAddress" name="recipientAddress"
-                                placeholder="Enter Ethereum Address (0x...)" required>
+                            <label for="scTransRecipientAddress">Recipient Address:</label>
+                            <input type="text" class="form-control" id="scTransRecipientAddress"
+                                name="scTransRecipientAddress" placeholder="Enter Ethereum Address (0x...)" required>
                         </div>
 
                         <!-- Token Name and Symbol on the same row -->
@@ -383,32 +382,33 @@
                             </div>
                         </div>
 
-                        <!-- Amount and Invalid Date on the same row -->
+                        <!-- Invalid Date and Creation Time on the same row -->
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="invalidDate">Invalid Date:</label>
                                 <input type="date" class="form-control" id="invalidDate" name="invalidDate" required>
                             </div>
-                            <div class="form-group col-md-6" id="creationTimeContainer" style="display:none">
-                                <label for="creationTime">Creation Time:</label>
-                                <input type="text" class="form-control" id="creationTime" name="creationTime" readonly>
+                            <div class="form-group col-md-6" id="scTransCreationTimeContainer" style="display:none">
+                                <label for="scTransCreationTime">Creation Time:</label>
+                                <input type="text" class="form-control" id="scTransCreationTime"
+                                    name="scTransCreationTime" readonly>
                             </div>
                         </div>
 
-                        <input type="hidden" id="tokenID" name="tokenID">
+                        <input type="hidden" id="scTransTokenID" name="scTransTokenID">
                         <!-- Three buttons in a single row -->
                         <div class="form-row">
                             <div class="col-md-4">
-                                <button type="button" id="searchSCBtn" class="btn btn-success btn-block">Search
-                                    Latest SC</button>
+                                <button type="button" id="searchScTransBtn" class="btn btn-success btn-block">Search
+                                    Latest SCTrans</button>
                             </div>
                             <div class="col-md-4">
-                                <button type="button" id="saveContractBtn" class="btn btn-generate btn-block">Save
-                                    SC</button>
+                                <button type="button" id="saveScTransBtn" class="btn btn-generate btn-block">Save
+                                    SCTrans</button>
                             </div>
                             <div class="col-md-4">
-                                <button type="button" id="signContractBtn" class="btn btn-warning btn-block">Sign
-                                    SC</button>
+                                <button type="button" id="signScTransBtn" class="btn btn-warning btn-block">Sign
+                                    SCTrans</button>
                             </div>
                         </div>
                     </form>
@@ -416,26 +416,130 @@
             </div>
 
             <div class="form-group">
-                <label for="contractAddressDisplay"><strong>SC On BlockChain:</strong></label>
+                <label for="scTransAddressDisplay"><strong>SCTrans BlockChain:</strong></label>
                 <div class="input-group">
-                    <input type="text" class="form-control" id="contractAddressDisplay" readonly>
+                    <input type="text" class="form-control" id="scTransAddressDisplay" readonly>
                     <div class="input-group-append">
-                        <button class="btn btn-outline-primary" type="button" onclick="refreshContractAddress()">
+                        <button class="btn btn-outline-primary" type="button" onclick="refreshScTransAddress()">
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
-                        <button class="btn btn-outline-secondary" type="button" onclick="copyContractAddress()">
+                        <button class="btn btn-outline-secondary" type="button" onclick="copyScTransAddress()">
                             <i class="fas fa-copy"></i> Copy
                         </button>
-                        <button class="btn btn-outline-success" type="button" onclick="saveSCAddress2DB()">
+                        <button class="btn btn-outline-success" type="button" onclick="saveScTransAddressToDB()">
                             <i class="fas fa-save"></i> Save
                         </button>
                     </div>
                 </div>
-                <label for="scCreateTimeDisplay"><strong>SC Create Time:</strong></label>
+                <label for="scTransCreateTimeDisplay"><strong>SCTrans CreateTime:</strong></label>
                 <div class="input-group">
-                    <input type="text" class="form-control" id="scCreateTimeDisplay" readonly>
+                    <input type="text" class="form-control" id="scTransCreateTimeDisplay" readonly>
                 </div>
             </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-edit mr-2"></i>Step2: Generate Manage SC (Multi-Sig)
+                </div>
+                <div class="card-body">
+                    <form id="scMultiForm">
+                        <div class="form-group">
+                            <label for="scMultiTransAddress">SCTrans Address:</label>
+                            <input type="text" class="form-control" id="scMultiTransAddress" name="scMultiTransAddress"
+                                placeholder="Shower Util SmartContract Address (0x...)" required readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="multiAddress1">Multi Address1:</label>
+                            <input type="text" class="form-control" id="multiAddress1" name="multiAddress1"
+                                placeholder="Enter Manage address (0x...)" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="multiAddress2">Multi Address2:</label>
+                            <input type="text" class="form-control" id="multiAddress2" name="multiAddress2"
+                                placeholder="Enter Manage Address (0x...)" required>
+                        </div>
+
+                        <input type="hidden" id="scMultiTokenID" name="scMultiTokenID">
+                        <!-- Three buttons in a single row -->
+                        <div class="form-row">
+                            <div class="col-md-4">
+                                <button type="button" id="searchScMultiBtn" class="btn btn-success btn-block">Search
+                                    Latest SCMulti</button>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" id="saveScMultiBtn" class="btn btn-generate btn-block">Save
+                                    SCMulti</button>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" id="signScMultiBtn" class="btn btn-warning btn-block">Sign
+                                    SCMulti</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="scMultiAddressDisplay"><strong>SCMulti BlockChain:</strong></label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="scMultiAddressDisplay" readonly>
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-primary" type="button" onclick="refreshScMultiAddress()">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-outline-secondary" type="button" onclick="copyScMultiAddress()">
+                            <i class="fas fa-copy"></i> Copy
+                        </button>
+                        <button class="btn btn-outline-success" type="button" onclick="saveScMultiAddressToDB()">
+                            <i class="fas fa-save"></i> Save
+                        </button>
+                    </div>
+                </div>
+                <label for="scMultiCreateTimeDisplay"><strong>SCMulti CreateTime:</strong></label>
+                <div class="input-group">
+                    <input type="text" class="form-control" id="scMultiCreateTimeDisplay" readonly>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <i class="fas fa-edit mr-2"></i>Step3: Generate Connections
+                </div>
+                <div class="card-body">
+                    <form id="scConnectionForm">
+                        <div class="form-group">
+                            <label for="connScTransAddress">SCTrans Address:</label>
+                            <input type="text" class="form-control" id="connScTransAddress" name="connScTransAddress"
+                                placeholder="Show SCTrans Address (0x...)" required readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="connScMultiAddress">SCMulti Address:</label>
+                            <input type="text" class="form-control" id="connScMultiAddress" name="connScMultiAddress"
+                                placeholder="Show SCMulti Address (0x...)" required readonly>
+                        </div>
+
+                        <input type="hidden" id="connTokenID" name="connTokenID">
+                        <!-- Two buttons in a single row -->
+                        <div class="form-row">
+                            <div class="col-md-5">
+                                <button type="button" id="saveConnectionsBtn" class="btn btn-generate btn-block">Save
+                                    Connections
+                                </button>
+                            </div>
+                            <div class="col-md-2">
+                                <!-- Empty column for spacing -->
+                            </div>
+                            <div class="col-md-5">
+                                <button type="button" id="signConnectionsBtn" class="btn btn-warning btn-block">Sign
+                                    SCConnections</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
 
             <!-- 引入脚本 -->
             <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
