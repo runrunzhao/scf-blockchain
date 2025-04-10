@@ -1,1 +1,1 @@
-select * from users;
+SELECT * from scMultiSCSigner;

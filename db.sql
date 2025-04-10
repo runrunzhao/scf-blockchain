@@ -103,7 +103,18 @@ CREATE TABLE SCToken (
     memo VARCHAR(64)
 );
 
+ALTER TABLE SCToken
+ADD COLUMN multContractAddr VARCHAR(42),
+ADD COLUMN multiCreateTime DATETIME;
 
+CREATE TABLE scMultiSCSigner (
+    multContractAddr VARCHAR(42) NOT NULL,
+    signer1 VARCHAR(42),
+    signer2 VARCHAR(42),
+    signer3 VARCHAR(42),
+    memo VARCHAR(42),
+    PRIMARY KEY (multContractAddr)
+);
 
 docker run --name scf-mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=SCFDB -p 3306:3306 -d mysql:5.7
 -- Step 1: Create the database

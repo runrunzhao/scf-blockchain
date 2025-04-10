@@ -327,13 +327,22 @@
                     <i class="fas fa-wallet mr-2"></i> Wallet Connection
                 </div>
                 <div class="card-body">
-                    <div class="d-flex align-items-center mb-2">
-                        <div id="walletStatus" class="mr-3"> Connected </div>
-                        <button id="connectWalletBtn" class="btn btn-primary">Connect Wallet</button>
+                    <div class="connected-account-info mb-3 p-2 border rounded bg-light">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <div>
+                                <span id="connectionStatus" class="badge badge-warning mr-2">Not Connected</span>
+                                <span id="connectedWallet" class="text-primary">No account detected</span>
+                            </div>
+                            <button type="button" id="connectWalletBtn" class="btn btn-primary btn-sm"
+                                onclick="connectMetaMask()">
+                                <i class="fas fa-plug mr-1"></i> Connect Wallet
+                            </button>
+                        </div>
                     </div>
-                    <div class="mb-1"><strong>Address:</strong> <span id="walletAddress">Not connected</span></div>
-                    <div class="mb-2"><strong>Gas:</strong> <span id="walletBalance">0 POL</span></div>
-
+                    <div class="wallet-info">
+                        <div class="mb-1"><strong>Address:</strong> <span id="walletAddress">Not connected</span></div>
+                        <div class="mb-2"><strong>Balance:</strong> <span id="walletBalance">0 POL</span></div>
+                    </div>
                 </div>
             </div>
 
@@ -356,8 +365,8 @@
                 </div>
             </div>
 
-            <div class="card">
-                <div class="card-header">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
                     <i class="fas fa-edit mr-2"></i>Step1: Generate Util SC (Transfer Contract)
                 </div>
                 <div class="card-body">
@@ -369,7 +378,7 @@
                         </div>
 
                         <!-- Token Name and Symbol on the same row -->
-                        <div class="form-row">
+                        <div class="form-row mb-3">
                             <div class="form-group col-md-6">
                                 <label for="tokenName">Token Name:</label>
                                 <input type="text" class="form-control" id="tokenName" name="tokenName"
@@ -383,7 +392,7 @@
                         </div>
 
                         <!-- Invalid Date and Creation Time on the same row -->
-                        <div class="form-row">
+                        <div class="form-row mb-4">
                             <div class="form-group col-md-6">
                                 <label for="invalidDate">Invalid Date:</label>
                                 <input type="date" class="form-control" id="invalidDate" name="invalidDate" required>
@@ -397,48 +406,62 @@
 
                         <input type="hidden" id="scTransTokenID" name="scTransTokenID">
                         <!-- Three buttons in a single row -->
-                        <div class="form-row">
+                        <div class="form-row mb-4">
                             <div class="col-md-4">
-                                <button type="button" id="searchScTransBtn" class="btn btn-success btn-block">Search
-                                    Latest SCTrans</button>
+                                <button type="button" id="searchSCTransBtn" class="btn btn-success btn-block">
+                                    <i class="fas fa-search mr-1"></i> Search Latest SCTrans from Server
+                                </button>
                             </div>
                             <div class="col-md-4">
-                                <button type="button" id="saveScTransBtn" class="btn btn-generate btn-block">Save
-                                    SCTrans</button>
+                                <button type="button" id="saveScTransBtn" class="btn btn-generate btn-block">
+                                    <i class="fas fa-save mr-1"></i> Save SCTrans to Server
+                                </button>
                             </div>
                             <div class="col-md-4">
-                                <button type="button" id="signScTransBtn" class="btn btn-warning btn-block">Sign
-                                    SCTrans</button>
+                                <button type="button" id="signScTransBtn" class="btn btn-warning btn-block">
+                                    <i class="fas fa-signature mr-1"></i> Sign SCTrans on Blockchain
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Contract Address Display Section -->
+                        <hr class="my-4">
+
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="scTransAddressDisplay"><strong>SCTrans BlockChain:</strong></label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="scTransAddressDisplay" readonly>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-primary" type="button"
+                                                onclick="refreshScTransAddress()">
+                                                <i class="fas fa-sync-alt"></i> Refresh
+                                            </button>
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                onclick="copyScTransAddress()">
+                                                <i class="fas fa-copy"></i> Copy
+                                            </button>
+                                            <button class="btn btn-outline-success" type="button"
+                                                onclick="saveScTransAddressToDB()">
+                                                <i class="fas fa-save"></i> Save2Server
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-0">
+                                    <label for="scTransCreateTimeDisplay"><strong>SCTrans CreateTime:</strong></label>
+                                    <input type="text" class="form-control" id="scTransCreateTimeDisplay" readonly>
+                                </div>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="scTransAddressDisplay"><strong>SCTrans BlockChain:</strong></label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="scTransAddressDisplay" readonly>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-primary" type="button" onclick="refreshScTransAddress()">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                        <button class="btn btn-outline-secondary" type="button" onclick="copyScTransAddress()">
-                            <i class="fas fa-copy"></i> Copy
-                        </button>
-                        <button class="btn btn-outline-success" type="button" onclick="saveScTransAddressToDB()">
-                            <i class="fas fa-save"></i> Save
-                        </button>
-                    </div>
-                </div>
-                <label for="scTransCreateTimeDisplay"><strong>SCTrans CreateTime:</strong></label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="scTransCreateTimeDisplay" readonly>
-                </div>
-            </div>
-
-            <div class="card">
-                <div class="card-header">
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
                     <i class="fas fa-edit mr-2"></i>Step2: Generate Manage SC (Multi-Sig)
                 </div>
                 <div class="card-body">
@@ -449,58 +472,75 @@
                                 placeholder="Shower Util SmartContract Address (0x...)" required readonly>
                         </div>
 
-                        <div class="form-group">
-                            <label for="multiAddress1">Multi Address1:</label>
-                            <input type="text" class="form-control" id="multiAddress1" name="multiAddress1"
-                                placeholder="Enter Manage address (0x...)" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="multiAddress2">Multi Address2:</label>
-                            <input type="text" class="form-control" id="multiAddress2" name="multiAddress2"
-                                placeholder="Enter Manage Address (0x...)" required>
+                        <div class="form-row mb-4">
+                            <div class="form-group col-md-6">
+                                <label for="multiAddress1">Multi Address1:</label>
+                                <input type="text" class="form-control" id="multiAddress1" name="multiAddress1"
+                                    placeholder="Enter Manage address (0x...)" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="multiAddress2">Multi Address2:</label>
+                                <input type="text" class="form-control" id="multiAddress2" name="multiAddress2"
+                                    placeholder="Enter Manage Address (0x...)" required>
+                            </div>
                         </div>
 
                         <input type="hidden" id="scMultiTokenID" name="scMultiTokenID">
                         <!-- Three buttons in a single row -->
-                        <div class="form-row">
+                        <div class="form-row mb-4">
                             <div class="col-md-4">
-                                <button type="button" id="searchScMultiBtn" class="btn btn-success btn-block">Search
-                                    Latest SCMulti</button>
+                                <button type="button" id="searchScMultiBtn" class="btn btn-success btn-block">
+                                    <i class="fas fa-search mr-1"></i> Search Latest SCMulti from Server
+                                </button>
                             </div>
                             <div class="col-md-4">
-                                <button type="button" id="saveScMultiBtn" class="btn btn-generate btn-block">Save
-                                    SCMulti</button>
+                                <button type="button" id="saveScMultiBtn" class="btn btn-generate btn-block">
+                                    <i class="fas fa-save mr-1"></i> Save SCMulti to Server
+                                </button>
                             </div>
                             <div class="col-md-4">
-                                <button type="button" id="signScMultiBtn" class="btn btn-warning btn-block">Sign
-                                    SCMulti</button>
+                                <button type="button" id="signScMultiBtn" class="btn btn-warning btn-block">
+                                    <i class="fas fa-signature mr-1"></i> Sign SCMulti on Blockchain
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Contract Address Display Section -->
+                        <hr class="my-4">
+
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <div class="form-group">
+                                    <label for="scMultiAddressDisplay"><strong>SCMulti BlockChain:</strong></label>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="scMultiAddressDisplay" readonly>
+                                        <div class="input-group-append">
+                                            <button class="btn btn-outline-primary" type="button"
+                                                onclick="refreshScMultiAddress()">
+                                                <i class="fas fa-sync-alt"></i> Refresh
+                                            </button>
+                                            <button class="btn btn-outline-secondary" type="button"
+                                                onclick="copyScMultiAddress()">
+                                                <i class="fas fa-copy"></i> Copy
+                                            </button>
+                                            <button class="btn btn-outline-success" type="button"
+                                                onclick="saveScMultiAddressToDB()">
+                                                <i class="fas fa-save"></i> Save2Server
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="form-group mb-0">
+                                    <label for="scMultiCreateTimeDisplay"><strong>SCMulti CreateTime:</strong></label>
+                                    <input type="text" class="form-control" id="scMultiCreateTimeDisplay" readonly>
+                                </div>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
 
-            <div class="form-group">
-                <label for="scMultiAddressDisplay"><strong>SCMulti BlockChain:</strong></label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="scMultiAddressDisplay" readonly>
-                    <div class="input-group-append">
-                        <button class="btn btn-outline-primary" type="button" onclick="refreshScMultiAddress()">
-                            <i class="fas fa-sync-alt"></i> Refresh
-                        </button>
-                        <button class="btn btn-outline-secondary" type="button" onclick="copyScMultiAddress()">
-                            <i class="fas fa-copy"></i> Copy
-                        </button>
-                        <button class="btn btn-outline-success" type="button" onclick="saveScMultiAddressToDB()">
-                            <i class="fas fa-save"></i> Save
-                        </button>
-                    </div>
-                </div>
-                <label for="scMultiCreateTimeDisplay"><strong>SCMulti CreateTime:</strong></label>
-                <div class="input-group">
-                    <input type="text" class="form-control" id="scMultiCreateTimeDisplay" readonly>
-                </div>
-            </div>
 
             <div class="card">
                 <div class="card-header">
@@ -1007,71 +1047,247 @@
                 //  console.log("customTokenBytecode defined:", typeof customTokenBytecode !== 'undefined');
             </script>
 
-            <!-- Web3 集成脚本 -->
+            <!-- Web3 wallet connect -->
+
             <script>
-                // 全局变量
-                let web3;
-                let contract;
-                let userAddress;
+                // Global variables
+                window.web3 = undefined;
+                window.userAddress = undefined;
+                window.scTranscontract = undefined;
+                window.scMulticontract = undefined;
 
-                document.addEventListener('DOMContentLoaded', () => {
-                    // 连接钱包按钮
-                    document.getElementById('connectWalletBtn').addEventListener('click', connectWallet);
-                    // 在 DOMContentLoaded 事件监听器内添加这行代码 
-                    document.getElementById('signContractBtn').addEventListener('click', deployCustomTokenContract);
-                    document.getElementById('saveContractBtn').addEventListener('click', saveContractToDatabase);
-                    document.getElementById('searchSCBtn').addEventListener('click', searchSCFromDB);
-                    // Add this line to automatically load the latest token on page load
+                // Document ready function
+                document.addEventListener('DOMContentLoaded', function () {
+                    console.log("Setting up wallet connection handlers...");
 
+                    // Connect wallet button
+                    document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
+                    document.getElementById('searchSCTransBtn').addEventListener('click', searchLatestSCTransFromDB);
+                    document.getElementById('saveScTransBtn').addEventListener('click', saveScTransToDB);
 
-                    // 处理表单提交
-                    document.getElementById('mintForm').addEventListener('submit', async function (e) {
-                        e.preventDefault();
+                    // Check if wallet is already connected
+                    checkInitialMetaMaskConnection();
 
-                        const recipientAddress = document.getElementById('recipientAddress').value;
-                        const amount = document.getElementById('amount').value;
-
-                        // 验证输入
-                        if (!web3 || !web3.utils.isAddress(recipientAddress)) {
-                            showStatus("Invalid Ethereum address format", true);
-                            return;
-                        }
-
-                        if (amount <= 0) {
-                            showStatus("Amount must be greater than 0", true);
-                            return;
-                        }
-
-                        // 调用铸币函数
-                        // await mintToken(recipientAddress, amount);
-
-
-                    });
-
-                    // 自动连接钱包 (如果已授权)
+                    // Set up MetaMask event listeners
                     if (window.ethereum) {
-                        window.ethereum.request({ method: 'eth_accounts' })
-                            .then(accounts => {
-                                if (accounts.length > 0) {
-                                    connectWallet();
-                                }
-                            });
+                        // Clear any existing listeners to avoid duplicates
+                        if (window.ethereum.removeAllListeners) {
+                            window.ethereum.removeAllListeners('accountsChanged');
+                            window.ethereum.removeAllListeners('chainChanged');
+                        }
+
+                        // Account change handler
+                        window.ethereum.on('accountsChanged', function (accounts) {
+                            console.log("MetaMask accounts changed:", accounts);
+                            if (accounts.length > 0) {
+                                // Update UI with new account
+                                // userAddress = accounts[0];
+                                window.userAddress = accounts[0];
+                                updateUIForConnectedWallet(accounts[0]);
+                                showStatus("Wallet account changed to: " + formatAddress(accounts[0]));
+                            } else {
+                                // Reset UI when user disconnects
+                                resetWalletConnectionUI();
+                                showStatus("Wallet disconnected");
+                            }
+                        });
+
+                        // Network change handler
+                        window.ethereum.on('chainChanged', function () {
+                            console.log("Chain changed, reloading page...");
+                            window.location.reload();
+                        });
                     }
                 });
 
-                // 监听钱包账户变化
-                if (window.ethereum) {
-                    window.ethereum.on('accountsChanged', function (accounts) {
-                        connectWallet();
-                    });
+                // Global connection flag to prevent multiple simultaneous connection attempts
+                let isConnecting = false;
 
-                    window.ethereum.on('chainChanged', function (chainId) {
-                        window.location.reload();
-                    });
+                // Connect to MetaMask - fixed to allow selecting different accounts
+                async function connectMetaMask() {
+                    // Check if MetaMask is installed
+                    if (typeof window.ethereum === 'undefined') {
+                        showStatus("MetaMask is not installed. Please install MetaMask and try again.", true);
+                        return;
+                    }
+
+                    // Prevent multiple simultaneous connection attempts
+                    if (isConnecting) {
+                        showStatus("Connection request already in progress. Please wait...", true);
+                        return;
+                    }
+
+                    try {
+                        isConnecting = true;
+
+                        // First check if we're in "connected" state
+                        const connectButton = document.getElementById('connectWalletBtn');
+
+                        if (connectButton.innerText === "Wallet Connected") {
+                            // Instead of disconnecting, force the account selection dialog
+                            console.log("Requesting MetaMask account selection...");
+
+                            // This method ALWAYS shows the account selection dialog
+                            await ethereum.request({
+                                method: 'wallet_requestPermissions',
+                                params: [{ eth_accounts: {} }]
+                            });
+
+                            // After getting permissions, get the selected account
+                            const accounts = await ethereum.request({ method: 'eth_accounts' });
+
+                            if (accounts && accounts.length > 0) {
+                                window.userAddress = accounts[0];  // Use window.userAddress instead of userAddress
+                                window.web3 = new Web3(window.ethereum);  // Use window.web3 instead of web3
+                                updateUIForConnectedWallet(accounts[0]);
+                                showStatus("Switched to wallet: " + formatAddress(accounts[0]));
+                            } else {
+                                resetWalletConnectionUI();
+                                showStatus("No accounts selected");
+                            }
+
+                            isConnecting = false;
+                            return;
+                        }
+
+                        console.log("Requesting MetaMask accounts...");
+
+                        // Use eth_requestAccounts for initial connection
+                        const accounts = await ethereum.request({
+                            method: 'eth_requestAccounts'
+                        });
+
+                        console.log("MetaMask accounts after selection:", accounts);
+
+                        if (accounts && accounts.length > 0) {
+                            //userAddress = accounts[0];
+                            window.userAddress = accounts[0];
+                            updateUIForConnectedWallet(accounts[0]);
+                            showStatus("Connected to wallet: " + formatAddress(accounts[0]));
+                        } else {
+                            showStatus("No accounts selected", true);
+                            resetWalletConnectionUI();
+                        }
+                    } catch (error) {
+                        console.error("Error connecting to MetaMask:", error);
+                        if (error.code === 4001) {
+                            showStatus("You rejected the connection request.", true);
+                        } else if (error.message.includes('already pending')) {
+                            showStatus("A connection request is already pending. Please check MetaMask popup.", true);
+                        } else {
+                            showStatus("Connection failed: " + error.message, true);
+                        }
+                        resetWalletConnectionUI();
+                    } finally {
+                        isConnecting = false;
+                    }
                 }
 
+                // Check if wallet is already connected
+                async function checkInitialMetaMaskConnection() {
+                    if (typeof window.ethereum !== 'undefined') {
+                        try {
+                            const accounts = await ethereum.request({ method: 'eth_accounts' });
+                            if (accounts && accounts.length > 0) {
+                                //  userAddress = accounts[0];
+                                window.userAddress = accounts[0];
+                                //web3 = new Web3(window.ethereum);
+                                window.web3 = new Web3(window.ethereum);
+                                updateUIForConnectedWallet(accounts[0]);
+                                console.log("Wallet already connected:", accounts[0]);
+                            }
+                        } catch (error) {
+                            console.error("Error checking initial wallet connection:", error);
+                        }
+                    }
+                }
 
+                // Update UI for connected wallet
+                function updateUIForConnectedWallet(address) {
+                    // Update status indicators
+                    document.getElementById('connectionStatus').className = 'badge badge-success mr-2';
+                    document.getElementById('connectionStatus').textContent = 'Connected';
+                    document.getElementById('connectedWallet').textContent = formatAddress(address);
 
+                    // Update wallet address display
+                    document.getElementById('walletAddress').innerText = address;
+
+                    // Update connect button
+                    const connectButton = document.getElementById('connectWalletBtn');
+                    connectButton.innerText = "Wallet Connected";
+                    connectButton.classList.remove('btn-primary');
+                    connectButton.classList.add('btn-success');
+
+                    // Initialize Web3 if not already initialized
+                    if (!web3) {
+                        // web3 = new Web3(window.ethereum);
+                        window.web3 = new Web3(window.ethereum);
+                    }
+
+                    // Get and update balance
+                    getWalletBalance(address);
+
+                    // Update recipient field if it exists
+                    const recipientField = document.getElementById('scTransRecipientAddress');
+                    if (recipientField && recipientField.value === "") {
+                        recipientField.value = address;
+                    }
+
+                    // Set SCTrans address automatically if field exists
+                    const scMultiTransAddressField = document.getElementById('scMultiTransAddress');
+                    const scTransAddressDisplayField = document.getElementById('scTransAddressDisplay');
+                    if (scMultiTransAddressField && scTransAddressDisplayField &&
+                        scTransAddressDisplayField.value && scTransAddressDisplayField.value !== "") {
+                        scMultiTransAddressField.value = scTransAddressDisplayField.value;
+                    }
+                }
+
+                // Reset UI when wallet is disconnected
+                function resetWalletConnectionUI() {
+                    // Reset state variables
+                    //  userAddress = null;
+                    window.userAddress = null;
+                    // web3 = null;
+                    window.web3 = null;
+
+                    // Reset UI elements
+                    document.getElementById('connectionStatus').className = 'badge badge-warning mr-2';
+                    document.getElementById('connectionStatus').textContent = 'Not Connected';
+                    document.getElementById('connectedWallet').textContent = 'No account detected';
+                    document.getElementById('walletAddress').innerText = "Not connected";
+                    document.getElementById('walletBalance').innerText = "0 POL";
+
+                    // Reset connect button
+                    const connectButton = document.getElementById('connectWalletBtn');
+                    connectButton.innerText = "Connect Wallet";
+                    connectButton.classList.remove('btn-success');
+                    connectButton.classList.add('btn-primary');
+                }
+
+                // Format address to shorter display format
+                function formatAddress(address) {
+                    if (!address) return "Not connected";
+                    return address.substring(0, 6) + '...' + address.substring(address.length - 4);
+                }
+
+                // Get wallet balance
+                async function getWalletBalance(address) {
+                    if (!address) return;
+
+                    try {
+                        const balanceHex = await ethereum.request({
+                            method: 'eth_getBalance',
+                            params: [address, 'latest']
+                        });
+                        const balance = parseFloat(parseInt(balanceHex, 16) / Math.pow(10, 18)).toFixed(4);
+                        document.getElementById('walletBalance').innerText = balance + " POL";
+                    } catch (error) {
+                        console.error("Error getting wallet balance:", error);
+                        document.getElementById('walletBalance').innerText = "Error";
+                    }
+                }
+
+                // Show status messages
                 function showStatus(message, isError = false) {
                     // Check if status element exists, if not create it
                     let statusDiv = document.getElementById('status');
@@ -1098,51 +1314,100 @@
                     } else {
                         statusDiv.className = 'status-success';
                     }
+
+                    // Auto-hide after 5 seconds
+                    setTimeout(() => {
+                        statusDiv.style.display = 'none';
+                    }, 5000);
                 }
 
-                async function connectWallet() {
-                    if (typeof window.ethereum !== 'undefined') {
-                        try {
-                            const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
-                            const walletAddress = accounts[0];
+                async function refreshContractAddress(addressElementId, timeElementId) {
+                    if (!window.web3) {
+                        showStatus("Web3 not initialized. Please connect your wallet first.", true);
+                        return;
+                    }
 
-                            // Update wallet address display
-                            document.getElementById('walletAddress').innerText = walletAddress;
+                    try {
+                        // Define the target address
+                        //  const targetAddress = userAddress;
+                        const targetAddress = window.userAddress;
+                        console.log("Using address for refresh:", targetAddress); // Debug log
 
-                            // Get and update balance
-                            const balanceHex = await ethereum.request({
-                                method: 'eth_getBalance',
-                                params: [walletAddress, 'latest']
-                            });
-                            const balance = parseFloat(parseInt(balanceHex, 16) / Math.pow(10, 18)).toFixed(4);
-                            document.getElementById('walletBalance').innerText = balance + " POL";
-
-                            // Update connection status
-                            document.getElementById('walletStatus').innerText = "Connected";
-                            document.getElementById('walletStatus').style.color = "green";
-
-                            // Update button to show connected state
-                            const connectButton = document.getElementById('connectWalletBtn');
-                            connectButton.innerText = "Wallet Connected";
-                            connectButton.classList.remove('btn-primary');
-                            connectButton.classList.add('btn-success');
-
-                            // Initialize Web3 and save address
-                            web3 = new Web3(window.ethereum);
-                            userAddress = walletAddress;
-                            document.getElementById('recipientAddress').value = walletAddress;
-
-                        } catch (error) {
-                            console.error("Failed to connect wallet:", error);
-                            alert("Failed to connect wallet: " + error.message);
+                        // Ensure the target address is valid
+                        if (!window.web3.utils.isAddress(targetAddress)) {
+                            throw new Error("Invalid target address format");
                         }
-                    } else {
-                        alert("MetaMask is not installed. Please install it to use this feature.");
+
+                        showStatus("Searching for contract deployment from address: " + formatAddress(targetAddress));
+
+
+                        //const apiUrl = `https://api-sepolia.polygonscan.com/api?module=account&action=txlist&address=${targetAddress}&sort=desc`;
+                        const apiUrl = "https://api-amoy.polygonscan.com/api?module=account&action=txlist&address=" + targetAddress + "&sort=desc&limit=20";
+                        const response = await fetch(apiUrl);
+                        if (!response.ok) {
+                            throw new Error("API request failed");
+                        }
+
+                        const data = await response.json();
+                        if (data.status !== "1") {
+                            throw new Error(`API error: ${data.message}`);
+                        }
+
+                        // Look for contract creation transactions
+                        const contractTxs = data.result.filter(tx =>
+                            tx.to === "" &&
+                            tx.input.length > 2 &&
+                            tx.isError === "0"
+                        );
+
+                        if (contractTxs.length === 0) {
+                            throw new Error("No contract deployments found for this address");
+                        }
+
+                        // Get the most recent contract creation
+                        const latestTx = contractTxs[0];
+                        const contractAddress = latestTx.contractAddress;
+
+                        if (!contractAddress) {
+                            throw new Error("Could not find contract address in transaction");
+                        }
+
+                        // When updating the elements, use the passed IDs
+                        document.getElementById(addressElementId).value = contractAddress;
+
+                        // For the timestamp
+                        if (latestTx.timeStamp) {
+                            // Format the timestamp
+                            const timestamp = parseInt(latestTx.timeStamp);
+                            const date = new Date(timestamp * 1000);
+                            const formattedDate = date.toLocaleString('en-US', {
+                                year: 'numeric',
+                                month: '2-digit',
+                                day: '2-digit',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            }).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2');
+
+                            // Update using the passed time element ID
+                            document.getElementById(timeElementId).value = formattedDate;
+                        }
+
+                        showStatus("Contract address refreshed successfully");
+                    }
+                    catch (error) {
+                        console.error("Error refreshing contract address:", error);
+                        showStatus("Failed to refresh contract address: " + error.message, true);
                     }
                 }
 
 
-                function searchSCFromDB() {
+            </script>
+
+            <!-- step1 SCTokenTransfer -->
+            <script>
+
+                function searchLatestSCTransFromDB() {
                     // Show loading status
                     showStatus("Searching for latest contract...");
 
@@ -1168,29 +1433,21 @@
                                 // Display the result
                                 const token = data.token;
 
-                                document.getElementById('tokenID').value = token.tokenID;
+                                document.getElementById('scTransTokenID').value = token.tokenID;
                                 document.getElementById('tokenName').value = token.tokenName;
                                 document.getElementById('tokenSymbol').value = token.tokenSymbol;
                                 document.getElementById('invalidDate').value = token.scexpireDate;
 
                                 // Display creation time if available
                                 if (token.sccreateTime) {
-                                    document.getElementById('creationTime').value = token.sccreateTime;
+                                    document.getElementById('scTransCreationTime').value = token.sccreateTime;
                                     // Make the creation time field visible
-                                    const creationTimeContainer = document.getElementById('creationTimeContainer');
-                                    if (creationTimeContainer) {
-                                        creationTimeContainer.style.display = 'block';
-                                    }
+                                    document.getElementById('scTransCreationTimeContainer').style.display = 'block';
                                 }
 
                                 // Update contract address if available
                                 if (token.genContractAddr) {
-                                    document.getElementById('contractAddressDisplay').value = token.genContractAddr;
-                                    // Make the contract address field visible
-                                    const addressContainer = document.getElementById('contractAddressDisplay').parentElement;
-                                    if (addressContainer) {
-                                        addressContainer.style.display = 'flex';
-                                    }
+                                    document.getElementById('scTransAddressDisplay').value = token.genContractAddr;
                                 }
 
                                 showStatus("Latest contract loaded successfully");
@@ -1205,58 +1462,42 @@
                         });
                 }
 
-
-                function saveContractToDatabase() {
-                    if (!userAddress) {
-                        showStatus("Please connect wallet   first", true);
-                        return;
-                    }
-
-                    // Get form data
+                // Then add this function to handle saving SC data
+                function saveScTransToDB() {
+                    // Validate form before submission
+                    const recipientAddress = document.getElementById('scTransRecipientAddress').value;
                     const tokenName = document.getElementById('tokenName').value;
                     const tokenSymbol = document.getElementById('tokenSymbol').value;
-                    const contractAddress = document.getElementById('contractAddressDisplay').value;
                     const invalidDate = document.getElementById('invalidDate').value;
-                    // const amount = document.getElementById('amount').value || '0'; // Default to 0 if empty
-                    //  const memo = document.getElementById('memo') ? document.getElementById('memo').value : '';
-
-                    // Add debugging
-                    console.log("userAddress:", userAddress);
-                    console.log("tokenName:", tokenName);
-                    console.log("tokenSymbol:", tokenSymbol);
-                    console.log("invalidDate:", invalidDate);
-                    console.log("contractAddress:", contractAddress);
 
 
-
-                    // Validate required fields
-                    if (!tokenName || !tokenSymbol || !invalidDate) {
-                        showStatus("The fields are required to save contract", true);
+                    if (!recipientAddress || !tokenName || !tokenSymbol || !invalidDate) {
+                        showStatus("Please fill all required fields", true);
                         return;
                     }
 
-                    const confirmSave = confirm("Are you sure  to savthis contract to the database?");
-                    if (!confirmSave) {
-                        showStatus("Save operation cancelled", true);
-                        return; // Exit the function if user cancels
+                    // Validate recipient address format
+                    if (window.web3 && !window.web3.utils.isAddress(recipientAddress)) {
+                        showStatus("Invalid recipient address format", true);
+                        return;
                     }
-                    showStatus("Saving contract to database...");
 
-                    const params = new URLSearchParams();
-                    params.append("owerAddr", userAddress);
-                    params.append("tokenName", tokenName);
-                    params.append("tokenSymbol", tokenSymbol);
-                    params.append("scexpireDate", invalidDate);
-                    params.append("genContractAddr", contractAddress || '');
+                    // Show status during saving
+                    showStatus("Saving SCTrans to server...");
 
-
-                    console.log("Sending data:", Object.fromEntries(params));
+                    // Prepare form data
+                    const formData = new URLSearchParams();
+                    formData.append('owerAddr', recipientAddress);
+                    formData.append('tokenName', tokenName);
+                    formData.append('tokenSymbol', tokenSymbol);
+                    formData.append('scexpireDate', invalidDate);
+                    formData.append('genContractAddr', ''); // Add this even if empty
                     fetch('saveToken', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/x-www-form-urlencoded'
                         },
-                        body: params.toString()  // Convert to string - important!
+                        body: formData.toString()
                     })
                         .then(response => {
                             if (!response.ok) {
@@ -1266,233 +1507,21 @@
                         })
                         .then(data => {
                             if (data.success) {
-                                showStatus("Contract saved to database successfully!");
+                                // Update token ID if returned
+                                if (data.tokenId) {
+                                    document.getElementById('scTransTokenID').value = data.tokenId;
+                                }
+                                showStatus("SCTrans saved successfully!");
                             } else {
-                                showStatus("Error saving contract: " + data.message, true);
+                                showStatus("Failed to save SCTrans: " + data.message, true);
                             }
                         })
                         .catch(error => {
-                            console.error('Error saving contract:', error);
-                            showStatus("Failed to save contract: " + error.message, true);
+                            console.error('Error saving SCTrans:', error);
+                            showStatus("Failed to save SCTrans: " + error.message, true);
                         });
                 }
 
-                function copyContractAddress() {
-                    const contractAddressEl = document.getElementById('contractAddressDisplay');
-                    contractAddressEl.select();
-                    document.execCommand('copy');
-                    alert('Contract address copied to clipboard!');
-                }
-
-
-                async function deployCustomTokenContract() {
-                    if (!web3 || !userAddress) {
-                        showStatus("Wallet not connected. Please connect your wallet first.", true);
-                        return false;
-                    }
-
-                    try {
-                        // Get form values
-                        const tokenName = document.getElementById('tokenName').value;
-                        const tokenSymbol = document.getElementById('tokenSymbol').value;
-                        const invalidDate = document.getElementById('invalidDate').value;
-
-                        // Validate form values
-                        if (!tokenName || !tokenSymbol || !invalidDate) {
-                            showStatus("Please fill in all required fields", true);
-                            return false;
-                        }
-
-                        // Convert date to timestamp (seconds)
-                        const invalidDateTimestamp = Math.floor(new Date(invalidDate).getTime() / 1000);
-
-                        // Show status message
-                        showStatus("Preparing to deploy contract...");
-
-                        // Fix bytecode - ensure even length
-                        let cleanBytecode = customTokenBytecode;
-                        if (cleanBytecode.startsWith("0x")) {
-                            cleanBytecode = cleanBytecode.substring(2);
-                        }
-
-                        // Ensure bytecode has even length
-                        if (cleanBytecode.length % 2 !== 0) {
-                            cleanBytecode = cleanBytecode.substring(0, cleanBytecode.length - 1);
-                        }
-
-                        // Restore 0x prefix
-                        cleanBytecode = "0x" + cleanBytecode;
-
-                        // 先定义合约对象
-                        const TokenContract = new web3.eth.Contract(customTokenABI);
-
-                        showStatus("Deploying contract, please confirm the transaction...");
-
-                        try {
-                            // 直接使用固定gas和较高的gasLimit进行部署
-                            const deployedContract = await TokenContract.deploy({
-                                data: cleanBytecode,
-                                arguments: [tokenName, tokenSymbol, invalidDateTimestamp]
-                            }).send({
-                                from: userAddress,
-                                gas: 3000000, // 固定较大的gas数量
-                                gasPrice: await web3.eth.getGasPrice() // 使用当前gas价格
-                            });
-
-                            // 添加调试信息
-                            console.log("Contract deployed successfully!");
-                            console.log("Contract address:", deployedContract.options.address);
-
-                            const newTokenAddress = deployedContract.options.address;
-
-                            // 确保合约地址显示在UI上
-                            const addressField = document.getElementById('contractAddressDisplay');
-                            if (addressField) {
-                                addressField.value = newTokenAddress;
-                                console.log("Set address field value to:", newTokenAddress);
-
-                                // 确保父元素显示
-                                const parentElement = addressField.parentElement;
-                                if (parentElement) {
-                                    parentElement.style.display = 'flex'; // 使用flex而不是block以确保布局正确
-                                    console.log("Set parent element display to flex");
-                                } else {
-                                    console.error("Could not find parent element of address field");
-                                }
-                            } else {
-                                console.error("Could not find contractAddressDisplay element");
-                            }
-
-                            // 更新状态
-                            showStatus(`Contract deployed successfully! Token address: ${newTokenAddress}`);
-                            document.getElementById('contractAddressDisplay').value = newTokenAddress;
-                            document.getElementById('contractAddressDisplay').parentElement.style.display = 'block';
-
-                            // 保存合约实例
-                            contract = deployedContract;
-
-                            // 启用铸币按钮
-                            document.querySelector('.btn-generate').disabled = false;
-
-                            return true;
-                        } catch (txError) {
-                            console.error("Transaction error:", txError);
-                            showStatus(`Transaction failed: ${txError.message}`, true);
-                            return false;
-                        }
-                    } catch (error) {
-                        console.error("Error deploying contract:", error);
-                        showStatus(`Error deploying contract: ${error.message}`, true);
-                        return false;
-                    }
-                }
-
-
-            </script>
-
-            <script>
-                async function refreshContractAddress() {
-                    if (!web3) {
-                        showStatus("Web3 not initialized. Please connect your wallet first.", true);
-                        return;
-                    }
-
-                    try {
-                        // Define the target address
-                        //  const targetAddress = "0xc8c632da94924456d96c6ad801f22e7ae9716d55";
-
-                        const targetAddress = userAddress;
-                        // Ensure the target address is valid
-                        if (!web3.utils.isAddress(targetAddress)) {
-                            throw new Error("Invalid target address format");
-                        }
-
-                        // Log the target address
-                        console.log("Using target address:", targetAddress);
-
-                        // Show status
-                        showStatus(`Searching for contracts deployed by ${targetAddress}...`);
-                        console.log("Starting blockchain query for contract address");
-
-                        try {
-                            // Construct the API URL
-                            // const apiUrl = `https://api-amoy.polygonscan.com/api?module=account&action=txlist&address=${targetAddress}&sort=desc`;
-                            //const apiUrl = "https://api-amoy.polygonscan.com/api?module=account&action=txlist&address=0xc8c632da94924456d96c6ad801f22e7ae9716d55&sort=desc";
-                            const apiUrl = "https://api-amoy.polygonscan.com/api?module=account&action=txlist&address=" + targetAddress + "&sort=desc&limit=20";
-                            console.log("Requesting data from blockchain API:", apiUrl);
-
-                            // Fetch data from the API
-                            const response = await fetch(apiUrl);
-                            if (!response.ok) {
-                                throw new Error(`API responded with status: ${response.status}`);
-                            }
-
-                            const data = await response.json();
-                            console.log("API Response:", data);
-
-                            if (data.status === "1" && data.result && data.result.length > 0) {
-                                console.log(`Found ${data.result.length} transactions`);
-
-                                // Filter for contract creation transactions
-                                const contractCreationTxs = data.result.filter(tx =>
-                                    (!tx.to || tx.to === '') &&
-                                    tx.contractAddress &&
-                                    tx.contractAddress !== ''
-                                );
-
-                                console.log(`Found ${contractCreationTxs.length} contract creation transactions`);
-
-                                if (contractCreationTxs.length > 0) {
-                                    // Get the most recent contract
-                                    const latestTx = contractCreationTxs[0];
-                                    const contractAddress = latestTx.contractAddress;
-
-                                    console.log(`Found contract: ${contractAddress} created at block ${latestTx.blockNumber}`);
-                                    document.getElementById('contractAddressDisplay').value = contractAddress;
-                                    showStatus(`Found contract: ${contractAddress} (Block: ${latestTx.blockNumber})`);
-                                    if (latestTx.timeStamp) {
-                                        const timestamp = parseInt(latestTx.timeStamp);
-                                        const date = new Date(timestamp * 1000); // Convert to milliseconds
-                                        // const formattedDate = date.toLocaleString(); // Format date as local string
-                                        const formattedDate = date.toLocaleString('en-US', {
-                                            year: 'numeric',
-                                            month: '2-digit',
-                                            day: '2-digit',
-                                            hour: '2-digit',
-                                            minute: '2-digit',
-                                            second: '2-digit',
-                                            hour12: false
-                                        }).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2'); // Convert MM/DD/YYYY to YYYY-MM-DD
-
-                                        // Update the SC Create Time display
-                                        document.getElementById('scCreateTimeDisplay').value = formattedDate;
-                                        console.log("Contract creation time:", formattedDate);
-                                    }
-                                    // Create contract instance
-                                    try {
-                                        contract = new web3.eth.Contract(customTokenABI, contractAddress);
-                                        console.log("Contract instance created successfully");
-                                    } catch (contractError) {
-                                        console.error("Error creating contract instance:", contractError);
-                                        showStatus(`Found contract address but couldn't initialize it: ${contractError.message}`, true);
-                                    }
-                                } else {
-                                    console.log("No contract creation transactions found");
-                                    showStatus("No contract creation transactions found for this address", true);
-                                }
-                            } else {
-                                console.error("API returned no results or error:", data);
-                                showStatus("Blockchain API returned no results or error", true);
-                            }
-                        } catch (apiError) {
-                            console.error("API request failed:", apiError);
-                            showStatus(`Blockchain query failed: ${apiError.message}`, true);
-                        }
-                    } catch (error) {
-                        console.error("Error searching for contract address:", error);
-                        showStatus(`Error: ${error.message}`, true);
-                    }
-                }
 
                 function copyContractAddress() {
                     const contractAddressEl = document.getElementById('contractAddressDisplay');
@@ -1510,11 +1539,10 @@
                     showStatus(`Contract address copied: ${address}`);
                 }
 
-
-                function saveSCAddress2DB() {
+                function saveSCTransAddress2DB() {
                     // Get token ID and contract address
-                    const tokenId = document.getElementById('tokenID').value;
-                    const contractAddress = document.getElementById('contractAddressDisplay').value;
+                    const tokenId = document.getElementById('scTransTokenID').value;
+                    const contractAddress = document.getElementById('scTransAddressDisplay').value;
 
                     // Validate values
                     if (!tokenId) {
@@ -1523,7 +1551,7 @@
                     }
 
                     if (!contractAddress) {
-                        showStatus("No sc address to save. Please  refresh  first.", true);
+                        showStatus("No sc address to save. Please refresh first.", true);
                         return;
                     }
 
@@ -1569,7 +1597,31 @@
                         });
                 }
 
+                // SCTrans specific functions
+                function refreshScTransAddress() {
+                    refreshContractAddress('scTransAddressDisplay', 'scTransCreateTimeDisplay');
+                }
 
+                function copyScTransAddress() {
+                    copyContractAddress();
+                }
+
+                function saveScTransAddressToDB() {
+                    saveSCAddress2DB();
+                }
+
+                // SCMulti specific functions
+                function refreshScMultiAddress() {
+                    refreshContractAddress('scMultiAddressDisplay', 'scMultiCreateTimeDisplay');
+                }
+
+                function copyScMultiAddress() {
+                    copyContractAddress();
+                }
+
+                function saveScMultiAddressToDB() {
+                    saveSCAddress2DB();
+                }
             </script>
 
             <!-- Footer -->

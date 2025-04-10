@@ -916,6 +916,7 @@
                     // 在 DOMContentLoaded 事件监听器内添加这行代码 
                     document.getElementById('signContractBtn').addEventListener('click', deployCustomTokenContract);
                     document.getElementById('saveContractBtn').addEventListener('click', saveContractToDatabase);
+                    document.getElementById('saveScTransBtn').addEventListener('click', saveScTransToDB);
                     document.getElementById('searchSCBtn').addEventListener('click', searchSCFromDB);
                     // Add this line to automatically load the latest token on page load
 
