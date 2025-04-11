@@ -1739,9 +1739,9 @@ const customTokenMultiBytecode= "608060405234801561000f575f80fd5b50604051612eaa3
                     console.log("Setting up wallet connection handlers...");
 
                         // Disable all blockchain action buttons initially
-                     document.getElementById('deployScTransBtn').disabled = true;
-                     document.getElementById('deployScMultiBtn').disabled = true;
-                     document.getElementById('signConnectionsBtn').disabled = true;
+                 //    document.getElementById('deployScTransBtn').disabled = true;
+                 //    document.getElementById('deployScMultiBtn').disabled = true;
+                 //    document.getElementById('signConnectionsBtn').disabled = true;
 
 
                     // Connect wallet button
@@ -1749,10 +1749,11 @@ const customTokenMultiBytecode= "608060405234801561000f575f80fd5b50604051612eaa3
                     document.getElementById('searchSCTransBtn').addEventListener('click', searchLatestSCTransFromDB);
                     document.getElementById('saveScTransBtn').addEventListener('click', saveScTransToDB);
                     document.getElementById('saveScMultiBtn').addEventListener('click', saveScMultiToDB);
+                    document.getElementById('saveConnectionsBtn').addEventListener('click', saveConnectionsToDB);
 
                     document.getElementById('deployScTransBtn').addEventListener('click', deployScTransToBlock);
-                    document.getElementById('deployScTransBtn').addEventListener('click', deployScMultiToBlock);
-                    document.getElementById('deployScTransBtn').addEventListener('click', signConnectionsToBlock);
+                    document.getElementById('deployScMultiBtn').addEventListener('click', deployScMultiToBlock);
+                    document.getElementById('signConnectionsBtn').addEventListener('click', signConnectionsToBlock);
                     // Check if wallet is already connected
                     checkInitialMetaMaskConnection();
 
@@ -2211,66 +2212,70 @@ const customTokenMultiBytecode= "608060405234801561000f575f80fd5b50604051612eaa3
                         });
                 }
 
-                // Then add this function to handle saving SC data
+                // Then add this function to handle saving ScMultit data
                 function saveScMultiToDB() {
-                    // Validate form before submission
-                    const recipientAddress = document.getElementById('scTransRecipientAddress').value;
-                    const tokenName = document.getElementById('tokenName').value;
-                    const tokenSymbol = document.getElementById('tokenSymbol').value;
-                    const invalidDate = document.getElementById('invalidDate').value;
+    // Validate form before submission
+    const scMultiTransAddress = document.getElementById('scMultiTransAddress').value;
+    const multiAddress1 = document.getElementById('multiAddress1').value;
+    const multiAddress2 = document.getElementById('multiAddress2').value;
+    const multiAddress3 = document.getElementById('multiAddress3') ? 
+                         document.getElementById('multiAddress3').value : '';
+    const tokenId = document.getElementById('scMultiTokenID').value;
 
+    if (!scMultiTransAddress || !multiAddress1 || !multiAddress2) {
+        showStatus("Please fill all required fields", true);
+        return;
+    }
 
-                    if (!recipientAddress || !tokenName || !tokenSymbol || !invalidDate) {
-                        showStatus("Please fill all required fields", true);
-                        return;
-                    }
+    // Validate addresses
+    if (window.web3 && (!window.web3.utils.isAddress(scMultiTransAddress) || 
+        !window.web3.utils.isAddress(multiAddress1) || 
+        !window.web3.utils.isAddress(multiAddress2))) {
+        showStatus("Invalid address format. Please check all addresses.", true);
+        return;
+    }
 
-                    // Validate recipient address format
-                    if (window.web3 && !window.web3.utils.isAddress(recipientAddress)) {
-                        showStatus("Invalid recipient address format", true);
-                        return;
-                    }
+    // Show status during saving
+    showStatus("Saving SCMulti to server...");
 
-                    // Show status during saving
-                    showStatus("Saving SCTrans to server...");
+    // Prepare form data
+    const formData = new URLSearchParams();
+    formData.append('scMultiTransAddress', scMultiTransAddress);
+    formData.append('multiAddress1', multiAddress1);
+    formData.append('multiAddress2', multiAddress2);
+    if (multiAddress3) formData.append('multiAddress3', multiAddress3);
+    if (tokenId) formData.append('tokenId', tokenId);
 
-                    // Prepare form data
-                    const formData = new URLSearchParams();
-                    formData.append('owerAddr', recipientAddress);
-                    formData.append('tokenName', tokenName);
-                    formData.append('tokenSymbol', tokenSymbol);
-                    formData.append('scexpireDate', invalidDate);
-                    formData.append('genContractAddr', ''); // Add this even if empty
-                    fetch('saveToken', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/x-www-form-urlencoded'
-                        },
-                        body: formData.toString()
-                    })
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.success) {
-                                // Update token ID if returned
-                                if (data.tokenId) {
-                                    document.getElementById('scTransTokenID').value = data.tokenId;
-                                }
-                                showStatus("SCTrans saved successfully!");
-                                document.getElementById('deployScTransBtn').disabled = false;
-                            } else {
-                                showStatus("Failed to save SCTrans: " + data.message, true);
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Error saving SCTrans:', error);
-                            showStatus("Failed to save SCTrans: " + error.message, true);
-                        });
-                }
+    fetch('saveScMulti', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            // Update token ID if returned
+            if (data.tokenId) {
+                document.getElementById('scMultiTokenID').value = data.tokenId;
+            }
+            showStatus("SCMulti saved successfully!");
+            document.getElementById('deployScMultiBtn').disabled = false;
+        } else {
+            showStatus("Failed to save SCMulti: " + data.message, true);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving SCMulti:', error);
+        showStatus("Failed to save SCMulti: " + error.message, true);
+    });
+}
 
 
                 function copyContractAddress() {
@@ -2639,6 +2644,64 @@ function updateUIForConnectedWallet(address) {
     }
 }
 
+function saveConnectionsToDB() {
+    // Get form values
+    const scTransAddress = document.getElementById('connScTransAddress').value;
+    const scMultiAddress = document.getElementById('connScMultiAddress').value;
+ 
+    console.log("Elements found:", scTransAddress, scMultiAddress);
+    // Check if elements actually exist
+    if (!connScTransAddress || !connScMultiAddress) {
+        showStatus("Form elements not found. Please refresh the page.", true);
+        console.error("Missing form elements:", 
+                     !connScTransAddress ? 'connScTransAddress' : '', 
+                     !connScMultiAddress ? 'connScMultiAddress' : '');
+        return;
+    }
+    
+    // Validate addresses
+    if (window.web3 && (!window.web3.utils.isAddress(scTransAddress) || 
+        !window.web3.utils.isAddress(scMultiAddress))) {
+        showStatus("Invalid address format. Please check both addresses.", true);
+        return;
+    }
+
+    // Show status during saving
+    showStatus("Saving connections to server...");
+
+    // Prepare form data
+    const formData = new URLSearchParams();
+    formData.append('connScTransAddress', scTransAddress);
+    formData.append('connScMultiAddress', scMultiAddress);
+    // Send to server
+    fetch('saveConnections', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: formData.toString()
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showStatus("Connections saved successfully!");
+            // Enable sign connections button
+            document.getElementById('signConnectionsBtn').disabled = false;
+        } else {
+            showStatus("Failed to save connections: " + data.message, true);
+        }
+    })
+    .catch(error => {
+        console.error('Error saving connections:', error);
+        showStatus("Failed to save connections: " + error.message, true);
+    });
+}
+
                 function copyScTransAddress() {
                     copyContractAddress();
                 }
@@ -2648,9 +2711,23 @@ function updateUIForConnectedWallet(address) {
                 }
 
                 // SCMulti specific functions
-                function refreshScMultiAddress() {
-                    refreshContractAddress('scMultiAddressDisplay', 'scMultiCreateTimeDisplay');
+function refreshScMultiAddress() {
+    refreshContractAddress('scMultiAddressDisplay', 'scMultiCreateTimeDisplay')
+        .then(() => {
+            // After refresh completes, propagate the address to Step 3
+            const scMultiAddress = document.getElementById('scMultiAddressDisplay').value;
+            if (scMultiAddress && scMultiAddress.trim() !== '') {
+                // Update in Step 3 (Connections section)
+                const connScMultiAddressField = document.getElementById('connScMultiAddress');
+                if (connScMultiAddressField) {
+                    connScMultiAddressField.value = scMultiAddress;
                 }
+            }
+        })
+        .catch(error => {
+            console.error("Error in refreshScMultiAddress:", error);
+        });
+}
 
                 function copyScMultiAddress() {
                     copyContractAddress();

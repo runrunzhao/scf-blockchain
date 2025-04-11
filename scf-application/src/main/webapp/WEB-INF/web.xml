@@ -247,7 +247,7 @@
 <!-- SCMulti Servlets -->
 <servlet>
     <servlet-name>SaveScMulti</servlet-name>
-    <servlet-class>com.neo.scf.servlets.SaveScMultiServlet</servlet-class>
+    <servlet-class>com.supplychainfinance.servlet.SaveScMultiServlet</servlet-class>
 </servlet>
 <servlet-mapping>
     <servlet-name>SaveScMulti</servlet-name>
@@ -256,7 +256,7 @@
 
 <servlet>
     <servlet-name>SearchScMulti</servlet-name>
-    <servlet-class>com.neo.scf.servlets.SearchScMultiServlet</servlet-class>
+    <servlet-class>com.supplychainfinance.servlet.SearchScMultiServlet</servlet-class>
 </servlet>
 <servlet-mapping>
     <servlet-name>SearchScMulti</servlet-name>
@@ -266,7 +266,7 @@
 <!-- SC Connections Servlets -->
 <servlet>
     <servlet-name>SaveConnections</servlet-name>
-    <servlet-class>com.neo.scf.servlets.SaveConnectionsServlet</servlet-class>
+    <servlet-class>com.supplychainfinance.servlet.SaveConnectionsServlet</servlet-class>
 </servlet>
 <servlet-mapping>
     <servlet-name>SaveConnections</servlet-name>
@@ -275,7 +275,7 @@
 
 <servlet>
     <servlet-name>SearchConnections</servlet-name>
-    <servlet-class>com.neo.scf.servlets.SearchConnectionsServlet</servlet-class>
+    <servlet-class>com.supplychainfinance.servlet.SearchConnectionsServlet</servlet-class>
 </servlet>
 <servlet-mapping>
     <servlet-name>SearchConnections</servlet-name>

@@ -104,7 +104,7 @@ public class SaveScMultiServlet extends HttpServlet {
             jsonResponse.put("success", false);
             jsonResponse.put("message", "Invalid token ID format");
         } finally {
-            DatabaseUtil.closeResources(rs, pstmt, conn);
+            DBUtil.closeResources(rs, pstmt, conn);
         }
 
         response.setContentType("application/json");
