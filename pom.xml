@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.supplychainfinance</groupId>
@@ -22,10 +22,10 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
-     <!-- 使用确定可用的版本 -->
-    <fabric-gateway.version>2.2.0</fabric-gateway.version>
-    <fabric-sdk.version>2.2.5</fabric-sdk.version>
-    <fabric-chaincode.version>2.4.1</fabric-chaincode.version>
+        <!-- 使用确定可用的版本 -->
+        <fabric-gateway.version>2.2.0</fabric-gateway.version>
+        <fabric-sdk.version>2.2.5</fabric-sdk.version>
+        <fabric-chaincode.version>2.4.1</fabric-chaincode.version>
         <grpc.version>1.53.0</grpc.version>
         <slf4j.version>1.7.36</slf4j.version>
         <logback.version>1.2.11</logback.version>
@@ -35,27 +35,27 @@
         <junit.version>5.9.2</junit.version>
     </properties>
 
-<repositories>
-    <repository>
-        <id>central</id>
-        <name>Central Repository</name>
-        <url>https://repo.maven.apache.org/maven2</url>
-    </repository>
-    <repository>
-        <id>hyperledger</id>
-        <name>Hyperledger Nexus</name>
-        <url>https://hyperledger.jfrog.io/hyperledger/fabric-maven</url>
-    </repository>
-    <repository>
-        <id>hyperledger-releases</id>
-        <name>Hyperledger Releases</name>
-        <url>https://nexus.hyperledger.org/content/repositories/releases/</url>
-    </repository>
-    <repository>
-        <id>jitpack.io</id>
-        <url>https://jitpack.io</url>
-    </repository>
-</repositories>
+    <repositories>
+        <repository>
+            <id>central</id>
+            <name>Central Repository</name>
+            <url>https://repo.maven.apache.org/maven2</url>
+        </repository>
+        <repository>
+            <id>hyperledger</id>
+            <name>Hyperledger Nexus</name>
+            <url>https://hyperledger.jfrog.io/hyperledger/fabric-maven</url>
+        </repository>
+        <repository>
+            <id>hyperledger-releases</id>
+            <name>Hyperledger Releases</name>
+            <url>https://nexus.hyperledger.org/content/repositories/releases/</url>
+        </repository>
+        <repository>
+            <id>jitpack.io</id>
+            <url>https://jitpack.io</url>
+        </repository>
+    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -110,7 +110,7 @@
                     </exclusion>
                 </exclusions>
             </dependency>
-            
+
             <!-- 统一 gRPC 版本 -->
             <dependency>
                 <groupId>io.grpc</groupId>
@@ -137,21 +137,21 @@
                 <artifactId>grpc-core</artifactId>
                 <version>${grpc.version}</version>
             </dependency>
-            
+
             <!-- Bouncycastle for crypto operations -->
             <dependency>
                 <groupId>org.bouncycastle</groupId>
                 <artifactId>bcpkix-jdk15on</artifactId>
                 <version>1.70</version>
             </dependency>
-            
+
             <!-- JSON Schema -->
             <dependency>
                 <groupId>org.everit.json</groupId>
                 <artifactId>org.everit.json.schema</artifactId>
                 <version>1.5.1</version>
             </dependency>
-            
+
             <!-- Servlet API -->
             <dependency>
                 <groupId>javax.servlet</groupId>
@@ -159,41 +159,41 @@
                 <version>${servlet-api.version}</version>
                 <scope>provided</scope>
             </dependency>
-            
+
             <!-- JSON Processing - Gson -->
             <dependency>
                 <groupId>com.google.code.gson</groupId>
                 <artifactId>gson</artifactId>
                 <version>${gson.version}</version>
             </dependency>
-            
+
             <!-- JSON Processing - Genson for Chaincode -->
             <dependency>
                 <groupId>com.owlike</groupId>
                 <artifactId>genson</artifactId>
                 <version>${genson.version}</version>
             </dependency>
-            
+
             <!-- JSON Processing - org.json -->
             <dependency>
                 <groupId>org.json</groupId>
                 <artifactId>json</artifactId>
                 <version>20230227</version>
             </dependency>
-            
+
             <!-- Apache Commons -->
             <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>3.12.0</version>
             </dependency>
-            
+
             <dependency>
                 <groupId>commons-io</groupId>
                 <artifactId>commons-io</artifactId>
                 <version>2.11.0</version>
             </dependency>
-            
+
             <!-- Logging -->
             <dependency>
                 <groupId>org.slf4j</groupId>
@@ -205,7 +205,7 @@
                 <artifactId>logback-classic</artifactId>
                 <version>${logback.version}</version>
             </dependency>
-            
+
             <!-- Testing -->
             <dependency>
                 <groupId>org.junit.jupiter</groupId>
@@ -241,7 +241,7 @@
                         <target>${maven.compiler.target}</target>
                     </configuration>
                 </plugin>
-                
+
                 <!-- Maven War Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -251,36 +251,36 @@
                         <failOnMissingWebXml>false</failOnMissingWebXml>
                     </configuration>
                 </plugin>
-                
+
                 <!-- Maven Surefire Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-surefire-plugin</artifactId>
                     <version>3.0.0</version>
                 </plugin>
-                
+
                 <!-- Maven Shade Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-shade-plugin</artifactId>
                     <version>3.4.1</version>
                 </plugin>
-                
+
                 <!-- Jetty Plugin -->
                 <plugin>
-    <groupId>org.eclipse.jetty</groupId>
-    <artifactId>jetty-maven-plugin</artifactId>
-    <version>9.4.44.v20210927</version>
-    <configuration>
-        <webApp>
-            <contextPath>/scf</contextPath>
-        </webApp>
-        <httpConnector>
-            <port>8088</port>
-        </httpConnector>
-    </configuration>
-</plugin>
-                
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-maven-plugin</artifactId>
+                    <version>9.4.44.v20210927</version>
+                    <configuration>
+                        <webApp>
+                            <contextPath>/scf</contextPath>
+                        </webApp>
+                        <httpConnector>
+                            <port>8088</port>
+                        </httpConnector>
+                    </configuration>
+                </plugin>
+
                 <!-- Maven Enforcer Plugin -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
