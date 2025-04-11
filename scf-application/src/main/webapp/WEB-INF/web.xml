@@ -262,6 +262,14 @@
     <servlet-name>SearchScMulti</servlet-name>
     <url-pattern>/searchScMulti</url-pattern>
 </servlet-mapping>
+<servlet>
+    <servlet-name>UpdateSCMultiAddressServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.UpdateSCMultiAddressServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UpdateSCMultiAddressServlet</servlet-name>
+    <url-pattern>/updateSCMultiAddress</url-pattern>
+</servlet-mapping>
 
 <!-- SC Connections Servlets -->
 <servlet>

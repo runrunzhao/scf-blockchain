@@ -17,6 +17,7 @@
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/blockchain/connection/FabricNetworkConfig.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/dao/InvoiceDAO.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/CreateEnterpriseServlet.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateSCMultiAddressServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/model/Contract.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/dao/UserDAO.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/util/PasswordUtil.java

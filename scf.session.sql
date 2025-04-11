@@ -1,1 +1,1 @@
-SELECT *  FROM SCToken;
+SELECT *  FROM scMulti

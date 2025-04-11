@@ -1748,6 +1748,7 @@
                     document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
                     document.getElementById('searchSCTransBtn').addEventListener('click', searchLatestSCTransFromDB);
                     document.getElementById('saveScTransBtn').addEventListener('click', saveScTransToDB);
+                    document.getElementById('searchScMultiBtn').addEventListener('click', searchLatestSCMultiFromDB);
                     document.getElementById('saveScMultiBtn').addEventListener('click', saveScMultiToDB);
                     document.getElementById('saveConnectionsBtn').addEventListener('click', saveConnectionsToDB);
 
@@ -2151,6 +2152,71 @@
                         });
                 }
 
+function searchLatestSCMultiFromDB() {
+    showStatus("Searching for latest SCMulti contract...");
+
+    // 获取钱包地址(如果已连接)
+    const walletAddress = window.userAddress || '';
+    
+    // 获取SCTrans地址
+    const scTransAddr = document.getElementById('scTransAddressDisplay').value || 
+                       document.getElementById('scMultiTransAddress').value || '';
+    
+    // 创建带查询参数的URL
+    let url = 'searchScMulti';
+    let hasParam = false;
+    
+    if (walletAddress) {
+        url += '?walletAddress=' + encodeURIComponent(walletAddress);
+        hasParam = true;
+    }
+    
+    if (scTransAddr) {
+        url += hasParam ? '&' : '?';
+        url += 'scTransAddr=' + encodeURIComponent(scTransAddr); // 修正这里的参数名!
+        hasParam = true;
+        console.log("Searching for SCMulti with SCTrans address:", scTransAddr);
+    }
+
+    // 从服务器获取最新的SCMulti合约
+    fetch(url)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
+        .then(data => {
+            if (data.success) {
+                // 显示结果
+                const scMultiData = data.data; // 注意这里要用data.data而不是data.scMulti
+
+                document.getElementById('scMultiTokenID').value = scMultiData.multiTokenID;
+                document.getElementById('scMultiTransAddress').value = scMultiData.scTransAddr;
+                document.getElementById('multiAddress1').value = scMultiData.signer1;
+                document.getElementById('multiAddress2').value = scMultiData.signer2;
+
+                // 如果有第三个签名者
+                if (scMultiData.signer3) {
+                    document.getElementById('multiAddress3').value = scMultiData.signer3;
+                }
+
+                // 更新合约地址(如果有)
+                if (scMultiData.genmuliContractAddr) {
+                    document.getElementById('scMultiAddressDisplay').value = scMultiData.genmuliContractAddr;
+                }
+
+                showStatus("Latest SCMulti contract loaded successfully");
+            } else {
+                // 显示允许手动创建的消息
+                showStatus(data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error searching SCMulti contract:', error);
+            showStatus("Failed to search SCMulti contract: " + error.message, true);
+        });
+}
                 // Then add this function to handle saving SC data
                 function saveScTransToDB() {
                     // Validate form before submission
@@ -2732,9 +2798,63 @@
                     copyContractAddress();
                 }
 
-                function saveSCMultiAddress2DB() {
-                    
-                }
+function saveSCMultiAddress2DB() {
+    const tokenId = document.getElementById('scMultiTokenID').value;
+    const contractAddress = document.getElementById('scMultiAddressDisplay').value;
+
+    // Validate values
+    if (!tokenId) {
+        showStatus("Error! Please search or create an SCMulti record first.", true);
+        return;
+    }
+
+    if (!contractAddress) {
+        showStatus("No SCMulti contract address to save. Please deploy or refresh first.", true);
+        return;
+    }
+
+    // Ask for confirmation
+    const confirmSave = confirm("Are you sure you want to update this SCMulti contract address in the database?");
+    if (!confirmSave) {
+        showStatus("Update operation cancelled", true);
+        return;
+    }
+
+    // Show saving status
+    showStatus("Updating SCMulti contract address in database...");
+
+    // Create form data
+    const params = new URLSearchParams();
+    params.append("multiTokenID", tokenId);
+    params.append("contractAddress", contractAddress);
+    
+    // Send update request
+    fetch('updateSCMultiAddress', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: params.toString()
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        if (data.success) {
+            showStatus("SCMulti contract address updated successfully!");
+        } else {
+            showStatus("Error updating SCMulti contract address: " + data.message, true);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating SCMulti contract address:', error);
+        showStatus("Failed to update SCMulti contract address: " + error.message, true);
+    });
+}
+
             </script>
 
             <!-- Footer -->
