@@ -103,18 +103,31 @@ CREATE TABLE SCToken (
     memo VARCHAR(64)
 );
 
-ALTER TABLE SCToken
-ADD COLUMN multContractAddr VARCHAR(42),
-ADD COLUMN multiCreateTime DATETIME;
+--ALTER TABLE SCToken
+--ADD COLUMN multContractAddr VARCHAR(42),
+--ADD COLUMN multiCreateTime DATETIME;
 
-CREATE TABLE scMultiSCSigner (
-    multContractAddr VARCHAR(42) NOT NULL,
+
+CREATE TABLE scMulti (
+    multiTokenID INT AUTO_INCREMENT PRIMARY KEY,
+    scTransAddr VARCHAR(42) NOT NULL,
     signer1 VARCHAR(42),
     signer2 VARCHAR(42),
     signer3 VARCHAR(42),
     memo VARCHAR(42),
-    PRIMARY KEY (multContractAddr)
+    genmuliContractAddr VARCHAR(42),
+    scmultiCreateTime DATETIME
 );
+
+
+CREATE TABLE scTransMultiConnection (
+    connectionID INT AUTO_INCREMENT PRIMARY KEY,
+    scTransAddr VARCHAR(42) NOT NULL,
+    scMultiAddr VARCHAR(42) NOT NULL,
+    scConnectTime DATETIME,
+    memo VARCHAR(42)
+);
+
 
 docker run --name scf-mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=SCFDB -p 3306:3306 -d mysql:5.7
 -- Step 1: Create the database

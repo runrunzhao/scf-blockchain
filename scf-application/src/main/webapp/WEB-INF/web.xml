@@ -244,4 +244,42 @@
     <url-pattern>/getContractParties</url-pattern>
 </servlet-mapping>
 
+<!-- SCMulti Servlets -->
+<servlet>
+    <servlet-name>SaveScMulti</servlet-name>
+    <servlet-class>com.neo.scf.servlets.SaveScMultiServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SaveScMulti</servlet-name>
+    <url-pattern>/saveScMulti</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>SearchScMulti</servlet-name>
+    <servlet-class>com.neo.scf.servlets.SearchScMultiServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SearchScMulti</servlet-name>
+    <url-pattern>/searchScMulti</url-pattern>
+</servlet-mapping>
+
+<!-- SC Connections Servlets -->
+<servlet>
+    <servlet-name>SaveConnections</servlet-name>
+    <servlet-class>com.neo.scf.servlets.SaveConnectionsServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SaveConnections</servlet-name>
+    <url-pattern>/saveConnections</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>SearchConnections</servlet-name>
+    <servlet-class>com.neo.scf.servlets.SearchConnectionsServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SearchConnections</servlet-name>
+    <url-pattern>/searchConnections</url-pattern>
+</servlet-mapping>
+
 </web-app>
