@@ -24,6 +24,8 @@ public class SearchScMultiServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String scTransAddr = request.getParameter("scTransAddr");
+        String signerAddress = request.getParameter("signerAddress");
+        String searchMode = request.getParameter("mode"); // Add a mode parameter to explicitly switch behavior
         
         JSONObject jsonResponse = new JSONObject();
         Connection conn = null;
@@ -33,9 +35,30 @@ public class SearchScMultiServlet extends HttpServlet {
         try {
             conn = DBUtil.getConnection();
             
-            String sql = "SELECT * FROM scMulti WHERE scTransAddr = ? ORDER BY scmultiCreateTime DESC LIMIT 1";
-            pstmt = conn.prepareStatement(sql);
-            pstmt.setString(1, scTransAddr);
+            // Only use signerAddress if mode is explicitly set to "signer"
+            // This ensures existing functionality remains intact
+            if ("signer".equals(searchMode) && signerAddress != null && !signerAddress.isEmpty()) {
+                String sql = "SELECT * FROM scMulti WHERE signer1 = ? OR signer2 = ? OR signer3 = ? ORDER BY scmultiCreateTime DESC LIMIT 1";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, signerAddress);
+                pstmt.setString(2, signerAddress);
+                pstmt.setString(3, signerAddress);
+            } 
+            // Default behavior - unchanged from original
+            else if (scTransAddr != null && !scTransAddr.isEmpty()) {
+                String sql = "SELECT * FROM scMulti WHERE scTransAddr = ? ORDER BY scmultiCreateTime DESC LIMIT 1";
+                pstmt = conn.prepareStatement(sql);
+                pstmt.setString(1, scTransAddr);
+            } 
+            else {
+                jsonResponse.put("success", false);
+                jsonResponse.put("message", "Missing required parameter: scTransAddr");
+                response.setContentType("application/json");
+                PrintWriter out = response.getWriter();
+                out.print(jsonResponse.toString());
+                out.flush();
+                return;
+            }
             
             rs = pstmt.executeQuery();
             
@@ -53,8 +76,10 @@ public class SearchScMultiServlet extends HttpServlet {
                 jsonResponse.put("success", true);
                 jsonResponse.put("data", scMultiData);
             } else {
+                String searchTerm = "signer".equals(searchMode) ? "signer address" : "SCTrans address";
+                String paramValue = "signer".equals(searchMode) ? signerAddress : scTransAddr;
                 jsonResponse.put("success", false);
-                jsonResponse.put("message", "No SCMulti record found for the given SCTrans address");
+                jsonResponse.put("message", "No SCMulti record found for the given " + searchTerm + ": " + paramValue);
             }
         } catch (SQLException e) {
             jsonResponse.put("success", false);
