@@ -290,4 +290,14 @@
     <url-pattern>/searchConnections</url-pattern>
 </servlet-mapping>
 
+<!-- UpdateConnectionSignTxServlet configuration -->
+<servlet>
+    <servlet-name>UpdateConnectionSignTxServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.UpdateConnectionSignTxServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UpdateConnectionSignTxServlet</servlet-name>
+    <url-pattern>/updateConnectionSignTx</url-pattern>
+</servlet-mapping>
+
 </web-app>
