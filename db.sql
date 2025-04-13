@@ -125,7 +125,7 @@ CREATE TABLE scTransMultiConnection (
     scTransAddr VARCHAR(42) NOT NULL,
     scMultiAddr VARCHAR(42) NOT NULL,
     scConnectTime DATETIME,
-    signTx VARCHAR(64),
+    signTx VARCHAR(72),
     memo VARCHAR(42)
 );
 
