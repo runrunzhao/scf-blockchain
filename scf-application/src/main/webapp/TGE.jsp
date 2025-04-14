@@ -2062,6 +2062,7 @@
                 }
 
 
+
                 async function confirmTransaction(txIndex) {
                     if (!window.web3) {
                         showStatus("Wallet not connected. Please connect wallet first.", true);
@@ -2077,26 +2078,67 @@
                     try {
                         const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
 
-                        // Check if transaction exists and isn't already confirmed by this address
+                        // Check if the transaction index is valid
+                        const txCount = await multiSigContract.methods.getTransactionCount().call();
+                        if (parseInt(txIndex) >= txCount) {
+                            showStatus(`Error: Transaction with index ${txIndex} does not exist. Available indices: 0 to ${txCount - 1}`, true);
+                            return;
+                        }
+
+                        // Check if the transaction already executed
+                        const tx = await multiSigContract.methods.getTransaction(txIndex).call();
+                        if (tx.executed) {
+                            showStatus(`Transaction ${txIndex} has already been executed and cannot be confirmed anymore.`, true);
+                            return;
+                        }
+
+                        // Check if user is a signer
+                        const isSigner = await multiSigContract.methods.isSigner(userAddress).call();
+                        if (!isSigner) {
+                            showStatus("Error: Your wallet address is not registered as a signer on this multi-signature contract.", true);
+                            return;
+                        }
+
+                        // Check if transaction is already confirmed by this address
                         const isAlreadyConfirmed = await multiSigContract.methods.isTransactionConfirmedBy(
                             txIndex, userAddress
                         ).call();
 
                         if (isAlreadyConfirmed) {
-                            showStatus("You have already confirmed this transaction", true);
+                            showStatus("You have already confirmed this transaction.", true);
                             return;
                         }
 
                         showStatus("Confirming transaction, please confirm in your wallet...");
 
-                        const tx = await multiSigContract.methods.confirmTransaction(txIndex).send({
-                            from: userAddress
+                        // Changed variable name to txConfirmation to avoid redeclaration
+                        const txConfirmation = await multiSigContract.methods.confirmTransaction(txIndex).send({
+                            from: userAddress,
+                            gas: 300000,
+                            gasPrice: await web3.eth.getGasPrice()
                         });
 
-                        showStatus(`Transaction confirmed successfully! Once enough confirmations are provided, the transaction can be executed.`);
+                        showStatus(`Transaction ${txIndex} confirmed successfully! Once enough confirmations are provided, the transaction can be executed.`);
+
+                        // Refresh the pending transactions list
+                        await loadPendingTransactions();
                     } catch (error) {
                         console.error("Error confirming transaction:", error);
-                        showStatus("Failed to confirm transaction: " + error.message, true);
+
+                        // Better error handling with specific messages
+                        if (error.message.includes("execution reverted")) {
+                            if (error.message.includes("not a signer")) {
+                                showStatus("Error: Your address is not authorized as a signer on this contract", true);
+                            } else if (error.message.includes("already confirmed")) {
+                                showStatus("Error: You have already confirmed this transaction", true);
+                            } else if (error.message.includes("does not exist")) {
+                                showStatus("Error: This transaction does not exist", true);
+                            } else {
+                                showStatus("Contract error: " + error.message.split('revert ')[1] || error.message, true);
+                            }
+                        } else {
+                            showStatus("Failed to confirm transaction: " + error.message, true);
+                        }
                     }
                 }
 
@@ -2228,7 +2270,23 @@
                     }
 
                     const manualAddress = document.getElementById('manualMultiSigAddress').value;
-                    // Use mode=signer to explicitly indicate we're searching by signer
+
+                    // If manual address is provided, use it directly
+                    if (manualAddress && manualAddress.trim() !== '') {
+                        if (!window.web3.utils.isAddress(manualAddress)) {
+                            showStatus("Invalid Ethereum address format. Please check the address.", true);
+                            return;
+                        }
+
+                        // Set the contract address directly
+                        document.getElementById('connScMultiAddress').value = manualAddress;
+                        window.scMulticontract = manualAddress;
+                        showStatus("Multi-signature contract address set manually.");
+                        checkMultiSigSettings();
+                        return;
+                    }
+
+                    // Otherwise search by signer
                     fetch('searchScMulti?signerAddress=' + encodeURIComponent(userAddress) + '&mode=signer')
                         .then(response => {
                             if (!response.ok) {
@@ -2249,7 +2307,10 @@
 
                                 // Store the multi-sig contract address in the global variable
                                 window.scMulticontract = data.data.genmuliContractAddr || '';
+
+                                // Update the manual field for display purposes
                                 document.getElementById('manualMultiSigAddress').value = data.data.genmuliContractAddr;
+
                                 showStatus("Multi-signature contract found successfully!");
                                 checkMultiSigSettings();
                             } else {

@@ -69,6 +69,7 @@ public class SearchScMultiServlet extends HttpServlet {
                 scMultiData.put("signer1", rs.getString("signer1"));
                 scMultiData.put("signer2", rs.getString("signer2"));
                 scMultiData.put("signer3", rs.getString("signer3"));
+                scMultiData.put("requiredConfirmations", rs.getInt("requiredConfirmations"));
                 scMultiData.put("memo", rs.getString("memo"));
                 scMultiData.put("genmuliContractAddr", rs.getString("genmuliContractAddr"));
                 scMultiData.put("scmultiCreateTime", rs.getString("scmultiCreateTime"));

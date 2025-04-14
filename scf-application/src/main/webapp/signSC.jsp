@@ -485,8 +485,9 @@
                             </div>
                             <div class="form-group col-md-6">
                                 <label for="requiredConfirmation">Required confirmation：</label>
-                                <input type="number" class="form-control" id="requiredConfirmations" name="requiredConfirmations"
-                                    placeholder="required confirmation" min="1" step="1" required>
+                                <input type="number" class="form-control" id="requiredConfirmations"
+                                    name="requiredConfirmations" placeholder="required confirmation" min="1" step="1"
+                                    required>
                             </div>
                         </div>
 
@@ -2237,6 +2238,14 @@
                                 document.getElementById('multiAddress1').value = scMultiData.signer1;
                                 document.getElementById('multiAddress2').value = scMultiData.signer2;
 
+                                // FIX: Check if requiredConfirmations exists before setting it
+                                if (scMultiData.requiredConfirmations !== undefined && scMultiData.requiredConfirmations !== null) {
+                                    document.getElementById('requiredConfirmations').value = scMultiData.requiredConfirmations;
+                                } else {
+                                    // Set a default value if requiredConfirmations is not available
+                                    document.getElementById('requiredConfirmations').value = 1;
+                                }
+
                                 // 如果有第三个签名者
                                 if (scMultiData.signer3) {
                                     document.getElementById('multiAddress3').value = scMultiData.signer3;
@@ -2358,7 +2367,7 @@
                     const multiAddress2 = document.getElementById('multiAddress2').value;
                     const multiAddress3 = document.getElementById('multiAddress3') ? document.getElementById('multiAddress3').value : '';
                     const tokenId = document.getElementById('scMultiTokenID').value;
-                    const requiredConfirmationsValue = parseInt(document.getElementById('requiredConfirmations').value, 10) || 1;
+                    const requiredConfirmationsValue = parseInt(document.getElementById('requiredConfirmations').value, 10);
                     if (!scMultiTransAddress || !multiAddress1 || !multiAddress2) {
                         showStatus("Please fill all required fields", true);
                         return;
@@ -2529,7 +2538,6 @@
                         // Restore 0x prefix
                         cleanBytecode = "0x" + cleanBytecode;
 
-                        // 先定义合约对象
                         const TokenContract = new web3.eth.Contract(customTokenTransferABI);
 
                         showStatus("Deploying contract, please confirm the transaction...");
@@ -2545,39 +2553,44 @@
                                 gasPrice: await web3.eth.getGasPrice() // 使用当前gas价格
                             });
 
-                            // 添加调试信息
                             console.log("Contract deployed successfully!");
                             console.log("Contract address:", deployedContract.options.address);
 
                             const newTokenAddress = deployedContract.options.address;
 
-                            // 确保合约地址显示在UI上
+                            // Update the address field
                             const addressField = document.getElementById('scTransAddressDisplay');
-                            if (addressField) {
-                                addressField.value = newTokenAddress;
-                                console.log("Set address field value to:", newTokenAddress);
+                            addressField.value = newTokenAddress;
 
-                                // 确保父元素显示
-                                const parentElement = addressField.parentElement;
-                                if (parentElement) {
-                                    parentElement.style.display = 'flex'; // 使用flex而不是block以确保布局正确
-                                    console.log("Set parent element display to flex");
-                                } else {
-                                    console.error("Could not find parent element of address field");
-                                }
-                            } else {
-                                console.error("Could not find contractAddressDisplay element");
+                            // Use a consistent display style (block) for the container
+                            const addressParent = addressField.closest('.card');
+                            if (addressParent) {
+                                addressParent.style.display = 'block';
                             }
 
-                            // 更新状态
-                            showStatus(`scTransfer Contract deployed ! Address: ${newTokenAddress}`);
-                            document.getElementById('scTransAddressDisplay').value = newTokenAddress;
-                            document.getElementById('scTransAddressDisplay').parentElement.style.display = 'block';
+                            // Add current timestamp to CreateTime field
+                            const timeField = document.getElementById('scTransCreateTimeDisplay');
+                            if (timeField) {
+                                const now = new Date();
+                                const formattedDate = now.toLocaleString('en-US', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit'
+                                }).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2');
+                                timeField.value = formattedDate;
+                            }
 
-                            // 保存合约实例
+                            // Update Step 2 and Step 3 fields with the new address
+                            updateAllScTransAddressFields(newTokenAddress);
+
+                            // Show success status
+                            showStatus(`SCTransfer Contract deployed successfully! Address: ${newTokenAddress}`);
+
+                            // Save contract instance
                             window.scTranscontract = deployedContract;
-
-
 
                             return true;
                         } catch (txError) {
@@ -2604,8 +2617,24 @@
                         const scTransAddress = document.getElementById('scMultiTransAddress').value;
                         const multiAddress1 = document.getElementById('multiAddress1').value;
                         const multiAddress2 = document.getElementById('multiAddress2').value;
-                        const requiredConfirmations = parseInt(document.getElementById('requiredConfirmations').value, 10) || 1;
-                        // Validate form values
+                        const requiredConfirmationsInput = parseInt(document.getElementById('requiredConfirmations').value, 10) || 1;
+
+                        let requiredConfirmations;
+
+                        // Validate the input is a number
+                        if (!requiredConfirmationsInput || isNaN(parseInt(requiredConfirmationsInput))) {
+                            showStatus("Please enter a valid number for required confirmations", true);
+                            return false;
+                        } else {
+                            requiredConfirmations = parseInt(requiredConfirmationsInput, 10);
+                            // Ensure it's at least 1
+                            if (requiredConfirmations < 1) {
+                                showStatus("Required confirmations must be at least 1", true);
+                                return false;
+                            }
+                            console.log("Using required confirmations:", requiredConfirmations);
+                        }
+
                         if (!scTransAddress || !multiAddress1 || !multiAddress2) {
                             showStatus("Please fill in all required fields", true);
                             return false;
@@ -2799,6 +2828,7 @@
                                 if (connScMultiAddressField) {
                                     connScMultiAddressField.value = scMultiAddress;
                                 }
+                                checkMultiSigSettings();
                             }
                         })
                         .catch(error => {
@@ -3119,6 +3149,20 @@
                     document.execCommand('copy');
                     showStatus(`Transaction hash copied: ${txHash}`);
                 }
+
+                async function checkMultiSigSettings() {
+                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
+                    const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
+
+                    const requiredConfirmations = await multiSigContract.methods.requiredConfirmations().call();
+                    console.log("Required On blockchain:", requiredConfirmations);
+
+                    const signerCount = await multiSigContract.methods.getSignerCount().call();
+                    console.log("Total signers:", signerCount);
+
+                    showStatus(`Multi-sig contract requires ${requiredConfirmations} of ${signerCount} confirmations`);
+                }
+
 
             </script>
 
