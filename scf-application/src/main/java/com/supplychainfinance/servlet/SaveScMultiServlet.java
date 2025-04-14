@@ -67,7 +67,7 @@ public class SaveScMultiServlet extends HttpServlet {
 
             if (tokenId > 0) {
                 // Update existing record
-                String sql = "UPDATE scMulti SET scTransAddr = ?, signer1 = ?, signer2 = ?, signer3 = ?, " +
+                String sql = "UPDATE scMulti SET genmuliContractAddr  = ?, signer1 = ?, signer2 = ?, signer3 = ?, " +
                              "requiredConfirmations = ? WHERE multiTokenID = ?";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, scMultiTransAddress);
@@ -83,8 +83,8 @@ public class SaveScMultiServlet extends HttpServlet {
                 jsonResponse.put("message", "ScMulti record updated successfully");
             } else {
                 // Insert new record
-                String sql = "INSERT INTO scMulti (scTransAddr, signer1, signer2, signer3, requiredConfirmations) " + 
-                             "VALUES (?, ?, ?, ?, ?)"; // NEW CODE - added requiredConfirmations
+                String sql = "INSERT INTO scMulti (scTransAddr, signer1, signer2, signer3, requiredConfirmations,scmultiCreateTime) " + 
+                             "VALUES (?, ?, ?, ?, ?, NOW())"; // NEW CODE - added requiredConfirmations
                 pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
                 pstmt.setString(1, scMultiTransAddress);
                 pstmt.setString(2, multiAddress1);

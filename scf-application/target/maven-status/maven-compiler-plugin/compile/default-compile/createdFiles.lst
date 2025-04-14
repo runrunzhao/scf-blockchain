@@ -23,6 +23,7 @@ com/supplychainfinance/blockchain/service/CTTTokenService.class
 com/supplychainfinance/dao/ContractDAO.class
 com/supplychainfinance/servlet/CoreEnterpriseServlet.class
 com/supplychainfinance/dao/EnterpriseDAO.class
+com/supplychainfinance/servlet/UpdateConnectionSignTxServlet.class
 com/supplychainfinance/dao/DBConnectionManager.class
 com/supplychainfinance/servlet/GetSingleInvoiceServlet.class
 com/supplychainfinance/model/PaymentPeriod.class
@@ -47,6 +48,7 @@ com/supplychainfinance/servlet/ContractPartiesServlet.class
 com/supplychainfinance/servlet/GetContractServlet.class
 com/supplychainfinance/blockchain/service/InvoiceBlockchainService.class
 com/supplychainfinance/util/ServletUtils.class
+com/supplychainfinance/servlet/UpdateSCMultiAddressServlet.class
 com/supplychainfinance/servlet/SaveTokenServlet.class
 com/supplychainfinance/util/PasswordUtil.class
 com/supplychainfinance/dao/InvoiceDAO.class

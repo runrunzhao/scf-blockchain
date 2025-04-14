@@ -374,7 +374,7 @@
                             <p><strong>Limit:</strong> $1,000,000</p>
                         </div>
                         <div class="col-md-4">
-                            <p><strong>Invalid Date:</strong> Dec 31, 2026</p>
+                            <p><strong>Invalid Date:</strong> Dec 31, 2027</p>
                         </div>
                     </div>
                 </div>
@@ -468,6 +468,9 @@
                         <button type="button" id="SearchMultiSigAddressBtn" class="btn btn-secondary btn-block">Search
                             Multi Address</button>
                     </div>
+                    <button type="button" id="checkSignersBtn" class="btn btn-info ml-2">
+                        View Authorized Signers
+                    </button>
                 </div>
                 <div class="card-body">
                     <div class="form-row">
@@ -478,7 +481,12 @@
                         </div>
                         <div class="form-group col-md-6">
                             <label>&nbsp;</label>
-                            <button id="confirmTxButton" class="btn btn-success btn-block">Confirm Transaction</button>
+                            <div class="d-flex">
+                                <button id="confirmTxButton" class="btn btn-success flex-grow-1 mr-2">Confirm
+                                    Transaction</button>
+                                <button id="executeTxButton" class="btn btn-primary flex-grow-1">Execute
+                                    Transaction</button>
+                            </div>
                         </div>
                     </div>
                     <div class="mt-3">
@@ -1643,7 +1651,7 @@
                     // Add event listener for search button
                     document.getElementById('searchSCTransButton').addEventListener('click', searchLatestSCTransFromDB);
                     document.getElementById('SearchMultiSigAddressBtn').addEventListener('click', SearchMultiSigAddressFromDB);
-
+                    document.getElementById('checkSignersBtn').addEventListener('click', checkMultiSigSigners);
                     document.getElementById('mintForm').addEventListener('submit', async function (e) {
                         e.preventDefault();
 
@@ -1675,6 +1683,14 @@
 
                     document.getElementById('loadTxsButton').addEventListener('click', loadPendingTransactions);
 
+                    document.getElementById('executeTxButton').addEventListener('click', async function () {
+                        const txIndex = document.getElementById('txIndexInput').value;
+                        if (!txIndex || isNaN(txIndex)) {
+                            showStatus("Please enter a valid transaction index", true);
+                            return;
+                        }
+                        await executeTransaction(txIndex);
+                    });
 
                     if (window.ethereum) {
                         window.ethereum.request({ method: 'eth_accounts' })
@@ -2062,85 +2078,62 @@
                 }
 
 
-
                 async function confirmTransaction(txIndex) {
-                    if (!window.web3) {
-                        showStatus("Wallet not connected. Please connect wallet first.", true);
-                        return;
-                    }
+    if (!window.web3) {
+        showStatus("Wallet not connected. Please connect wallet first.", true);
+        return;
+    }
 
-                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
-                    if (!multiSigContractAddress) {
-                        showStatus("Multi-signature contract address not found.", true);
-                        return;
-                    }
+    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
+    if (!multiSigContractAddress) {
+        showStatus("Multi-signature contract address not found.", true);
+        return;
+    }
 
-                    try {
-                        const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
+    try {
+        const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
 
-                        // Check if the transaction index is valid
-                        const txCount = await multiSigContract.methods.getTransactionCount().call();
-                        if (parseInt(txIndex) >= txCount) {
-                            showStatus(`Error: Transaction with index ${txIndex} does not exist. Available indices: 0 to ${txCount - 1}`, true);
-                            return;
-                        }
+        // 验证交易存在且未执行
+        const txCount = await multiSigContract.methods.getTransactionCount().call();
+        if (parseInt(txIndex) >= txCount) {
+            showStatus("Error: Transaction with index " + txIndex + " does not exist.", true);
+            return;
+        }
+        const tx = await multiSigContract.methods.getTransaction(txIndex).call();
+        if (tx.executed) {
+            showStatus("Transaction " + txIndex + " has been executed.", true);
+            return;
+        }
 
-                        // Check if the transaction already executed
-                        const tx = await multiSigContract.methods.getTransaction(txIndex).call();
-                        if (tx.executed) {
-                            showStatus(`Transaction ${txIndex} has already been executed and cannot be confirmed anymore.`, true);
-                            return;
-                        }
+        // 检查当前账户是否为签名者
+        const isSigner = await multiSigContract.methods.isSigner(userAddress).call();
+        if (!isSigner) {
+            showStatus("Error: Your wallet address is not registered as a signer.", true);
+            return;
+        }
 
-                        // Check if user is a signer
-                        const isSigner = await multiSigContract.methods.isSigner(userAddress).call();
-                        if (!isSigner) {
-                            showStatus("Error: Your wallet address is not registered as a signer on this multi-signature contract.", true);
-                            return;
-                        }
+        // 【移除预检查部分——直接提交确认】
+        showStatus("Confirming transaction, please confirm in your wallet...");
 
-                        // Check if transaction is already confirmed by this address
-                        const isAlreadyConfirmed = await multiSigContract.methods.isTransactionConfirmedBy(
-                            txIndex, userAddress
-                        ).call();
+        const txConfirmation = await multiSigContract.methods.confirmTransaction(txIndex).send({
+            from: userAddress,
+            gas: 300000,
+            gasPrice: await web3.eth.getGasPrice()
+        });
+        
+        console.log("Confirmation result:", txConfirmation);
+        showStatus("Transaction " + txIndex + " confirmed successfully!");
 
-                        if (isAlreadyConfirmed) {
-                            showStatus("You have already confirmed this transaction.", true);
-                            return;
-                        }
-
-                        showStatus("Confirming transaction, please confirm in your wallet...");
-
-                        // Changed variable name to txConfirmation to avoid redeclaration
-                        const txConfirmation = await multiSigContract.methods.confirmTransaction(txIndex).send({
-                            from: userAddress,
-                            gas: 300000,
-                            gasPrice: await web3.eth.getGasPrice()
-                        });
-
-                        showStatus(`Transaction ${txIndex} confirmed successfully! Once enough confirmations are provided, the transaction can be executed.`);
-
-                        // Refresh the pending transactions list
-                        await loadPendingTransactions();
-                    } catch (error) {
-                        console.error("Error confirming transaction:", error);
-
-                        // Better error handling with specific messages
-                        if (error.message.includes("execution reverted")) {
-                            if (error.message.includes("not a signer")) {
-                                showStatus("Error: Your address is not authorized as a signer on this contract", true);
-                            } else if (error.message.includes("already confirmed")) {
-                                showStatus("Error: You have already confirmed this transaction", true);
-                            } else if (error.message.includes("does not exist")) {
-                                showStatus("Error: This transaction does not exist", true);
-                            } else {
-                                showStatus("Contract error: " + error.message.split('revert ')[1] || error.message, true);
-                            }
-                        } else {
-                            showStatus("Failed to confirm transaction: " + error.message, true);
-                        }
-                    }
-                }
+        await loadPendingTransactions();
+    } catch (error) {
+        console.error("Error confirming transaction:", error);
+        if (error.message.includes("already confirmed")) {
+            showStatus("Error: You have already confirmed this transaction", true);
+        } else {
+            showStatus("Failed to confirm transaction: " + error.message, true);
+        }
+    }
+}
 
 
                 async function loadPendingTransactions() {
@@ -2259,7 +2252,7 @@
                     }
                 }
 
-                function SearchMultiSigAddressFromDB() {
+                async function SearchMultiSigAddressFromDB() {
                     // Show loading status
                     showStatus("Searching for multi-signature contracts...");
 
@@ -2278,12 +2271,36 @@
                             return;
                         }
 
-                        // Set the contract address directly
-                        document.getElementById('connScMultiAddress').value = manualAddress;
-                        window.scMulticontract = manualAddress;
-                        showStatus("Multi-signature contract address set manually.");
-                        checkMultiSigSettings();
-                        return;
+                        try {
+                            // Set the contract address directly
+                            document.getElementById('connScMultiAddress').value = manualAddress;
+                            window.scMulticontract = manualAddress;
+
+                            // Create contract instance here - proper error handling
+                            const multiSigContract = new window.web3.eth.Contract(customTokenMultiABI, manualAddress);
+
+                            // Try to verify this is a valid multi-sig contract
+                            try {
+                                const required = await multiSigContract.methods.requiredConfirmations().call();
+                                console.log("Required On blockchain:", required);
+
+                                const signers = await multiSigContract.methods.getAllSigners().call();
+                                console.log("Authorized blockchain signers:", signers);
+
+                                showStatus(`Multi-signature contract verified with ${required} required confirmations and ${signers.length} signers.`);
+                            } catch (verifyError) {
+                                console.error("Contract verification error:", verifyError);
+                                showStatus("Address may not be a valid multi-signature contract. Some functions may not work.", true);
+                            }
+
+                            // Still proceed with the address
+                            checkMultiSigSettings();
+                            return;
+                        } catch (error) {
+                            console.error("Error setting up multi-sig contract:", error);
+                            showStatus("Failed to initialize the multi-signature contract: " + error.message, true);
+                            return;
+                        }
                     }
 
                     // Otherwise search by signer
@@ -2345,6 +2362,121 @@
                     });
 
                     showStatus(`Required confirmations changed to ${newValue}`);
+                }
+
+                async function checkMultiSigSigners() {
+                    if (!window.web3) {
+                        showStatus("Web3 not initialized. Please connect your wallet first.", true);
+                        return;
+                    }
+
+                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
+                    if (!multiSigContractAddress || !window.web3.utils.isAddress(multiSigContractAddress)) {
+                        showStatus("Invalid multi-signature contract address", true);
+                        return;
+                    }
+
+                    try {
+                        const multiSigContract = new window.web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
+
+                        // Get all authorized signers
+                        const signers = await multiSigContract.methods.getAllSigners().call();
+                        console.log("Authorized signers:", signers);
+
+                        // Get required confirmations
+                        const required = await multiSigContract.methods.requiredConfirmations().call();
+
+                        // Use string concatenation instead of template literals
+                        let signerList = '';
+                        for (let i = 0; i < signers.length; i++) {
+                            const addr = signers[i];
+                            const isCurrentUser = addr.toLowerCase() === window.userAddress.toLowerCase();
+                            signerList += (i + 1) + '. ' + addr + ' ' + (isCurrentUser ? '(You)' : '') + '<br>';
+                        }
+
+                        showStatus('<strong>Multi-Signature Contract Signers (' + required + ' of ' + signers.length + ' required)</strong>:<br>' + signerList, false, true);
+
+                        // Check if current user is a signer
+                        let isCurrentUserSigner = false;
+                        for (let i = 0; i < signers.length; i++) {
+                            if (signers[i].toLowerCase() === window.userAddress.toLowerCase()) {
+                                isCurrentUserSigner = true;
+                                break;
+                            }
+                        }
+
+                        if (!isCurrentUserSigner) {
+                            showStatus("Warning: Your current wallet address is NOT authorized as a signer on this contract", true);
+                        }
+
+                        return signers;
+                    } catch (error) {
+                        console.error("Error fetching signers:", error);
+                        showStatus("Failed to retrieve signers: " + error.message, true);
+                        return [];
+                    }
+                }
+                // Update the showStatus function to accept HTML content
+                function showStatus(message, isError = false, isHTML = false) {
+                    let statusDiv = document.getElementById('status');
+                    if (!statusDiv) {
+                        statusDiv = document.createElement('div');
+                        statusDiv.id = 'status';
+                        const container = document.querySelector('.container');
+                        if (container) {
+                            container.insertBefore(statusDiv, container.firstChild);
+                        } else {
+                            document.body.appendChild(statusDiv);
+                        }
+                    }
+
+                    if (isHTML) {
+                        statusDiv.innerHTML = message;
+                    } else {
+                        statusDiv.textContent = message;
+                    }
+
+                    statusDiv.style.display = 'block';
+                    statusDiv.className = isError ? 'status-error' : 'status-success';
+
+                    // Don't auto-hide for signer list
+                    if (!isHTML) {
+                        setTimeout(() => {
+                            statusDiv.style.display = 'none';
+                        }, 5000);
+                    }
+                }
+
+
+                async function executeTransaction(txIndex) {
+                    if (!window.web3) {
+                        showStatus("Wallet not connected. Please connect wallet first.", true);
+                        return;
+                    }
+
+                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
+                    if (!multiSigContractAddress) {
+                        showStatus("Multi-signature contract address not found.", true);
+                        return;
+                    }
+
+                    try {
+                        const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
+
+                        showStatus("Executing transaction, please confirm in your wallet...");
+
+                        const tx = await multiSigContract.methods.executeTransaction(txIndex).send({
+                            from: userAddress,
+                            gas: 500000,
+                            gasPrice: await web3.eth.getGasPrice()
+                        });
+
+                        showStatus(`Transaction ${txIndex} executed successfully!`);
+                        await loadPendingTransactions(); // Refresh the list
+                    } catch (error) {
+                        console.error("Error executing transaction:", error);
+                        showStatus("Failed to execute transaction: " + error.message, true);
+                    }
                 }
 
             </script>
