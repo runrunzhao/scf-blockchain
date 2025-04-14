@@ -483,6 +483,11 @@
                                 <input type="text" class="form-control" id="multiAddress2" name="multiAddress2"
                                     placeholder="Enter Manage Address (0x...)" required>
                             </div>
+                            <div class="form-group col-md-6">
+                                <label for="requiredConfirmation">Required confirmation：</label>
+                                <input type="number" class="form-control" id="requiredConfirmations" name="requiredConfirmations"
+                                    placeholder="required confirmation" min="1" step="1" required>
+                            </div>
                         </div>
 
                         <input type="hidden" id="scMultiTokenID" name="scMultiTokenID">
@@ -2351,10 +2356,9 @@
                     const scMultiTransAddress = document.getElementById('scMultiTransAddress').value;
                     const multiAddress1 = document.getElementById('multiAddress1').value;
                     const multiAddress2 = document.getElementById('multiAddress2').value;
-                    const multiAddress3 = document.getElementById('multiAddress3') ?
-                        document.getElementById('multiAddress3').value : '';
+                    const multiAddress3 = document.getElementById('multiAddress3') ? document.getElementById('multiAddress3').value : '';
                     const tokenId = document.getElementById('scMultiTokenID').value;
-
+                    const requiredConfirmationsValue = parseInt(document.getElementById('requiredConfirmations').value, 10) || 1;
                     if (!scMultiTransAddress || !multiAddress1 || !multiAddress2) {
                         showStatus("Please fill all required fields", true);
                         return;
@@ -2376,6 +2380,7 @@
                     formData.append('scMultiTransAddress', scMultiTransAddress);
                     formData.append('multiAddress1', multiAddress1);
                     formData.append('multiAddress2', multiAddress2);
+                    formData.append('requiredConfirmations', requiredConfirmationsValue);
                     if (multiAddress3) formData.append('multiAddress3', multiAddress3);
                     if (tokenId) formData.append('tokenId', tokenId);
 
@@ -2599,7 +2604,7 @@
                         const scTransAddress = document.getElementById('scMultiTransAddress').value;
                         const multiAddress1 = document.getElementById('multiAddress1').value;
                         const multiAddress2 = document.getElementById('multiAddress2').value;
-
+                        const requiredConfirmations = parseInt(document.getElementById('requiredConfirmations').value, 10) || 1;
                         // Validate form values
                         if (!scTransAddress || !multiAddress1 || !multiAddress2) {
                             showStatus("Please fill in all required fields", true);
@@ -2633,8 +2638,6 @@
 
                         // Create signers array for the contract constructor
                         const signers = [multiAddress1, multiAddress2];
-                        const requiredConfirmations = 1; // Require at least one confirmation
-
                         // Define Multi-Sig contract object
                         const MultiContract = new window.web3.eth.Contract(customTokenMultiABI);
 

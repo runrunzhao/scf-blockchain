@@ -114,11 +114,13 @@ CREATE TABLE scMulti (
     signer1 VARCHAR(42),
     signer2 VARCHAR(42),
     signer3 VARCHAR(42),
+    requiredConfirmations INT,
     memo VARCHAR(42),
     genmuliContractAddr VARCHAR(42),
     scmultiCreateTime DATETIME
 );
-
+ALTER TABLE scMulti
+ADD COLUMN requiredConfirmations INT AFTER signer3;
 
 CREATE TABLE scTransMultiConnection (
     connectionID INT AUTO_INCREMENT PRIMARY KEY,

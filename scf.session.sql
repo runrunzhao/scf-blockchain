@@ -1,2 +1,3 @@
- select * from scTransMultiConnection 
+ select * from scMulti 
+ 
  
