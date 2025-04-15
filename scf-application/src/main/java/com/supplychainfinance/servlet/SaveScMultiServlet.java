@@ -21,7 +21,7 @@ public class SaveScMultiServlet extends HttpServlet {
             throws ServletException, IOException {
 
         // Get parameters from the request
-        String scMultiTransAddress = request.getParameter("scMultiTransAddress");
+        String scTransAddress = request.getParameter("scTransAddress");
         String multiAddress1 = request.getParameter("multiAddress1");
         String multiAddress2 = request.getParameter("multiAddress2");
         String multiAddress3 = request.getParameter("multiAddress3");
@@ -70,7 +70,7 @@ public class SaveScMultiServlet extends HttpServlet {
                 String sql = "UPDATE scMulti SET genmuliContractAddr  = ?, signer1 = ?, signer2 = ?, signer3 = ?, " +
                              "requiredConfirmations = ? WHERE multiTokenID = ?";
                 pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, scMultiTransAddress);
+                pstmt.setString(1, scTransAddress);
                 pstmt.setString(2, multiAddress1);
                 pstmt.setString(3, multiAddress2);
                 pstmt.setString(4, multiAddress3);
@@ -86,7 +86,7 @@ public class SaveScMultiServlet extends HttpServlet {
                 String sql = "INSERT INTO scMulti (scTransAddr, signer1, signer2, signer3, requiredConfirmations,scmultiCreateTime) " + 
                              "VALUES (?, ?, ?, ?, ?, NOW())"; // NEW CODE - added requiredConfirmations
                 pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-                pstmt.setString(1, scMultiTransAddress);
+                pstmt.setString(1, scTransAddress);
                 pstmt.setString(2, multiAddress1);
                 pstmt.setString(3, multiAddress2);
                 pstmt.setString(4, multiAddress3);

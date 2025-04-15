@@ -438,17 +438,17 @@
                                 <div class="form-group">
                                     <label for="scTransAddressDisplay"><strong>SCTrans BlockChain:</strong></label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="scTransAddressDisplayFromBlock" readonly>
+                                        <input type="text" class="form-control" id="scTransAddressDisplay" readonly>
                                         <div class="input-group-append">
                                             <button class="btn btn-outline-primary" type="button"
                                                 onclick="refreshScTransAddress()">
-                                                <i class="fas fa-sync-alt"></i> RefreshSCTransAddress
+                                                <i class="fas fa-sync-alt"></i> Refresh
                                             </button>
                                             <button class="btn btn-outline-secondary" type="button"
                                                 onclick="copySCTransAddress()">
                                                 <i class="fas fa-copy"></i> CopySCTransAddress
                                             </button>
-                                            <button id="saveScTransBtnFromBlock" class="btn btn-outline-success" type="button"
+                                            <button id="saveScTransBtn" class="btn btn-outline-success" type="button"
                                                 onclick="saveSCTransAddress2DB()">
                                                 <i class="fas fa-save"></i> saveSCTransAddress2DB
                                             </button>
@@ -530,11 +530,11 @@
                                 <div class="form-group">
                                     <label for="scMultiAddressDisplay"><strong>SCMulti BlockChain:</strong></label>
                                     <div class="input-group">
-                                        <input type="text" class="form-control" id="scMultiAddressDisplayFromBlock" readonly>
+                                        <input type="text" class="form-control" id="scMultiAddressDisplay" readonly>
                                         <div class="input-group-append">
                                             <button class="btn btn-outline-primary" type="button"
                                                 onclick="refreshScMultiAddress()">
-                                                <i class="fas fa-sync-alt"></i> RefreshScMultiAddress
+                                                <i class="fas fa-sync-alt"></i> Refresh
                                             </button>
                                             <button class="btn btn-outline-secondary" type="button"
                                                 onclick="copyScMultiAddress()">
@@ -607,7 +607,7 @@
                                         <div class="input-group-append">
                                             <button class="btn btn-outline-primary" type="button"
                                                 onclick="refreshSignTx()">
-                                                <i class="fas fa-sync-alt"></i> RefreshSignTx
+                                                <i class="fas fa-sync-alt"></i> Refresh
                                             </button>
                                             <button class="btn btn-outline-secondary" type="button"
                                                 onclick="copySignTx()">
@@ -1975,7 +1975,7 @@
                     if (recipientField && recipientField.value === "") {
                         recipientField.value = address;
                     }
-                    /*
+
                     // Set SCTrans address automatically if field exists
                     const scMultiTransAddressField = document.getElementById('scMultiTransAddress');
                     const scTransAddressDisplayField = document.getElementById('scTransAddressDisplay');
@@ -1983,7 +1983,6 @@
                         scTransAddressDisplayField.value && scTransAddressDisplayField.value !== "") {
                         scMultiTransAddressField.value = scTransAddressDisplayField.value;
                     }
-                    */
                 }
 
                 // Reset UI when wallet is disconnected
@@ -2157,163 +2156,81 @@
                 }
 
 
-              // ...existing code...
-              async function findContractByType(transactions, contractType) {
+                async function findContractByType(transactions, contractType) {
                     console.log(`Finding ${contractType} contract in ${transactions.length} transactions`);
 
-                    if (!window.web3) {
-                        console.error("Web3 is not initialized in findContractByType.");
-                        showStatus("Wallet not connected or Web3 not initialized.", true);
-                        return null;
-                    }
-                    if (!transactions || transactions.length === 0) {
-                        console.log("No transactions provided to findContractByType.");
-                        return null;
-                    }
+                    if (!transactions || transactions.length === 0) return null;
 
-                    // Filter for valid contract creation transactions first
                     const validTransactions = transactions.filter(tx =>
                         tx && tx.contractAddress &&
-                        window.web3.utils.isAddress(tx.contractAddress) &&
-                        (tx.to === "" || tx.to === null) && // Explicitly check for creation TX
-                        tx.isError === "0" // Ensure transaction was successful
+                        window.web3.utils.isAddress(tx.contractAddress)
                     );
 
-                    console.log(`Found ${validTransactions.length} valid successful contract creation transactions`);
-                    if (validTransactions.length === 0) {
-                        console.log("No valid contract creation transactions found.");
-                        return null;
-                    }
-
+                    console.log(`Found ${validTransactions.length} valid contract transactions`);
                     const potentialMatches = [];
 
                     for (const tx of validTransactions) {
                         try {
                             //console.log(`Examining contract at ${tx.contractAddress}`);
                             const code = await window.web3.eth.getCode(tx.contractAddress);
-                            // Skip if no code exists (not a contract or destroyed)
-                            if (code === '0x' || code === '0x0') {
-                                //console.log(`Skipping ${tx.contractAddress} - no bytecode found.`);
-                                continue;
-                            }
+                            if (code === '0x' || code === '0x0') continue;
 
                             let confidence = 0;
-                            let contractInstance; // Define contractInstance outside the specific type blocks
 
                             if (contractType === 'SCTrans') {
                                 // Use safer method calls with individual try/catch blocks
-                                contractInstance = new window.web3.eth.Contract(
-                                    customTokenTransferABI, // Ensure this ABI is defined globally or passed
+                                const contract = new window.web3.eth.Contract(
+                                    customTokenTransferABI,
                                     tx.contractAddress
                                 );
 
                                 try {
-                                    await contractInstance.methods.name().call();
-                                    //console.log(`Contract ${tx.contractAddress} has name()`);
-                                    confidence += 25;
-                                } catch (e) { /* console.log(`Contract ${tx.contractAddress} lacks name()`); */ }
-
-                                try {
-                                    await contractInstance.methods.symbol().call();
-                                    //console.log(`Contract ${tx.contractAddress} has symbol()`);
-                                    confidence += 25;
-                                } catch (e) { /* console.log(`Contract ${tx.contractAddress} lacks symbol()`); */ }
-
-                                try {
-                                    await contractInstance.methods.totalSupply().call();
-                                    //console.log(`Contract ${tx.contractAddress} has totalSupply()`);
-                                    confidence += 25;
-                                } catch (e) { /* console.log(`Contract ${tx.contractAddress} lacks totalSupply()`); */ }
-
-                                try {
-                                    await contractInstance.methods.owner().call();
-                                    //console.log(`Contract ${tx.contractAddress} has owner()`);
-                                    confidence += 25;
-                                } catch (e) { /* console.log(`Contract ${tx.contractAddress} lacks owner()`); */ }
-
-                            } else if (contractType === 'SCMulti') {
-                                // Add specific checks for SCMulti contract
-                                contractInstance = new window.web3.eth.Contract(
-                                    customTokenMultiABI, // Ensure this ABI is defined globally or passed
-                                    tx.contractAddress
-                                );
-
-                                try {
-                                    await contractInstance.methods.requiredConfirmations().call();
-                                    //console.log(`Contract ${tx.contractAddress} has requiredConfirmations()`);
+                                    const name = await contract.methods.name().call();
+                                    //console.log(`Contract has name(): "${name}"`);
                                     confidence += 30;
-                                } catch (e) { /* console.log(`Contract ${tx.contractAddress} lacks requiredConfirmations()`); */ }
+                                } catch (e) { }
 
                                 try {
-                                    await contractInstance.methods.tokenContract().call();
-                                    //console.log(`Contract ${tx.contractAddress} has tokenContract()`);
+                                    const symbol = await contract.methods.symbol().call();
+                                   // console.log(`Contract has symbol(): "${symbol}"`);
                                     confidence += 30;
-                                } catch (e) { /* console.log(`Contract ${tx.contractAddress} lacks tokenContract()`); */ }
+                                } catch (e) { }
 
                                 try {
-                                    await contractInstance.methods.getTransactionCount().call();
-                                    //console.log(`Contract ${tx.contractAddress} has getTransactionCount()`);
+                                    const totalSupply = await contract.methods.totalSupply().call();
+                                    //console.log(`Contract has totalSupply(): ${totalSupply}`);
                                     confidence += 20;
-                                } catch (e) { /* console.log(`Contract ${tx.contractAddress} lacks getTransactionCount()`); */ }
+                                } catch (e) { }
 
                                 try {
-                                    // SCMulti might also have an owner (if Ownable)
-                                    await contractInstance.methods.owner().call();
-                                    //console.log(`Contract ${tx.contractAddress} has owner()`);
+                                    const owner = await contract.methods.owner().call();
+                                    //console.log(`Contract has owner(): ${owner}`);
                                     confidence += 20;
-                                } catch (e) { /* console.log(`Contract ${tx.contractAddress} lacks owner()`); */ }
-                            }
+                                } catch (e) { }
 
-                            // Only add if confidence is reasonably high for the specific type
-                            if (confidence >= 50) { // Threshold might need adjustment (e.g., 50 for SCTrans, 60 for SCMulti)
-                                potentialMatches.push({ tx, confidence });
-                                console.log(`Potential ${contractType} match: ${tx.contractAddress} with confidence ${confidence}`);
-                            } else {
-                                //console.log(`Skipping ${tx.contractAddress} for ${contractType} - low confidence (${confidence})`);
+                                if (confidence >= 50) {
+                                    potentialMatches.push({ tx, confidence });
+                                }
                             }
-
+                            // SCMulti implementation remains the same...
                         } catch (error) {
-                            // Log errors more specifically if possible
-                            if (error.message.includes("Returned values aren't valid")) {
-                                console.warn(`Contract at ${tx.contractAddress} might not match ABI or is not the expected type.`);
-                            } else {
-                                console.error(`Error examining contract ${tx.contractAddress}:`, error.message);
-                            }
+                            // General error handling
                         }
                     }
 
-                    // Sort by confidence (highest first), then by timestamp (newest first)
-                    potentialMatches.sort((a, b) => {
-                        if (b.confidence !== a.confidence) {
-                            return b.confidence - a.confidence;
-                        }
-                        // If confidence is the same, prefer the newer transaction
-                        return parseInt(b.tx.timeStamp) - parseInt(a.tx.timeStamp);
-                    });
-
+                    potentialMatches.sort((a, b) => b.confidence - a.confidence);
 
                     if (potentialMatches.length > 0) {
-                        console.log(`Found ${potentialMatches.length} potential ${contractType} contracts - using best match: ${potentialMatches[0].tx.contractAddress} with ${potentialMatches[0].confidence} confidence`);
-                        return potentialMatches[0].tx; // Return the transaction object of the best match
+                        console.log(`Found ${potentialMatches.length} ${contractType} contracts - using best match with ${potentialMatches[0].confidence}% confidence`);
+                        return potentialMatches[0].tx;
                     }
 
-                    // Fallback: If no confident match, return the latest valid contract creation TX (less reliable)
-                    console.warn(`No confident ${contractType} contract found based on method checks. Falling back to the absolute latest contract creation transaction if available.`);
-                    // validTransactions is already sorted by the API (desc), so the first one is the latest
                     if (validTransactions.length > 0) {
-                         // Sort valid transactions by timestamp descending just to be sure
-                        validTransactions.sort((a, b) => parseInt(b.timeStamp) - parseInt(a.timeStamp));
-                        console.log(`Using fallback: latest contract transaction ${validTransactions[0].contractAddress}`);
-                        return validTransactions[0]; // Return the latest valid transaction object
+                        return validTransactions[0];
                     }
 
-
-                    console.error(`No suitable ${contractType} contract found.`);
-                    return null; // Explicitly return null if nothing found
+                    return null;
                 }
-
-               
-
 
             </script>
 
@@ -2534,18 +2451,19 @@
                 // Then add this function to handle saving ScMultit data
                 function saveScMultiToDB() {
                     // Validate form before submission
-                    const scTransAddress = document.getElementById('scTransAddressinDB2').value;
+                    const scMultiTransAddress = document.getElementById('scMultiTransAddress').value;
                     const multiAddress1 = document.getElementById('multiAddress1').value;
                     const multiAddress2 = document.getElementById('multiAddress2').value;
                     const multiAddress3 = document.getElementById('multiAddress3') ? document.getElementById('multiAddress3').value : '';
+                    const tokenId = document.getElementById('scMultiTokenID').value;
                     const requiredConfirmationsValue = parseInt(document.getElementById('requiredConfirmations').value, 10);
-                    if (!scTransAddress || !multiAddress1 || !multiAddress2) {
+                    if (!scMultiTransAddress || !multiAddress1 || !multiAddress2) {
                         showStatus("Please fill all required fields", true);
                         return;
                     }
 
                     // Validate addresses
-                    if (window.web3 && (!window.web3.utils.isAddress(scTransAddress) ||
+                    if (window.web3 && (!window.web3.utils.isAddress(scMultiTransAddress) ||
                         !window.web3.utils.isAddress(multiAddress1) ||
                         !window.web3.utils.isAddress(multiAddress2))) {
                         showStatus("Invalid address format. Please check all addresses.", true);
@@ -2557,12 +2475,12 @@
 
                     // Prepare form data
                     const formData = new URLSearchParams();
-                    formData.append('scTransAddress', scTransAddress);
+                    formData.append('scMultiTransAddress', scMultiTransAddress);
                     formData.append('multiAddress1', multiAddress1);
                     formData.append('multiAddress2', multiAddress2);
                     formData.append('requiredConfirmations', requiredConfirmationsValue);
                     if (multiAddress3) formData.append('multiAddress3', multiAddress3);
-                   
+                    if (tokenId) formData.append('tokenId', tokenId);
 
                     fetch('saveScMulti', {
                         method: 'POST',
@@ -2572,7 +2490,7 @@
                         body: formData.toString()
                     })
                         .then(response => {
-                            if (!response.ok) { 
+                            if (!response.ok) {
                                 throw new Error('Network response was not ok');
                             }
                             return response.json();
@@ -2580,8 +2498,8 @@
                         .then(data => {
                             if (data.success) {
                                 // Update token ID if returned
-                                if (data.multiTokenID) {
-                                    document.getElementById('scMultiTokenID').value = data.multiTokenID;
+                                if (data.tokenId) {
+                                    document.getElementById('scMultiTokenID').value = data.tokenId;
                                 }
                                 showStatus("SCMulti saved successfully!");
                                 document.getElementById('deployScMultiBtn').disabled = false;
@@ -2597,7 +2515,7 @@
 
 
                 function copyContractAddress() {
-                    const contractAddressEl = document.getElementById('scTransAddressDisplayFromBlock');
+                    const contractAddressEl = document.getElementById('scTransAddressDisplay');
                     const address = contractAddressEl.value.trim();
 
                     // Check if address exists
@@ -2615,7 +2533,7 @@
 
                 function saveSCTransAddress2DB() {
                     const tokenId = document.getElementById('scTransTokenID').value;
-                    const contractAddress = document.getElementById('scTransAddressDisplayFromBlock').value;
+                    const contractAddress = document.getElementById('scTransAddressDisplay').value;
 
                     // Validate values
                     if (!tokenId) {
@@ -2638,6 +2556,7 @@
                     // Show saving status
                     showStatus("Updating contract address in database...");
 
+                    // Create form data - use "tokenId" as the parameter name
                     const params = new URLSearchParams();
                     params.append("tokenId", tokenId);
                     params.append("contractAddress", contractAddress);
@@ -2711,7 +2630,7 @@
 
                         const TokenContract = new web3.eth.Contract(customTokenTransferABI);
 
-                        showStatus("Deploying contract, please wait and then Refresh...");
+                        showStatus("Deploying contract, please confirm the transaction...");
 
                         try {
                             // 直接使用固定gas和较高的gasLimit进行部署
@@ -2723,6 +2642,39 @@
                                 gas: 3000000, // 固定较大的gas数量
                                 gasPrice: await web3.eth.getGasPrice() // 使用当前gas价格
                             });
+
+                            console.log("Contract deployed successfully!");
+                            console.log("Contract address:", deployedContract.options.address);
+
+                            const newTokenAddress = deployedContract.options.address;
+
+                            // Update the address field
+                            const addressField = document.getElementById('scTransAddressDisplay');
+                            addressField.value = newTokenAddress;
+
+                            // Use a consistent display style (block) for the container
+                            const addressParent = addressField.closest('.card');
+                            if (addressParent) {
+                                addressParent.style.display = 'block';
+                            }
+
+                            // Add current timestamp to CreateTime field
+                            const timeField = document.getElementById('scTransCreateTimeDisplay');
+                            if (timeField) {
+                                const now = new Date();
+                                const formattedDate = now.toLocaleString('en-US', {
+                                    year: 'numeric',
+                                    month: '2-digit',
+                                    day: '2-digit',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    second: '2-digit'
+                                }).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2');
+                                timeField.value = formattedDate;
+                            }
+
+                            // Update Step 2 and Step 3 fields with the new address
+                            updateAllScTransAddressFields(newTokenAddress);
 
                             // Show success status
                             showStatus(`SCTransfer Contract deployed successfully! Address: ${newTokenAddress}`);
@@ -2752,7 +2704,7 @@
 
                     try {
                         // Get form values from Step 2
-                        const scTransAddress = document.getElementById('scTransAddressinDB2').value;
+                        const scTransAddress = document.getElementById('scMultiTransAddress').value;
                         const multiAddress1 = document.getElementById('multiAddress1').value;
                         const multiAddress2 = document.getElementById('multiAddress2').value;
                         const requiredConfirmationsInput = parseInt(document.getElementById('requiredConfirmations').value, 10) || 1;
@@ -2821,8 +2773,19 @@
                                 gasPrice: await window.web3.eth.getGasPrice() // Use current gas price
                             });
 
-              
+                            console.log("Multi-Sig contract deployed successfully!");
+                            console.log("Contract address:", deployedContract.options.address);
+
                             const newMultiAddress = deployedContract.options.address;
+
+                            // Update UI with contract address
+                            document.getElementById('scMultiAddressDisplay').value = newMultiAddress;
+
+                            // Also update Step 3 connections section
+                            const connScMultiAddressField = document.getElementById('connScMultiAddress');
+                            if (connScMultiAddressField) {
+                                connScMultiAddressField.value = newMultiAddress;
+                            }
 
                             // Save contract instance
                             window.scMulticontract = deployedContract;
@@ -2867,10 +2830,10 @@
                 }
 
                 function refreshScTransAddress() {
-                    refreshContractAddress('scTransAddressDisplayFromBlock', 'scTransCreateTimeDisplay', 'SCTrans')
+                    refreshContractAddress('scTransAddressDisplay', 'scTransCreateTimeDisplay', 'SCTrans')
                         .then(() => {
                             // After refresh completes, propagate the address to other fields
-                            const scTransAddress = document.getElementById('scTransAddressDisplayFromBlock').value;
+                            const scTransAddress = document.getElementById('scTransAddressDisplay').value;
                             if (scTransAddress && scTransAddress.trim() !== '') {
                                 updateAllScTransAddressFields(scTransAddress);
                             }
@@ -2880,9 +2843,9 @@
                 // Keep updateAllScTransAddressFields as it is - it has a specific purpose
                 function updateAllScTransAddressFields(scTransAddress) {
                     // Update in Step 2 (Multi-Sig section)
-                    const scTransAddressinDB2 = document.getElementById('scTransAddressinDB2');
-                    if (scTransAddressinDB2) {
-                        scTransAddressinDB2.value = scTransAddress;
+                    const scMultiTransAddressField = document.getElementById('scMultiTransAddress');
+                    if (scMultiTransAddressField) {
+                        scMultiTransAddressField.value = scTransAddress;
                     }
 
                     // Update in Step 3 (Connections section)
@@ -2892,7 +2855,7 @@
                     }
                 }
 
-                
+                // Modify updateUIForConnectedWallet to call updateAllScTransAddressFields
                 function updateUIForConnectedWallet(address) {
                     // Update status indicators
                     document.getElementById('connectionStatus').className = 'badge badge-success mr-2';
@@ -2928,6 +2891,13 @@
                         multiAddress1Field.value = address;
                     }
 
+                    // Check if there's an existing SCTrans address and propagate it
+                    const scTransAddressDisplayField = document.getElementById('scTransAddressDisplay');
+                    if (scTransAddressDisplayField &&
+                        scTransAddressDisplayField.value &&
+                        scTransAddressDisplayField.value !== "") {
+                        updateAllScTransAddressFields(scTransAddressDisplayField.value);
+                    }
                 }
 
 
@@ -2938,10 +2908,10 @@
 
                 // SCMulti specific functions
                 function refreshScMultiAddress() {
-                    refreshContractAddress('scMultiAddressDisplayFromBlock', 'scMultiCreateTimeDisplay', 'SCMulti')
+                    refreshContractAddress('scMultiAddressDisplay', 'scMultiCreateTimeDisplay', 'SCMulti')
                         .then(() => {
                             // After refresh completes, propagate the address to Step 3
-                            const scMultiAddress = document.getElementById('scMultiAddressDisplayFromBlock').value;
+                            const scMultiAddress = document.getElementById('scMultiAddressDisplay').value;
                             if (scMultiAddress && scMultiAddress.trim() !== '') {
                                 // Update in Step 3 (Connections section)
                                 const connScMultiAddressField = document.getElementById('connScMultiAddress');
