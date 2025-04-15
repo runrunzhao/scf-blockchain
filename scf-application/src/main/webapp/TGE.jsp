@@ -374,7 +374,7 @@
                             <p><strong>Limit:</strong> $1,000,000</p>
                         </div>
                         <div class="col-md-4">
-                            <p><strong>Invalid Date:</strong> Dec 31, 2027</p>
+                            <p><strong>Invalid Date:</strong> Dec 31, 2026</p>
                         </div>
                     </div>
                 </div>
@@ -440,63 +440,78 @@
 
                         <!-- Two buttons side by side -->
                         <div class="form-row justify-content-center">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <button type="button" id="searchSCTransButton" class="btn btn-info btn-block">
-                                    <i class="fas fa-search mr-1"></i> Search Latest SCTransfer
+                                    <i class="fas fa-search mr-1"></i> Search Latest SC
                                 </button>
                             </div>
-                            <div class="col-md-6">
+                            <div class="col-md-4">
+                                <button type="button" id="saveTokenInfoButton" class="btn btn-info btn-block">
+                                    <i class="fas fa-save mr-1"></i> Save TokenInfo
+                                </button>
+                            </div>
+                            <div class="col-md-4">
                                 <button type="submit" class="btn btn-generate btn-block">Generate Token</button>
                             </div>
                         </div>
                     </form>
                 </div>
             </div>
-            <!-- Add this to your TGE.jsp page -->
+            <!-- Pending Transactions Card -->
             <div class="card mt-4">
-
                 <div class="card-header">
-                    <i class="fas fa-list-alt mr-2"></i> Pending Transactions
-                </div>
-                <div class="form-row">
-                    <div class="form-group col-md-9">
-                        <label for="manualMultiSigAddress">Multi-Sig Address (Manual):</label>
-                        <input type="text" class="form-control" id="manualMultiSigAddress"
-                            placeholder="Enter multi-sig contract address if not showing automatically">
-                    </div>
-                    <div class="form-group col-md-3 d-flex align-items-end">
-                        <button type="button" id="SearchMultiSigAddressBtn" class="btn btn-secondary btn-block">Search
-                            Multi Address</button>
-                    </div>
-                    <button type="button" id="checkSignersBtn" class="btn btn-info ml-2">
-                        View Authorized Signers
-                    </button>
+                    <i class="fas fa-list-alt mr-2"></i> Pending Transactions & Multi-Sig Actions
                 </div>
                 <div class="card-body">
-                    <div class="form-row">
-                        <div class="form-group col-md-6">
-                            <label for="txIndexInput">Transaction Index:</label>
-                            <input type="number" class="form-control" id="txIndexInput"
-                                placeholder="Enter transaction index">
+                    <!-- Row 1: Search Multi Address and Display -->
+                    <div class="form-row mb-3 align-items-center">
+                        <div class="col-md-4">
+                            <button type="button" id="SearchMultiSigAddressBtn" class="btn btn-primary btn-block">
+                                <i class="fas fa-search mr-1"></i> Search Multi Address
+                            </button>
                         </div>
-                        <div class="form-group col-md-6">
-                            <label>&nbsp;</label>
+                        <div class="col-md-8">
+                            <input type="text" class="form-control" id="manualMultiSigAddress"
+                                placeholder="Enter or search for Multi-Sig Address (0x...)">
+                        </div>
+                    </div>
+
+                    <!-- Row 2: Load Transactions Button -->
+                    <div class="form-row mb-3">
+                        <div class="col-12">
+                            <button id="loadTxsButton" class="btn btn-info btn-block">
+                                <i class="fas fa-sync-alt mr-1"></i> Load Pending Transactions
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Row 3: Pending Transactions Display Area -->
+                    <div id="pendingTransactions" class="mb-3"
+                        style="min-height: 100px; border: 1px solid #eee; padding: 10px; border-radius: 5px; background-color: #f8f9fa;">
+                        <!-- Transactions table will be loaded here by JavaScript -->
+                        <small class="text-muted">Click "Load Pending Transactions" to view.</small>
+                    </div>
+
+                    <!-- Row 4: Transaction Actions -->
+                    <div class="form-row align-items-end">
+                        <div class="form-group col-md-4">
+                            <label for="txIndexInput">Transaction Index:</label>
+                            <input type="number" class="form-control" id="txIndexInput" placeholder="Enter Index #">
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label>&nbsp;</label> <!-- Spacer label for alignment -->
                             <div class="d-flex">
-                                <button id="confirmTxButton" class="btn btn-success flex-grow-1 mr-2">Confirm
-                                    Transaction</button>
-                                <button id="executeTxButton" class="btn btn-primary flex-grow-1">Execute
-                                    Transaction</button>
+                                <button id="confirmTxButton" class="btn btn-success flex-grow-1 mr-2">
+                                    <i class="fas fa-check mr-1"></i> Confirm Tx
+                                </button>
+                                <button id="executeTxButton" class="btn btn-primary flex-grow-1">
+                                    <i class="fas fa-play mr-1"></i> Execute Tx
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <div class="mt-3">
-                        <button id="loadTxsButton" class="btn btn-info">Load Pending Transactions</button>
-                        <div id="pendingTransactions" class="mt-3">
-                            <!-- Transactions will be displayed here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
+                </div> <!-- End card-body -->
+            </div> <!-- End card -->
 
             <!-- 引入脚本 -->
             <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -1636,7 +1651,7 @@
                 ]
 
             </script>
-            <!-- Web3 集成脚本 -->
+
             <script>
                 // 全局变量
                 window.web3 = undefined;
@@ -1644,14 +1659,14 @@
                 window.scTranscontract = undefined;
                 window.scMulticontract = undefined;
 
-                // 文档加载完成后添加事件监听器
+
                 document.addEventListener('DOMContentLoaded', () => {
 
                     document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
                     // Add event listener for search button
                     document.getElementById('searchSCTransButton').addEventListener('click', searchLatestSCTransFromDB);
                     document.getElementById('SearchMultiSigAddressBtn').addEventListener('click', SearchMultiSigAddressFromDB);
-                    document.getElementById('checkSignersBtn').addEventListener('click', checkMultiSigSigners);
+                   // document.getElementById('checkSignersBtn').addEventListener('click', checkMultiSigSigners);
                     document.getElementById('mintForm').addEventListener('submit', async function (e) {
                         e.preventDefault();
 
@@ -1987,7 +2002,7 @@
                                 document.getElementById('connScMultiAddress').value = data.data.genmuliContractAddr || '';
 
                                 // Store the multi-sig contract address in the global variable
-                                window.scMulticontract = data.data.genmuliContractAddr || '';
+                                window.scMulticontract = data.data.genmuliContractAddr;
 
                                 showStatus("SC connections loaded successfully");
                             } else {
@@ -2040,8 +2055,6 @@
                         const currentGasPrice = await web3.eth.getGasPrice();
                         console.log("Current gas price:", currentGasPrice);
 
-                        // Submit mint transaction request through multi-sig contract
-                        // submitMintTransaction creates a transaction requiring multiple signatures
                         const tx = await multiSigContract.methods.submitMintTransaction(
                             recipientAddress,
                             amountInWei
@@ -2108,14 +2121,12 @@
                             return;
                         }
 
-                        // 检查当前账户是否为签名者
                         const isSigner = await multiSigContract.methods.isSigner(userAddress).call();
                         if (!isSigner) {
                             showStatus("Error: Your wallet address is not registered as a signer.", true);
                             return;
                         }
 
-                        // 【移除预检查部分——直接提交确认】
                         showStatus("Confirming transaction, please confirm in your wallet...");
 
                         const txConfirmation = await multiSigContract.methods.confirmTransaction(txIndex).send({
@@ -2285,9 +2296,6 @@
                                 const required = await multiSigContract.methods.requiredConfirmations().call();
                                 console.log("Required On blockchain:", required);
 
-                                // const signers = await multiSigContract.methods.getAllSigners().call();
-                                // console.log("Authorized blockchain signers:", signers);
-                                // checkTokenExpiration();
                                 showStatus(`Multi-signature contract verified with ${required} required confirmations and ${signers.length} signers.`);
                             } catch (verifyError) {
                                 console.error("Contract verification error:", verifyError);
@@ -2295,7 +2303,7 @@
                             }
 
                             // Still proceed with the address
-                            checkMultiSigSettings();
+                         //   checkMultiSigSettings();
                             return;
                         } catch (error) {
                             console.error("Error setting up multi-sig contract:", error);
@@ -2331,10 +2339,10 @@
 
                                 showStatus("Multi-signature contract found successfully!");
                                 //checkMultiSigSettings();
-                               // checkTokenMultiSigAddress();
-                              //  checkMultiSigTokenAddress();
+                                // checkTokenMultiSigAddress();
+                                //  checkMultiSigTokenAddress();
 
-                               // checkTokenTotalSupply();
+                                // checkTokenTotalSupply();
                                 //checkTokenExpiration();
                                 //checkRecipientBalance();
                             } else {
@@ -2348,40 +2356,40 @@
                 }
 
                 async function checkMultiSigTokenAddress() {
-    try {
-        const multiSigAddress = document.getElementById('connScMultiAddress').value;
-        if (!multiSigAddress) {
-            showStatus("Multi-sig contract address not found.", true);
-            return;
-        }
-        const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigAddress);
+                    try {
+                        const multiSigAddress = document.getElementById('connScMultiAddress').value;
+                        if (!multiSigAddress) {
+                            showStatus("Multi-sig contract address not found.", true);
+                            return;
+                        }
+                        const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigAddress);
 
-        showStatus("Checking token address stored in multi-sig contract...");
-        const storedTokenAddr = await multiSigContract.methods.tokenContract().call();
+                        showStatus("Checking token address stored in multi-sig contract...");
+                        const storedTokenAddr = await multiSigContract.methods.tokenContract().call();
 
-        const expectedTokenAddr = document.getElementById('contractAddressDisplay').value;
+                        const expectedTokenAddr = document.getElementById('contractAddressDisplay').value;
 
-        console.log("Address stored in Multi-Sig Contract (tokenContract):", storedTokenAddr);
-        console.log("Expected Token Contract Address:", expectedTokenAddr);
+                        console.log("Address stored in Multi-Sig Contract (tokenContract):", storedTokenAddr);
+                        console.log("Expected Token Contract Address:", expectedTokenAddr);
 
-        if (!expectedTokenAddr) {
-             showStatus("Expected Token Contract address is missing in the UI.", true);
-             return;
-        }
+                        if (!expectedTokenAddr) {
+                            showStatus("Expected Token Contract address is missing in the UI.", true);
+                            return;
+                        }
 
-        if (storedTokenAddr.toLowerCase() === expectedTokenAddr.toLowerCase()) {
-            showStatus("Multi-sig contract has the correct token contract address set.", false);
-        } else if (storedTokenAddr === "0x0000000000000000000000000000000000000000") {
-            showStatus("ERROR: Token contract address is NOT SET in the multi-sig contract!", true);
-        } else {
-            showStatus("ERROR: Multi-sig contract has the WRONG token contract address set!", true);
-            showStatus("Expected: " + expectedTokenAddr + "<br>Got: " + storedTokenAddr, true, true);
-        }
-    } catch (error) {
-        console.error("Error checking multi-sig's token address:", error);
-        showStatus("Failed to check multi-sig's token address: " + error.message, true);
-    }
-}
+                        if (storedTokenAddr.toLowerCase() === expectedTokenAddr.toLowerCase()) {
+                            showStatus("Multi-sig contract has the correct token contract address set.", false);
+                        } else if (storedTokenAddr === "0x0000000000000000000000000000000000000000") {
+                            showStatus("ERROR: Token contract address is NOT SET in the multi-sig contract!", true);
+                        } else {
+                            showStatus("ERROR: Multi-sig contract has the WRONG token contract address set!", true);
+                            showStatus("Expected: " + expectedTokenAddr + "<br>Got: " + storedTokenAddr, true, true);
+                        }
+                    } catch (error) {
+                        console.error("Error checking multi-sig's token address:", error);
+                        showStatus("Failed to check multi-sig's token address: " + error.message, true);
+                    }
+                }
 
                 async function checkMultiSigSettings() {
                     const multiSigContractAddress = document.getElementById('connScMultiAddress').value;

@@ -361,26 +361,7 @@
                     </div>
                 </div>
             </div>
-            <div class="card">
-                <div class="card-header">
-                    <i class="fas fa-info-circle mr-2"></i> Limit Information
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <p><strong>Bank Name:</strong> ABC Bank</p>
-                        </div>
-                        <div class="col-md-4">
-                            <p><strong>Limit:</strong> $1,000,000</p>
-                        </div>
-                        <div class="col-md-4">
-                            <p><strong>Invalid Date:</strong> Dec 31, 2027</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
+ 
             <div class="card">
                 <div class="card-header">
                     <i class="fas fa-edit mr-2"></i> Generate Token
@@ -403,19 +384,6 @@
                         </div>
 
 
-                        <!-- Token Name and Symbol on the same row -->
-                        <div class="form-row">
-                            <div class="form-group col-md-6">
-                                <label for="tokenName">Token Name:</label>
-                                <input type="text" class="form-control" id="tokenName" name="tokenName"
-                                    placeholder="Enter Token Name" required readonly>
-                            </div>
-                            <div class="form-group col-md-6">
-                                <label for="tokenSymbol">Token Symbol:</label>
-                                <input type="text" class="form-control" id="tokenSymbol" name="tokenSymbol"
-                                    placeholder="Symbol (e.g. CTT)" required readonly>
-                            </div>
-                        </div>
                         <input type="hidden" id="tokenID" name="tokenID">
                         <!-- Amount and Invalid Date on the same row -->
                         <div class="form-row">
@@ -1929,18 +1897,6 @@
                                 // Display the result
                                 const token = data.token;
 
-                                document.getElementById('tokenID').value = token.tokenID;
-                                document.getElementById('tokenName').value = token.tokenName;
-                                document.getElementById('tokenSymbol').value = token.tokenSymbol;
-                                document.getElementById('invalidDate').value = token.scexpireDate;
-
-                                // Display creation time if available
-                                if (token.sccreateTime) {
-                                    document.getElementById('creationTime').value = token.sccreateTime;
-                                    // Make the creation time field visible
-                                    document.getElementById('creationTimeContainer').style.display = 'block';
-                                }
-
                                 // Update contract address if available
                                 if (token.genContractAddr) {
                                     document.getElementById('contractAddressDisplay').value = token.genContractAddr;
@@ -2001,83 +1957,7 @@
                 }
 
 
-                async function mintToken(recipientAddress, amount) {
-                    if (!window.web3) {
-                        showStatus("Wallet not connected. Please connect wallet first.", true);
-                        return false;
-                    }
-
-                    // Check token contract address
-                    const tokenContractAddress = document.getElementById('contractAddressDisplay').value;
-                    if (!tokenContractAddress) {
-                        showStatus("Token contract address not found. Please search for a contract first.", true);
-                        return false;
-                    }
-
-                    // Check multi-sig contract address
-                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
-                    if (!multiSigContractAddress) {
-                        showStatus("Multi-signature contract address not found. Cannot proceed with minting operation.", true);
-                        return false;
-                    }
-
-                    try {
-                        // Initialize token contract
-                        const tokenContract = new web3.eth.Contract(customTokenTransferABI, tokenContractAddress);
-                        console.log("Token contract initialized successfully");
-
-                        // Initialize multi-sig contract
-                        const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
-                        console.log("Multi-signature contract initialized successfully");
-
-                        // Convert amount to correct format (18 decimal places)
-                        // User inputs the actual token amount, we convert to wei for blockchain
-                        const amountInWei = web3.utils.toWei(amount.toString(), 'ether');
-
-                        showStatus("Submitting mint request to multi-sig contract, please confirm transaction in your wallet...");
-
-                        // Get current gas price
-                        const currentGasPrice = await web3.eth.getGasPrice();
-                        console.log("Current gas price:", currentGasPrice);
-
-                        // Submit mint transaction request through multi-sig contract
-                        // submitMintTransaction creates a transaction requiring multiple signatures
-                        const tx = await multiSigContract.methods.submitMintTransaction(
-                            recipientAddress,
-                            amountInWei
-                        ).send({
-                            from: userAddress,
-                            gas: 3000000,
-                            gasPrice: currentGasPrice
-                        });
-
-                        // Get transaction index from receipt
-                        const txIndex = tx.events.TransactionSubmitted ?
-                            tx.events.TransactionSubmitted.returnValues.txIndex :
-                            "Unknown";
-
-                        showStatus(`Mint transaction request submitted! Transaction index: ${txIndex}. Please wait for enough signers to confirm before execution.`);
-                        return true;
-                    } catch (error) {
-                        console.error("Mint transaction request failed:", error);
-
-                        // Detailed error handling
-                        if (error.message.includes("execution reverted")) {
-                            if (error.message.includes("not a signer")) {
-                                showStatus("Error: Your address is not authorized as a signer on the multi-sig contract", true);
-                            } else if (error.message.includes("already submitted")) {
-                                showStatus("Error: A transaction with the same parameters already exists", true);
-                            } else {
-                                showStatus("Transaction reverted: " + error.message, true);
-                            }
-                        } else {
-                            showStatus("Mint transaction request error: " + error.message, true);
-                        }
-                        return false;
-                    }
-                }
-
-
+           
                 async function confirmTransaction(txIndex) {
                     if (!window.web3) {
                         showStatus("Wallet not connected. Please connect wallet first.", true);
@@ -2096,7 +1976,6 @@
                     try {
                         const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
 
-                        // 验证交易存在且未执行
                         const txCount = await multiSigContract.methods.getTransactionCount().call();
                         if (parseInt(txIndex) >= txCount) {
                             showStatus("Error: Transaction with index " + txIndex + " does not exist.", true);
