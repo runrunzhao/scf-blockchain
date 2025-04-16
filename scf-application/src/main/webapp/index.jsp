@@ -255,7 +255,7 @@
                     <a class="dropdown-item" href="signSC.jsp">Sign SC</a>
                     <a class="dropdown-item" href="TGE.jsp">TGE</a>
                     <a class="dropdown-item" href="CTTinfo.jsp">Detail</a>
-                    <a class="dropdown-item" href="invoice.jsp"">AutoPay Invoice</a>
+                    <a class="dropdown-item" href="autoPay.jsp"">AutoPay</a>
                 </div>
             </div>
 

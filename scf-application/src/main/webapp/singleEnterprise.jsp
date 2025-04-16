@@ -338,7 +338,7 @@
                                 history.pushState(null, '', `singleEnterprise.jsp?id=${response.enterpriseID}`);
                             }
 
-                            alert('保存成功');
+                            alert('Save successful!');
 
                             // 切换回查看模式
                             toggleEditMode();

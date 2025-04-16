@@ -39,10 +39,12 @@ CREATE TABLE contract (
     signingDate DATE NOT NULL ,
     effectiveDate  DATE NOT NULL ,
     invalidDate DATE NOT NULL  ,
-    status ENUM('Active', 'Pending','End','drfting') NOT NULL,
+    status ENUM('Active', 'Pending','End','Draft') NOT NULL,
     remarks VARCHAR(255)                        
-                   
-    );
+    ;
+
+    ALTER TABLE contract 
+MODIFY COLUMN status ENUM('Active', 'Pending', 'End',   'Draft') NOT NULL; 
 
 -- Step 7: Create 'invoice' table
 CREATE TABLE invoice (
@@ -55,6 +57,7 @@ CREATE TABLE invoice (
     memo VARCHAR(255),
     FOREIGN KEY (contractID) REFERENCES contract(contractID) -- Foreign key to contract table
 );
+ALTER TABLE invoice ADD COLUMN payPeriod int AFTER contractID
 
 
 CREATE TABLE SCToken (
@@ -103,6 +106,17 @@ CREATE TABLE CTT (
     burn BOOLEAN DEFAULT FALSE                  -- Whether the contract is canceled or fulfilled (True/False)
 );
 
-
+CREATE TABLE scheduledTransfers (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  fromAddress VARCHAR(42) NOT NULL,
+  toAddress VARCHAR(42) NOT NULL,
+  amount DECIMAL(36,18) NOT NULL,
+  scheduledTime DATETIME NOT NULL,
+  executed BOOLEAN DEFAULT FALSE,
+  executionTime DATETIME,
+  transaction_hash VARCHAR(66),
+  createdTime DATETIME DEFAULT CURRENT_TIMESTAMP,
+  status VARCHAR(10) DEFAULT 'PENDING'
+);
 
 

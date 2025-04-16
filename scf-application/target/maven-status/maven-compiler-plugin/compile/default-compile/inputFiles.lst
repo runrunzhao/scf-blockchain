@@ -38,6 +38,7 @@
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetSingleInvoiceServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/util/DBTest.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/dao/DBConnectionManager.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetScheduledTransfersServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SearchContractServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/GetContractServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/model/Invoice.java
@@ -51,4 +52,5 @@
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SearchConnectionsServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SaveScMultiServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateProfileServlet.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/ScheduleTransferServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SaveContractServlet.java
