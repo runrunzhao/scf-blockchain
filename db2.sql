@@ -27,6 +27,7 @@ CREATE TABLE enterprise(
     role ENUM('Core', 'Bank','Supplier','Distributor') NOT NULL,
     tier INT
 );
+ALTER TABLE enterprise ADD COLUMN memo VARCHAR(100);
 
 
 CREATE TABLE contract (

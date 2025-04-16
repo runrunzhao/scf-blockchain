@@ -304,7 +304,7 @@
 
                 // 表单验证
                 if (!enterpriseData.name.trim()) {
-                    alert("企业名称不能为空");
+                    alert("Enterprise name is required");
                     return;
                 }
 
@@ -346,7 +346,7 @@
                             // 不再跳转到不存在的页面
                             // window.location.href = 'enterpriseList.jsp';
                         } else {
-                            alert('保存失败: ' + (response.message || '未知错误'));
+                            alert('Error: ' + (response.message || '未知错误'));
                         }
                     },
                     error: function (xhr, status, error) {
@@ -405,7 +405,7 @@
 
                     // 初始化表单为空值 - 使用正确的默认值格式
                     document.getElementById('editName').value = '';
-                    document.getElementById('editType').value = 'Core';
+                    document.getElementById('editType').value = 'Supplier';
                     document.getElementById('editTier').value = '1';  // 数字字符串 (不是 'Tier1')
                     document.getElementById('editContact').value = '';
                     document.getElementById('editAddress').value = '';

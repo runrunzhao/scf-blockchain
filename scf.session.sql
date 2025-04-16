@@ -1,3 +1,1 @@
-select  * from  SCToken
-
- 
+SELECT * from  enterprise     where enterpriseID='E3100221'
