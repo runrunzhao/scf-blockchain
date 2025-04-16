@@ -1,4 +1,3 @@
-select  * from  users ；
-
+select  * from  SCToken
 
  

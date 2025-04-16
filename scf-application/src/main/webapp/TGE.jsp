@@ -447,11 +447,12 @@
                             </div>
                             <div class="col-md-4">
                                 <button type="button" id="saveTokenInfoButton" class="btn btn-info btn-block">
-                                    <i class="fas fa-save mr-1"></i> Save TokenInfo
+                                    <i class="fas fa-save mr-1"></i> Save TokenInfo Server
                                 </button>
                             </div>
                             <div class="col-md-4">
-                                <button type="submit" class="btn btn-generate btn-block">Generate Token</button>
+                                <button type="submit" id="generateTokenButton"
+                                    class="btn btn-generate btn-block">Generate Token BlockChain</button>
                             </div>
                         </div>
                     </form>
@@ -472,7 +473,7 @@
                         </div>
                         <div class="col-md-8">
                             <input type="text" class="form-control" id="manualMultiSigAddress"
-                                placeholder="Enter or search for Multi-Sig Address (0x...)">
+                                placeholder="Search for Multi-Sig Address (0x...)" rea>
                         </div>
                     </div>
 
@@ -504,9 +505,7 @@
                                 <button id="confirmTxButton" class="btn btn-success flex-grow-1 mr-2">
                                     <i class="fas fa-check mr-1"></i> Confirm Tx
                                 </button>
-                                <button id="executeTxButton" class="btn btn-primary flex-grow-1">
-                                    <i class="fas fa-play mr-1"></i> Execute Tx
-                                </button>
+
                             </div>
                         </div>
                     </div>
@@ -1666,7 +1665,8 @@
                     // Add event listener for search button
                     document.getElementById('searchSCTransButton').addEventListener('click', searchLatestSCTransFromDB);
                     document.getElementById('SearchMultiSigAddressBtn').addEventListener('click', SearchMultiSigAddressFromDB);
-                   // document.getElementById('checkSignersBtn').addEventListener('click', checkMultiSigSigners);
+                    // document.getElementById('checkSignersBtn').addEventListener('click', checkMultiSigSigners);
+                    document.getElementById('saveTokenInfoButton').addEventListener('click', saveTokenAmount);
                     document.getElementById('mintForm').addEventListener('submit', async function (e) {
                         e.preventDefault();
 
@@ -1697,15 +1697,6 @@
                     });
 
                     document.getElementById('loadTxsButton').addEventListener('click', loadPendingTransactions);
-
-                    document.getElementById('executeTxButton').addEventListener('click', async function () {
-                        const txIndex = document.getElementById('txIndexInput').value;
-                        if (!txIndex || isNaN(txIndex)) {
-                            showStatus("Please enter a valid transaction index", true);
-                            return;
-                        }
-                        await executeTransaction(txIndex);
-                    });
 
                     if (window.ethereum) {
                         window.ethereum.request({ method: 'eth_accounts' })
@@ -1819,6 +1810,7 @@
                             window.userAddress = accounts[0];
                             updateUIForConnectedWallet(accounts[0]);
                             showStatus("Connected to wallet: " + formatAddress(accounts[0]));
+
                         } else {
                             showStatus("No accounts selected", true);
                             resetWalletConnectionUI();
@@ -1839,7 +1831,7 @@
                 }
 
                 // Update UI for connected wallet
-                function updateUIForConnectedWallet(address) {
+                async function updateUIForConnectedWallet(address) {
                     // Update status indicators
                     document.getElementById('connectionStatus').className = 'badge badge-success mr-2';
                     document.getElementById('connectionStatus').textContent = 'Connected';
@@ -1862,6 +1854,14 @@
 
                     // Get and update balance
                     getWalletBalance(address);
+
+                    // Check owner status and update UI accordingly
+                    const isOwner = await checkAddressOwner();
+                    if(!isOwner)
+                    {
+                        document.getElementById('saveTokenInfoButton').disabled = true;
+                        document.getElementById('generateTokenButton').disabled = true;
+                    }
 
                     // Update recipient field if it exists
                     const recipientField = document.getElementById('recipientAddress');
@@ -1916,14 +1916,35 @@
                     }
                 }
 
+                async function checkAddressOwner() {
+                    try {
+                        const walletAddress = window.userAddress;
+                        if (!walletAddress) {
+                            return false;
+                        }
 
+                        const url = 'searchToken?walletAddress=' + encodeURIComponent(walletAddress);
+                        const response = await fetch(url);
+
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+
+                        const data = await response.json();
+                        return data.success; // Returns true if owner, false otherwise
+                    } catch (error) {
+                        console.error('Error checking owner status:', error);
+                        showStatus("Failed to check owner status: " + error.message, true);
+                        return false; // Default to non-owner on error for security
+                    }
+                }
 
                 function searchLatestSCTransFromDB(showStatusMsg = true) {
                     // Show loading status
                     showStatus("Searching for latest contract...");
 
                     // Get wallet address if connected
-                    const walletAddress = userAddress || '';
+                    const walletAddress = window.userAddress;
 
                     // Create URL with query parameter if wallet is connected
                     let url = 'searchToken';
@@ -1941,6 +1962,7 @@
                         })
                         .then(data => {
                             if (data.success) {
+                                console.log("Ower address");
                                 // Display the result
                                 const token = data.token;
 
@@ -1948,7 +1970,7 @@
                                 document.getElementById('tokenName').value = token.tokenName;
                                 document.getElementById('tokenSymbol').value = token.tokenSymbol;
                                 document.getElementById('invalidDate').value = token.scexpireDate;
-
+                                document.getElementById('amount').value=token.tokenAmount;
                                 // Display creation time if available
                                 if (token.sccreateTime) {
                                     document.getElementById('creationTime').value = token.sccreateTime;
@@ -1966,8 +1988,9 @@
 
                                 showStatus("Latest contract loaded successfully");
                             } else {
-                                // Show the message that allows manual creation
-                                showStatus(data.message);
+                                // console.log("Signer address");
+                                SearchMultiSigAddressFromDB();
+                                // showStatus(data.message);
                             }
                         })
                         .catch(error => {
@@ -2001,9 +2024,6 @@
                                 // Update the SCMulti connection field
                                 document.getElementById('connScMultiAddress').value = data.data.genmuliContractAddr || '';
 
-                                // Store the multi-sig contract address in the global variable
-                                window.scMulticontract = data.data.genmuliContractAddr;
-
                                 showStatus("SC connections loaded successfully");
                             } else {
                                 showStatus("No multi-sig contract found for this token", true);
@@ -2015,6 +2035,53 @@
                         });
                 }
 
+                async function saveTokenAmount() {
+                    try {
+                        // Get token amount from UI
+                        const tokenAmount = document.getElementById('amount').value;
+
+                        // Validate input
+                        if (!tokenAmount || isNaN(parseFloat(tokenAmount))) {
+                            showStatus("Please enter a valid token amount", true);
+                            return;
+                        }
+
+                        // Get token ID from UI
+                        const tokenID = document.getElementById('tokenID').value;
+
+                        if (!tokenID) {
+                            showStatus("Token ID not found. Please search for a token first.", true);
+                            return;
+                        }
+
+                        showStatus("Saving token amount...");
+
+                        // Call server to update token amount
+                        const response = await fetch('updateTokenAmount', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded',
+                            },
+                            body: "tokenID=" + encodeURIComponent(tokenID) + "&tokenAmount=" + encodeURIComponent(tokenAmount)
+                        });
+
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            showStatus("Token amount saved successfully!");
+                        } else {
+                            showStatus("Failed to save token amount: " + data.message, true);
+                        }
+
+                    } catch (error) {
+                        console.error('Error saving token amount:', error);
+                        showStatus("Error saving token amount: " + error.message, true);
+                    }
+                }
 
                 async function mintToken(recipientAddress, amount) {
                     if (!window.web3) {
@@ -2097,52 +2164,122 @@
                         return;
                     }
 
-                    const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
-                    window.userAddress = accounts[0];
-
-                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
-                    if (!multiSigContractAddress) {
-                        showStatus("Multi-signature contract address not found.", true);
+                    // 格式化索引为整数
+                    txIndex = parseInt(txIndex);
+                    if (isNaN(txIndex) || txIndex < 0) {
+                        showStatus("Invalid transaction index. Please enter a valid number.", true);
                         return;
                     }
 
                     try {
+                        // 获取最新账户以确保使用当前连接的钱包
+                        const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+                        if (!accounts || accounts.length === 0) {
+                            showStatus("Failed to get connected account. Please check MetaMask connection.", true);
+                            return;
+                        }
+                        window.userAddress = accounts[0];
+
+                        const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
+                        if (!multiSigContractAddress || !window.web3.utils.isAddress(multiSigContractAddress)) {
+                            showStatus("Invalid multi-signature contract address.", true);
+                            return;
+                        }
+
+                        showStatus(`Checking transaction #${txIndex}...`);
+                        console.log(`Confirming transaction ${txIndex} on contract ${multiSigContractAddress}`);
+
+                        // 创建合约实例
                         const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
 
-                        // 验证交易存在且未执行
+                        // 检查交易总数
                         const txCount = await multiSigContract.methods.getTransactionCount().call();
-                        if (parseInt(txIndex) >= txCount) {
-                            showStatus("Error: Transaction with index " + txIndex + " does not exist.", true);
+                        if (txIndex >= txCount) {
+                            showStatus(`Error: Transaction with index ${txIndex} does not exist. Total transactions: ${txCount}`, true);
                             return;
                         }
+
+                        // 获取交易详情
                         const tx = await multiSigContract.methods.getTransaction(txIndex).call();
+                        console.log("Transaction details:", tx);
+
+                        // 检查交易是否已执行
                         if (tx.executed) {
-                            showStatus("Transaction " + txIndex + " has been executed.", true);
+                            showStatus(`Transaction #${txIndex} has already been executed and cannot be confirmed again.`, true);
                             return;
                         }
 
-                        const isSigner = await multiSigContract.methods.isSigner(userAddress).call();
+                        // 检查用户是否是授权签名者
+                        const isSigner = await multiSigContract.methods.isSigner(window.userAddress).call();
                         if (!isSigner) {
-                            showStatus("Error: Your wallet address is not registered as a signer.", true);
+                            showStatus("Error: Your wallet address is not registered as an authorized signer for this contract.", true);
                             return;
                         }
 
-                        showStatus("Confirming transaction, please confirm in your wallet...");
+                        // 检查用户是否已经确认过该交易
+                        const isAlreadyConfirmed = await multiSigContract.methods.isTransactionConfirmedBy(txIndex, window.userAddress).call();
+                        if (isAlreadyConfirmed) {
+                            showStatus(`You have already confirmed transaction #${txIndex}.`, true);
+                            return;
+                        }
 
-                        const txConfirmation = await multiSigContract.methods.confirmTransaction(txIndex).send({
-                            from: window.userAddress
-                        });
+                        const networkId = await web3.eth.net.getId();
+                        console.log("Current network ID:", networkId);
 
-                        console.log("Confirmation result:", txConfirmation);
-                        showStatus("Transaction " + txIndex + " confirmed successfully!");
+                        const gasPrice = await web3.eth.getGasPrice();
+                        console.log("Current gas price:", gasPrice);
+
+                        let gasEstimate;
+                        try {
+                            gasEstimate = await multiSigContract.methods.confirmTransaction(txIndex)
+                                .estimateGas({ from: window.userAddress });
+                            console.log("Estimated gas:", gasEstimate);
+                            // 增加 20% 的 gas 限制以确保交易成功
+                            gasEstimate = Math.ceil(gasEstimate * 1.2);
+                        } catch (gasError) {
+                            console.warn("Failed to estimate gas, using default:", gasError);
+                            gasEstimate = 300000;
+                        }
+                        showStatus("Confirming transaction, please approve in your wallet...");
+
+                        const txConfirmation = await multiSigContract.methods.confirmTransaction(txIndex)
+                            .send({
+                                from: window.userAddress,
+                                gas: gasEstimate,
+                                gasPrice: gasPrice
+                            });
+
+                        console.log("Confirmation transaction result:", txConfirmation);
+
+
+                        const requiredConfirmations = await multiSigContract.methods.requiredConfirmations().call();
+                        const updatedTx = await multiSigContract.methods.getTransaction(txIndex).call();
+                        const canExecute = updatedTx.numConfirmations >= requiredConfirmations && !updatedTx.executed;
+
+                        if (canExecute) {
+                            showStatus(`Transaction #${txIndex} confirmed successfully! It now has ${updatedTx.numConfirmations}/${requiredConfirmations} confirmations and can be executed.`);
+                        } else {
+                            showStatus(`Transaction #${txIndex} confirmed successfully! It now has ${updatedTx.numConfirmations}/${requiredConfirmations} confirmations.`);
+                        }
+
 
                         await loadPendingTransactions();
+
                     } catch (error) {
                         console.error("Error confirming transaction:", error);
-                        if (error.message.includes("already confirmed")) {
-                            showStatus("Error: You have already confirmed this transaction", true);
+
+                        if (error.code === 4001) {
+                            showStatus("Transaction was rejected in your wallet.", true);
+                        } else if (error.message && error.message.includes("already confirmed")) {
+                            showStatus("You have already confirmed this transaction.", true);
+                        } else if (error.message && error.message.includes("gas")) {
+                            showStatus("Transaction failed due to gas estimation issues. Try again or increase gas limit manually.", true);
+                        } else if (error.message && error.message.includes("nonce")) {
+                            showStatus("Transaction failed due to incorrect nonce. Please reset your MetaMask account or try again.", true);
+                        } else if (error.message && error.message.toLowerCase().includes("not a signer")) {
+                            showStatus("Error: Your wallet address is not registered as a signer for this contract.", true);
                         } else {
-                            showStatus("Failed to confirm transaction: " + error.message, true);
+                            showStatus("Failed to confirm transaction: " + (error.message || "Unknown error"), true);
                         }
                     }
                 }
@@ -2265,95 +2402,129 @@
                 }
 
                 async function SearchMultiSigAddressFromDB() {
-                    // Show loading status
-                    showStatus("Searching for multi-signature contracts...");
-
-                    // Get wallet address
-                    if (!userAddress) {
-                        showStatus("Wallet not connected. Please connect wallet first.", true);
-                        return;
-                    }
-
-                    const manualAddress = document.getElementById('manualMultiSigAddress').value;
-
-                    // If manual address is provided, use it directly
-                    if (manualAddress && manualAddress.trim() !== '') {
-                        if (!window.web3.utils.isAddress(manualAddress)) {
-                            showStatus("Invalid Ethereum address format. Please check the address.", true);
+                    try {
+                        // Check if Web3 is available
+                        if (!window.web3) {
+                            showStatus("Please connect your wallet first", true);
                             return;
                         }
 
-                        try {
-                            // Set the contract address directly
-                            document.getElementById('connScMultiAddress').value = manualAddress;
-                            window.scMulticontract = manualAddress;
+                        // Show searching status
+                        showStatus("Searching for multi-signature contracts...");
 
-                            // Create contract instance here - proper error handling
-                            const multiSigContract = new window.web3.eth.Contract(customTokenMultiABI, manualAddress);
-
-                            // Try to verify this is a valid multi-sig contract
-                            try {
-                                const required = await multiSigContract.methods.requiredConfirmations().call();
-                                console.log("Required On blockchain:", required);
-
-                                showStatus(`Multi-signature contract verified with ${required} required confirmations and ${signers.length} signers.`);
-                            } catch (verifyError) {
-                                console.error("Contract verification error:", verifyError);
-                                showStatus("Address may not be a valid multi-signature contract. Some functions may not work.", true);
-                            }
-
-                            // Still proceed with the address
-                         //   checkMultiSigSettings();
-                            return;
-                        } catch (error) {
-                            console.error("Error setting up multi-sig contract:", error);
-                            showStatus("Failed to initialize the multi-signature contract: " + error.message, true);
+                        // Check if user has connected wallet
+                        if (!window.userAddress) {
+                            showStatus("Please connect your wallet first", true);
                             return;
                         }
-                    }
 
-                    // Otherwise search by signer
-                    fetch('searchScMulti?signerAddress=' + encodeURIComponent(userAddress) + '&mode=signer')
-                        .then(response => {
-                            if (!response.ok) {
-                                throw new Error('Network response was not ok');
-                            }
-                            return response.json();
-                        })
-                        .then(data => {
-                            if (data.success && data.data) {
-                                // Update the SCMulti connection field
-                                document.getElementById('connScMultiAddress').value = data.data.genmuliContractAddr || '';
+                        // Call searchBySigner API with proper error handling
+                        const response = await fetch('searchBySigner?signerAddress=' + encodeURIComponent(window.userAddress));
 
-                                // Also update the SCTrans address field if it's not already set
-                                if (!document.getElementById('contractAddressDisplay').value) {
-                                    document.getElementById('contractAddressDisplay').value = data.data.scTransAddr || '';
-                                    window.scTranscontract = data.data.scTransAddr || '';
+                        const contentType = response.headers.get("content-type");
+                        // console.log("Response content type:", contentType);
+
+                        if (!response.ok) {
+                            throw new Error('Network request failed with status: ' + response.status);
+                        }
+
+                        if (!contentType || !contentType.includes('application/json')) {
+                            // Getting HTML instead of JSON, dump first 100 chars for debugging
+                            const text = await response.text();
+                            console.error("Received non-JSON response:", text.substring(0, 100) + "...");
+                            throw new Error('Server returned incorrect format. Expected JSON, got: ' +
+                                (contentType || 'unknown format'));
+                        }
+
+                        // Parse JSON response
+                        const data = await response.json();
+
+                        if (data.success) {
+                            // Process successful query
+
+                            // 1. Update multi-sig contract info
+                            if (data.multi) {
+                                const multiAddress = data.multi.genmuliContractAddr;
+
+                                // Update UI display
+                                document.getElementById('connScMultiAddress').value = multiAddress || '';
+                                document.getElementById('manualMultiSigAddress').value = multiAddress || '';
+
+                                // Update scTransAddr if available
+                                const scTransAddr = data.multi.scTransAddr;
+                                if (scTransAddr) {
+                                    document.getElementById('contractAddressDisplay').value = scTransAddr;
                                 }
 
-                                // Store the multi-sig contract address in the global variable
-                                window.scMulticontract = data.data.genmuliContractAddr || '';
-
-                                // Update the manual field for display purposes
-                                document.getElementById('manualMultiSigAddress').value = data.data.genmuliContractAddr;
-
-                                showStatus("Multi-signature contract found successfully!");
-                                //checkMultiSigSettings();
-                                // checkTokenMultiSigAddress();
-                                //  checkMultiSigTokenAddress();
-
-                                // checkTokenTotalSupply();
-                                //checkTokenExpiration();
-                                //checkRecipientBalance();
-                            } else {
-                                showStatus("No multi-signature contracts found where you are a signer", true);
+                                // Create multi-sig contract instance
+                                if (window.web3 && multiAddress) {
+                                    try {
+                                        window.scMulticontract = new window.web3.eth.Contract(
+                                            customTokenMultiABI,
+                                            multiAddress
+                                        );
+                                        console.log("Multi-sig contract instance created successfully");
+                                    } catch (err) {
+                                        console.error("Failed to create multi-sig contract instance:", err);
+                                    }
+                                }
                             }
-                        })
-                        .catch(error => {
-                            console.error('Error searching multi-sig contracts:', error);
-                            showStatus("Failed to search multi-sig contracts: " + error.message, true);
-                        });
+
+                            // 2. Update Token info
+                            if (data.token) {
+                                document.getElementById('tokenID').value = data.token.tokenID || '';
+                                document.getElementById('tokenName').value = data.token.tokenName || '';
+                                document.getElementById('tokenSymbol').value = data.token.tokenSymbol || '';
+                                document.getElementById('invalidDate').value = data.token.scexpireDate || '';
+
+                                // Show creation time
+                                if (data.token.scCreateTime) {
+                                    document.getElementById('creationTime').value = data.token.scCreateTime;
+                                    document.getElementById('creationTimeContainer').style.display = 'block';
+                                }
+
+                                // Update recipient address
+                                if (data.token.owerAddr) {
+                                    document.getElementById('recipientAddress').value = data.token.owerAddr;
+                                }
+
+                                // Create Token contract instance
+                                const tokenAddress = data.token.genContractAddr;
+                                if (window.web3 && tokenAddress) {
+                                    try {
+                                        window.scTranscontract = new window.web3.eth.Contract(
+                                            customTokenTransferABI,
+                                            tokenAddress
+                                        );
+                                        console.log("Token contract instance created successfully");
+                                    } catch (err) {
+                                        console.error("Failed to create Token contract instance:", err);
+                                    }
+                                }
+                            } else if (data.multi && data.multi.scTransAddr) {
+                                document.getElementById('contractAddressDisplay').value = data.multi.scTransAddr || '';
+                            }
+
+                            showStatus("Contract information loaded successfully");
+
+                            // 3. Load pending transactions
+                            if (data.multi && data.multi.genmuliContractAddr) {
+                                try {
+                                    await loadPendingTransactions();
+                                } catch (txError) {
+                                    console.error("Error loading transactions:", txError);
+                                }
+                            }
+                        } else {
+                            // No contract information found
+                            showStatus(data.message || "No multi-signature contracts found where you are a signer", true);
+                        }
+                    } catch (error) {
+                        console.error('Error searching contracts:', error);
+                        showStatus("Search failed: " + error.message, true);
+                    }
                 }
+
 
                 async function checkMultiSigTokenAddress() {
                     try {
@@ -2572,7 +2743,7 @@
                         showStatus("Failed to check token's multi-sig address: " + error.message, true);
                     }
                 }
-                // 你可以在适当的地方调用 checkTokenMultiSigAddress() 来进行检查，例如在连接钱包或加载合约后。
+
                 async function checkTokenTotalSupply() {
                     try {
                         const tokenAddress = document.getElementById('contractAddressDisplay').value;

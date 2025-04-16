@@ -36,14 +36,14 @@ public class SearchTokenServlet extends HttpServlet {
             
             // Get only the most recent record by sccreateTime
             if (walletAddress != null && !walletAddress.trim().isEmpty()) {
-                sql = "SELECT tokenID,owerAddr, tokenName, tokenSymbol, scexpireDate, genContractAddr, sccreateTime  " +
+                sql = "SELECT tokenID,owerAddr, tokenName, tokenSymbol, scexpireDate, genContractAddr, sccreateTime,tokenAmount  " +
                       "FROM SCToken WHERE owerAddr = ? " +
                       "ORDER BY sccreateTime DESC LIMIT 1";
                 pstmt = conn.prepareStatement(sql);
                 pstmt.setString(1, walletAddress);
             } else {
                 // Get the most recent record regardless of owner
-                sql = "SELECT tokenID,owerAddr, tokenName, tokenSymbol, scexpireDate, genContractAddr , sccreateTime " +
+                sql = "SELECT tokenID,owerAddr, tokenName, tokenSymbol, scexpireDate, genContractAddr , sccreateTime,tokenAmount " +
                       "FROM SCToken ORDER BY sccreateTime DESC LIMIT 1";
                 pstmt = conn.prepareStatement(sql);
             }
@@ -56,7 +56,7 @@ public class SearchTokenServlet extends HttpServlet {
                 token.put("tokenName", rs.getString("tokenName"));
                 token.put("tokenSymbol", rs.getString("tokenSymbol"));
                 token.put("tokenID", rs.getInt("tokenID"));
-                
+                token.put("tokenAmount", rs.getInt("tokenAmount"));
                 // Format the date to yyyy-MM-dd
                 java.sql.Date expireDate = rs.getDate("scexpireDate");
                 token.put("scexpireDate", expireDate != null ? 

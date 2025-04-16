@@ -1,6 +1,6 @@
 mvn jetty:run
 docker ps -a | grep scf-mysql
- docker run --name scf-mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=SCFDB -p 3306:3306 -d mysql:5.7
+-- docker run --name scf-mysql -e MYSQL_ROOT_PASSWORD=password -e MYSQL_DATABASE=SCFDB -p 3306:3306 -d mysql:5.7
 docker start scf-mysql
 docker exec -it scf-mysql bash ;
 

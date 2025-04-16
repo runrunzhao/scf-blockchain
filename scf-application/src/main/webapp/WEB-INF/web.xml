@@ -300,4 +300,23 @@
     <url-pattern>/updateConnectionSignTx</url-pattern>
 </servlet-mapping>
 
+<!-- SearchBySignerAddressServlet - to search multi-sig contracts by signer address -->
+<servlet>
+    <servlet-name>SearchBySignerAddressServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.SearchBySignerAddressServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SearchBySignerAddressServlet</servlet-name>
+    <url-pattern>/searchBySigner</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>UpdateTokenAmountServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.UpdateTokenAmountServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UpdateTokenAmountServlet</servlet-name>
+    <url-pattern>/updateTokenAmount</url-pattern>
+</servlet-mapping>
+
 </web-app>
