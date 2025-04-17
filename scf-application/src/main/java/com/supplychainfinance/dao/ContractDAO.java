@@ -126,7 +126,7 @@ public class ContractDAO {
                 contract.setToEnterpriseName(rs.getString("toEnterpriseName"));
                 contract.setAmount(rs.getDouble("amount"));
                 contract.setStatus(rs.getString("status"));
-
+                contract.setContractType(rs.getString("contractType"));
                 // Get dates
                 java.sql.Date signingDate = rs.getDate("signingDate");
                 java.sql.Date effectiveDate = rs.getDate("effectiveDate");
@@ -141,18 +141,21 @@ public class ContractDAO {
                     contract.setExpiryDate(new java.util.Date(invalidDate.getTime()));
 
                 List<PaymentPeriod> paymentPeriods = new ArrayList<>();
-                String invoiceSQL = "SELECT * FROM invoice WHERE contractID = ? ORDER BY PayDate";
+                String invoiceSQL = "SELECT * FROM invoice WHERE contractID = ? ORDER BY  payPeriod, PayDate";
                 try (PreparedStatement invoiceStmt = conn.prepareStatement(invoiceSQL)) {
                     invoiceStmt.setString(1, contractId);
                     ResultSet invoiceRS = invoiceStmt.executeQuery();
 
-                    int periodCounter = 1;
+                 //   int periodCounter = 1;
                     while (invoiceRS.next()) {
                         PaymentPeriod period = new PaymentPeriod();
-                        period.setPeriod(periodCounter++);
+                       // period.setPeriod(periodCounter++);
+                        period.setPeriod(invoiceRS.getInt("payPeriod") );
                         period.setAmount(invoiceRS.getDouble("amount"));
                         period.setDate(invoiceRS.getDate("PayDate"));
                         period.setTerms(invoiceRS.getString("memo"));
+                        period.setPaymentMethod(invoiceRS.getString("paymentMethod"));
+                           
                         paymentPeriods.add(period);
                     }
                 }
@@ -171,9 +174,9 @@ public class ContractDAO {
 
     // 插入合同
     public void insertContract(Contract contract) throws SQLException {
-        String sql = "INSERT INTO contract (contractID, realNo, part1, part2, amount, signingDate, effectiveDate, invalidDate, status) "
+        String sql = "INSERT INTO contract (contractID, realNo, part1, part2, amount, signingDate, effectiveDate, invalidDate, status,contractType) "
                 +
-                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?,?)";
 
         try (Connection conn = DBUtil.getConnection();
                 PreparedStatement stmt = conn.prepareStatement(sql)) {
@@ -214,6 +217,7 @@ public class ContractDAO {
             }
 
             stmt.setString(9, contract.getStatus() != null ? contract.getStatus() : "Active");
+            stmt.setString(10, contract.getContractType() != null ? contract.getContractType() : "Service");
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {
@@ -226,7 +230,7 @@ public class ContractDAO {
     public void updateContract(Contract contract) throws SQLException {
         String sql = "UPDATE contract SET realNo = ?, part1 = ?, part2 = ?, " +
                 "amount = ?, signingDate = ?, effectiveDate = ?, " +
-                "invalidDate = ?, status = ? " +
+                "invalidDate = ?, status = ?,contractType = ? " +
                 "WHERE contractID = ?";
 
         try (Connection conn = DBUtil.getConnection();
@@ -262,7 +266,8 @@ public class ContractDAO {
             }
 
             stmt.setString(8, contract.getStatus());
-            stmt.setString(9, contract.getContractId());
+            stmt.setString(9, contract.getContractType());
+            stmt.setString(10, contract.getContractId());
 
             int rowsAffected = stmt.executeUpdate();
             if (rowsAffected == 0) {

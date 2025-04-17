@@ -5,6 +5,7 @@ import java.util.Date;
 public class Invoice {
     private String invoiceID;
     private String contractID;
+    private int payPeriod; 
     private double amount;
     private Date payDate;
     private String status;
@@ -78,10 +79,33 @@ public class Invoice {
         return paymentMethod;
     }
 
-    public void setPaymentMethod(String paymentMethod) {
-        this.paymentMethod = paymentMethod;
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod != null ? paymentMethod.toString() : null;
     }
     
+    public void setPaymentMethod(String paymentMethodStr) {
+        if (paymentMethodStr == null || paymentMethodStr.isEmpty()) {
+            this.paymentMethod = null;
+            return;
+        }
+        
+        try {
+            
+            PaymentMethod method = PaymentMethod.fromString(paymentMethodStr);
+            this.paymentMethod = method != null ? method.toString() : paymentMethodStr;
+        } catch (Exception e) {
+            
+            this.paymentMethod = paymentMethodStr;
+        }
+    }
+
+    public int getPayPeriod() {
+        return payPeriod;
+    }
+    public void setPayPeriod(int payPeriod) {
+        this.payPeriod = payPeriod;
+    }
+
     @Override
     public String toString() {
         return "Invoice{" +

@@ -1,1 +1,1 @@
-SELECT * From invoice
+SELECT * FROM invoice

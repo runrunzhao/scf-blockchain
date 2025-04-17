@@ -29,6 +29,7 @@
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/LoginServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SearchEnterprisesServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/controller/MainController.java
+/workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/model/PaymentMethod.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/SaveTokenServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/servlet/LogoutServlet.java
 /workspaces/scf-java/scf-application/src/main/java/com/supplychainfinance/blockchain/service/CTTTokenService.java

@@ -45,10 +45,13 @@ CREATE TABLE contract (
 
     ALTER TABLE contract 
 MODIFY COLUMN status ENUM('Active', 'Pending', 'End',   'Draft') NOT NULL; 
+ALTER TABLE contract 
+ADD COLUMN contractType ENUM('Purchase', 'Sales', 'Service') NOT NULL DEFAULT 'Service';
 
 -- Step 7: Create 'invoice' table
 CREATE TABLE invoice (
     invoiceID char(8) PRIMARY KEY,   -- Invoice ID
+    payPeriod int,                             -- Payment period
     contractID char(8),                             -- Contract ID 
     amount DECIMAL(15, 2) NOT NULL,             -- Invoice amount
     PayDate DATE NOT NULL,   
@@ -58,6 +61,8 @@ CREATE TABLE invoice (
     FOREIGN KEY (contractID) REFERENCES contract(contractID) -- Foreign key to contract table
 );
 ALTER TABLE invoice ADD COLUMN payPeriod int AFTER contractID
+ALTER TABLE invoice
+MODIFY COLUMN paymentMethod ENUM('CTT', 'Transfer', 'Check', 'Card') DEFAULT NULL;
 
 
 CREATE TABLE SCToken (

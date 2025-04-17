@@ -179,9 +179,9 @@
                                     <div class="form-group col-md-6">
                                         <label for="contractType">Contract Type</label>
                                         <select class="form-control" id="contractType">
-                                            <option value="Purchase">Purchase Contract</option>
-                                            <option value="Sales">Sales Contract</option>
-                                            <option value="Service">Service Contract</option>
+                                            <option value="Purchase">Purchase</option>
+                                            <option value="Sales">Sales</option>
+                                            <option value="Service">Service</option>
                                         </select>
                                     </div>
                                     <div class="form-group col-md-6">
@@ -493,13 +493,17 @@
                 }
             }
 
-            // Function to update payment fields based on selected number of periods
+
             function updatePaymentFields() {
                 const periods = parseInt($('#paymentPeriods').val());
                 const container = $('#paymentPeriodsContainer');
+
+                // Debug log
+                // console.log("Creating fields for " + periods + " payment periods");
+
                 container.empty();
 
-                // Calculate default amounts - divide total amount by number of periods
+                // Calculate default amounts
                 const totalAmount = parseFloat($('#amount').val() || 0);
                 const defaultAmount = totalAmount > 0 ? (totalAmount / periods).toFixed(2) : '';
 
@@ -507,74 +511,91 @@
                 const paymentCard = $('<div class="payment-periods-table"></div>');
 
                 // Add header row
-                const headerRow = $(`
-        <div class="row payment-period-header border-bottom pb-2 mb-3">
-            <div class="col-md-2"><strong>Period</strong></div>
-            <div class="col-md-3"><strong>Date</strong></div>
-            <div class="col-md-3"><strong>Amount ($)</strong></div>
-            <div class="col-md-4"><strong>Memo</strong></div>
-        </div>
-    `);
+                const headerRow = $(
+                    '<div class="row payment-period-header border-bottom pb-2 mb-3">' +
+                    '<div class="col-md-2"><strong>Period</strong></div>' +
+                    '<div class="col-md-3"><strong>Date</strong></div>' +
+                    '<div class="col-md-3"><strong>Amount ($)</strong></div>' +
+                    '<div class="col-md-4"><strong>Payment Method</strong></div>' +
+                    '</div>'
+                );
                 paymentCard.append(headerRow);
 
                 // Create fields for each payment period
                 for (let i = 1; i <= periods; i++) {
-                    const periodRow = $(`
-            <div class="row mb-3 payment-period" data-period="${i}">
-                <div class="col-md-2 d-flex align-items-center">
-                    <span class="badge badge-primary">Period ${i}</span>
-                </div>
-                <div class="col-md-3">
-                    <input type="date" class="form-control payment-date" 
-                        id="paymentDate${i}" placeholder="Date">
-                </div>
-                <div class="col-md-3">
-                    <div class="input-group">
-                        <div class="input-group-prepend">
-                            <span class="input-group-text">$</span>
-                        </div>
-                        <input type="number" class="form-control payment-amount" 
-                            id="paymentAmount${i}" placeholder="Amount" value="${defaultAmount}" step="0.01">
-                    </div>
-                </div>
-                <div class="col-md-4">
-                    <input type="text" class="form-control payment-terms"
-                        id="Memo${i}" placeholder="e.g., Net 30 days">
-                </div>
-            </div>
-        `);
+                    const periodRow = $(
+                        '<div class="row mb-3 payment-period" data-period="' + i + '">' +
+                        '<div class="col-md-2 d-flex align-items-center">' +
+                        '<span class="badge badge-primary">' + i + '</span>' +
+                        '</div>' +
+                        '<div class="col-md-3">' +
+                        '<input type="date" class="form-control payment-date" ' +
+                        'id="paymentDate' + i + '" placeholder="Date">' +
+                        '</div>' +
+                        '<div class="col-md-3">' +
+                        '<div class="input-group">' +
+                        '<div class="input-group-prepend">' +
+                        '<span class="input-group-text">$</span>' +
+                        '</div>' +
+                        '<input type="number" class="form-control payment-amount" ' +
+                        'id="paymentAmount' + i + '" placeholder="Amount" value="' + defaultAmount + '" step="0.01">' +
+                        '</div>' +
+                        '</div>' +
+                        '<div class="col-md-4">' +
+                        '<select class="form-control payment-method" id="PaymentMethod' + i + '">' +
+                        '<option value="">Select Payment Method</option>' +
+                        '<option value="CTT">CTT</option>' +
+                        '<option value="Transfer">Transfer</option>' +
+                        '<option value="Check">Check</option>' +
+                        '<option value="Card">Card</option>' +
+                        '</select>' +
+                        '</div>' +
+                        '</div>'
+                    );
                     paymentCard.append(periodRow);
+
+                    // Debug: verify field was created
+                    // console.log("Created period " + i + " fields with IDs: paymentDate" + i + ", paymentAmount" + i + ", PaymentMethod" + i);
                 }
 
-                // Add a total row
-                const totalRow = $(`
-        <div class="row mt-3 pt-2 border-top">
-            <div class="col-md-5 text-right">
-                <strong>Total:</strong>
-            </div>
-            <div class="col-md-3">
-                <div class="input-group">
-                    <div class="input-group-prepend">
-                        <span class="input-group-text">$</span>
-                    </div>
-                    <input type="text" class="form-control" 
-                        id="totalPaymentAmount" value="${totalAmount.toFixed(2)}" readonly>
-                </div>
-            </div>
-            <div class="col-md-4"></div>
-        </div>
-    `);
+                // Add total row
+                const totalRow = $(
+                    '<div class="row mt-3 pt-2 border-top">' +
+                    '<div class="col-md-5 text-right">' +
+                    '<strong>Total:</strong>' +
+                    '</div>' +
+                    '<div class="col-md-3">' +
+                    '<div class="input-group">' +
+                    '<div class="input-group-prepend">' +
+                    '<span class="input-group-text">$</span>' +
+                    '</div>' +
+                    '<input type="text" class="form-control" ' +
+                    'id="totalPaymentAmount" value="' + totalAmount.toFixed(2) + '" readonly>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="col-md-4"></div>' +
+                    '</div>'
+                );
                 paymentCard.append(totalRow);
 
                 container.append(paymentCard);
 
-                // Add event listeners to recalculate total when amounts change
+                // Add event listeners
                 $('.payment-amount').on('input', function () {
                     updateTotalPaymentAmount();
                 });
+
+                // Debug: list all created fields
+                console.log("Payment fields after creation:",
+                    $('#paymentPeriodsContainer input, #paymentPeriodsContainer select').map(function () {
+                        return this.id;
+                    }).get().join(", ")
+                );
             }
 
-            // Function to update the total payment amount
+
+
+            // Function to update the total payment amountCASH
             function updateTotalPaymentAmount() {
                 let total = 0;
                 $('.payment-amount').each(function () {
@@ -600,33 +621,67 @@
                     return;
                 }
 
-                // Collect payment periods data
+                console.log("Selected contract type:", $("#contractType").val());
                 const paymentPeriods = [];
                 const periodCount = parseInt($('#paymentPeriods').val());
 
+                // Ensure payment fields exist before proceeding
+                let allFieldsExist = true;
                 for (let i = 1; i <= periodCount; i++) {
-                    // Validate required fields for each payment period
-                    const date = $(`#paymentDate${i}`).val();
-                    const amount = $(`#paymentAmount${i}`).val();
+                    const dateField = document.getElementById('paymentDate' + i);
+                    const amountField = document.getElementById('paymentAmount' + i);
 
-                    if (!date) {
-                        showAlert('Please enter a date for Payment Period ' + i, 'danger');
+                    if (!dateField) {
+                        console.error("Missing date field: paymentDate" + i);
+                        allFieldsExist = false;
+                    }
+                    if (!amountField) {
+                        console.error("Missing amount field: paymentAmount" + i);
+                        allFieldsExist = false;
+                    }
+                }
+
+                if (!allFieldsExist) {
+                    showAlert("Some payment fields are missing. Please try refreshing the page.", 'danger');
+                    // Force recreate fields
+                    updatePaymentFields();
+                    return;
+                }
+
+                for (let i = 1; i <= periodCount; i++) {
+
+                    const dateFieldId = 'paymentDate' + i;
+                    const amountFieldId = 'paymentAmount' + i;
+                    const methodFieldId = 'PaymentMethod' + i;
+
+                    const dateField = document.getElementById(dateFieldId);
+                    const amountField = document.getElementById(amountFieldId);
+                    const methodField = document.getElementById(methodFieldId); 
+                    // Check if elements exist
+                    if (!dateField) {
+                        console.error(`Error: Field ${dateFieldId} not found`);
+                        showAlert(`Error: Payment field for period ${i} not found. Please refresh the page.`, 'danger');
                         return;
                     }
 
-                    if (!amount) {
-                        showAlert('Please enter an amount for Payment Period ' + i, 'danger');
+                    if (!amountField) {
+                        console.error(`Error: Field ${amountFieldId} not found`);
+                        showAlert(`Error: Amount field for period ${i} not found. Please refresh the page.`, 'danger');
                         return;
                     }
+
+                    const date = dateField.value;
+                    const amount = amountField.value;
+                    const method = methodField.value;
 
                     paymentPeriods.push({
                         period: parseInt(i),
                         paydate: date,
                         amount: amount,
-                        terms: $("#Memo" + i).val()
+                        paymentMethod:method
                     });
                 }
-
+                console.log("准备发送的付款期数据:", JSON.stringify(paymentPeriods));
                 // Get form data
                 const contract = {
                     contractId: $('#contractId').val(),
@@ -684,6 +739,7 @@
 
                                 // Change mode flag
                                 isAddMode = false;
+                                $('#saveButton').html('Update Contract');
                             }
                         } else {
                             // Show error message
@@ -790,24 +846,42 @@
                             document.getElementById('description').value = contract.description || '';
                             document.getElementById('remarks').value = contract.remarks || '';
 
-                            // Set payment periods if they exist
+                            // 在loadContractDetails函数中找到这段代码
                             if (contract.paymentPeriods && contract.paymentPeriods.length > 0) {
                                 $('#paymentPeriods').val(contract.paymentPeriods.length);
 
                                 // Call updatePaymentFields first to create the fields
                                 updatePaymentFields();
 
-                                // Then set the values
-                                setTimeout(function () {
-                                    contract.paymentPeriods.forEach(function (period) {
-                                        $(`#paymentDate${period.period}`).val(period.date);
-                                        $(`#paymentAmount${period.period}`).val(period.amount);
-                                        $(`#Memo${period.period}`).val(period.terms);
-                                    });
+                                console.log("Payment periods from server:", contract.paymentPeriods);
 
-                                    // Recalculate total
+                                // 增加延迟时间并使用正确的属性名
+                                setTimeout(function () {
+                                    console.log("Setting payment period values now...");
+
+                                    for (let i = 0; i < contract.paymentPeriods.length; i++) {
+                                        const period = contract.paymentPeriods[i];
+                                        const periodNum = period.period;
+
+                                        // 使用jQuery连接字符串而非模板字符串
+                                        console.log("Setting data for period " + periodNum +
+                                            ": date=" + period.date +
+                                            ", amount=" + period.amount);
+
+                                        // 使用正确的属性名称
+                                        $('#paymentDate' + periodNum).val(period.date);
+                                        $('#paymentAmount' + periodNum).val(period.amount);
+                                        $('#PaymentMethod' + periodNum).val(period.paymentMethod);
+
+                                        // 验证值是否设置成功
+                                        console.log("After setting - date value: " +
+                                            $('#paymentDate' + periodNum).val());
+                                    }
+
+                                    // 重新计算总金额
                                     updateTotalPaymentAmount();
-                                }, 100);
+                                }, 1000); // 增加到1秒以确保DOM已更新
+
                             } else {
                                 // Default to 1 payment period
                                 $('#paymentPeriods').val(1);

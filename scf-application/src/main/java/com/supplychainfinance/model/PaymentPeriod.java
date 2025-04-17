@@ -7,6 +7,7 @@ public class PaymentPeriod {
     private Date date;
     private double amount;
     private String terms;
+    private PaymentMethod paymentMethod; 
     
     // Constructors
     public PaymentPeriod() {
@@ -17,6 +18,7 @@ public class PaymentPeriod {
         this.date = date;
         this.amount = amount;
         this.terms = terms;
+        this.paymentMethod = PaymentMethod.UNKNOWN;
     }
     
     // Getters and setters
@@ -51,6 +53,20 @@ public class PaymentPeriod {
     public void setTerms(String terms) {
         this.terms = terms;
     }
+
+    public PaymentMethod getPaymentMethod() {
+        return paymentMethod;
+    }
+    
+    public void setPaymentMethod(PaymentMethod paymentMethod) {
+        this.paymentMethod = paymentMethod;
+    }
+    
+    
+    public void setPaymentMethod(String paymentMethodStr) {
+        this.paymentMethod = PaymentMethod.fromString(paymentMethodStr);
+    }
+    
     
     @Override
     public String toString() {
