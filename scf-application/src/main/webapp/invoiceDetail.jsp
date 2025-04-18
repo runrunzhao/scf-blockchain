@@ -476,7 +476,7 @@
                                 },
                                 dataType: "json",
                                 success: function (contract) {
-                                    $('#contractRealNo').text(contract.realNo || '-');
+                                    $('#contractRealNo').text(contract.contractName);
                                     $('#contractAmount').text('$' + contract.amount.toLocaleString('en-US',
                                         { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
                                     $('#contractStatus').text(contract.status || '-');
