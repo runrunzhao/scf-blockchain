@@ -1,1 +1,1 @@
-mysqldump -u root -p SCFDB > backup.sql
+DESCRIBE invoice;

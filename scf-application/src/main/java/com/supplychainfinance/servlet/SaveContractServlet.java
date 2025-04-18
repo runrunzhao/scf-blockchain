@@ -263,7 +263,7 @@ public class SaveContractServlet extends HttpServlet {
                     System.out.println("  - Form date: " + period.getDate());
                     System.out.println("  - Form amount: " + period.getAmount());
                     System.out.println("  - Form terms: " + period.getTerms());
-
+                    System.out.println("  - Form paymentMethod: " + period.getPaymentMethod());
                     // Keep the same invoice ID, update all other fields
                     newInvoice.setInvoiceID(existingInvoice.getInvoiceID());
 

@@ -2,9 +2,9 @@ package com.supplychainfinance.model;
 
 public enum PaymentMethod {
     CTT("CTT"),
-    BANK_TRANSFER("Bank Transfer"),
-    CHECK("Check"),
-    CREDIT_CARD("Credit Card"),
+    Transfer("Transfer"),
+    Check("Check"),
+    Card("Card"),
     UNKNOWN("");
     
     private final String displayName;

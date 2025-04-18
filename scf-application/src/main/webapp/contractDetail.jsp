@@ -930,7 +930,8 @@
                                     // 重新计算总金额
                                     updateTotalPaymentAmount();
                                 }, 1000); // 增加到1秒以确保DOM已更新
-
+                                // Disable all inputs/selects inside the payment schedule container
+                                $('#paymentPeriodsContainer').find('input, select').prop('disabled', true);
                             } else {
                                 // Default to 1 payment period
                                 $('#paymentPeriods').val(1);
@@ -1029,7 +1030,8 @@
                             'onclick="goBack()">Back to List</button>' +
                             '</div>'
                         );*/
-                        
+                        // 初次加载时将 Payment Schedule 区域设为只读
+                        $('#paymentPeriodsContainer').find('input, select').prop('disabled', true);
                     } else {
                         // 编辑模式
                         document.getElementById('panelTitle').innerText = 'Edit Contract';
