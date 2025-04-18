@@ -397,7 +397,7 @@
             // 处理AutoPay按钮点击
             function handleAutoPay(invoiceId) {
                 // 跳转到AutoPay处理页面，传递发票ID参数
-                window.location.href = 'autoPayInvoice.jsp?invoiceId=' + invoiceId;
+                window.location.href = 'autoPay.jsp?invoiceId=' + invoiceId;
             }
             // 格式化货币显示
             function formatCurrency(amount) {

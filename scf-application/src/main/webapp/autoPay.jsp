@@ -202,8 +202,8 @@
                             <p id="invoiceAmount" class="font-weight-bold"></p>
                         </div>
                         <div class="form-group">
-                            <label>Issue Date:</label>
-                            <p id="issueDate"></p>
+                            <label>Payment Method:</label>
+                            <p id="paymentMethod"></p>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -331,7 +331,7 @@
         // Load invoice details
         function loadInvoiceDetails() {
             const urlParams = new URLSearchParams(window.location.search);
-            const invoiceId = urlParams.get('id');
+            const invoiceId = urlParams.get('invoiceId');
 
             if (!invoiceId) {
                 alert("No invoice ID provided");
@@ -349,7 +349,7 @@
                         // Update invoice details section
                         document.getElementById('invoiceId').textContent = invoiceDetails.invoiceID;
                         document.getElementById('invoiceAmount').textContent = invoiceDetails.amount + ' ' + (invoiceDetails.currency || 'USD');
-                        document.getElementById('issueDate').textContent = formatDate(invoiceDetails.issueDate);
+                        document.getElementById('paymentMethod').textContent = invoiceDetails.paymentMethod;
 
                         // For enterprise names, get enterprise names if they're not included
                         if (invoiceDetails.fromEnterpriseID) {
@@ -364,7 +364,8 @@
                         // Pre-fill payment details
                         document.getElementById('amount').value = invoiceDetails.amount;
                         document.getElementById('toAddress').value = invoiceDetails.recipientAddress || '';
-
+                        getContractDetails(invoiceDetails.contractID);
+                        
                         // Set default scheduled date to payment due date
                         if (invoiceDetails.payDate) {
                             const dueDate = new Date(invoiceDetails.payDate);
@@ -382,6 +383,41 @@
                 }
             });
         }
+
+        function getContractDetails(contractID) {
+    $.ajax({
+        url: 'getContract?contractId=' + contractID,
+        method: 'GET',
+        success: function (contract) {
+            if (contract) {
+                // Get enterprise names from contract details
+                const fromEnterpriseId = contract.fromEnterpriseId;
+                const toEnterpriseId = contract.toEnterpriseId;
+
+                if (fromEnterpriseId) {
+                    getEnterpriseName(fromEnterpriseId, 'fromEnterprise');
+                } else {
+                    document.getElementById('fromEnterprise').textContent = 'N/A';
+                }
+
+                if (toEnterpriseId) {
+                    getEnterpriseName(toEnterpriseId, 'toEnterprise');
+                } else {
+                    document.getElementById('toEnterprise').textContent = 'N/A';
+                }
+            } else {
+                console.warn("Failed to load contract details for contract ID: " + contractID);
+                document.getElementById('fromEnterprise').textContent = 'N/A';
+                document.getElementById('toEnterprise').textContent = 'N/A';
+            }
+        },
+        error: function () {
+            console.error("Error loading contract details for contract ID: " + contractID);
+            document.getElementById('fromEnterprise').textContent = 'N/A';
+            document.getElementById('toEnterprise').textContent = 'N/A';
+        }
+    });
+}
 
         // Helper function to get enterprise names if needed
         function getEnterpriseName(enterpriseID, elementId) {
@@ -562,7 +598,7 @@
         // Initialize when document is ready
         $(document).ready(function () {
             loadInvoiceDetails();
-            connectWallet();
+           // connectWallet();
         });
     </script>
 </body>
