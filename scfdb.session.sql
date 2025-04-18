@@ -1,1 +1,1 @@
-SELECT * FROM invoice
+mysqldump -u root -p SCFDB > backup.sql

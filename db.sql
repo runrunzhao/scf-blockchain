@@ -4,6 +4,8 @@ docker ps -a | grep scf-mysql
 docker start scf-mysql
 docker exec -it scf-mysql bash ;
 
+docker exec -it scf-mysql mysqldump -u root -p SCFDB > backup0418.sql
+
 git add .                        
 git commit -m "02261824"     
 git push origin main    
