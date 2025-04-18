@@ -493,6 +493,55 @@
                 }
             }
 
+            // Replace the current buttons section with this code
+            function updateButtonStates(mode) {
+                // Create all three buttons
+                $('.form-row.mt-4').html(
+                    '<div class="col-md-4 mb-2">' +
+                    '<button type="button" id="editButton" class="btn btn-primary btn-block">Edit</button>' +
+                    '</div>' +
+                    '<div class="col-md-4 mb-2">' +
+                    '<button type="button" id="saveButton" class="btn btn-success btn-block">Save</button>' +
+                    '</div>' +
+                    '<div class="col-md-4 mb-2">' +
+                    '<button type="button" id="cancelButton" class="btn btn-secondary btn-block">Cancel</button>' +
+                    '</div>'
+                );
+
+                // Set button states based on mode
+                if (mode === 'view') {
+                    // View mode: Edit enabled, Save disabled
+                    $('#editButton').prop('disabled', false).show();
+                    $('#saveButton').prop('disabled', true);
+                    $('#cancelButton').prop('disabled', false).click(function () { goBack(); });
+
+                    // Disable form fields in view mode
+                    $('#contractForm input, #contractForm select, #contractForm textarea').prop('disabled', true);
+                } else {
+                    // Edit/add mode: Edit disabled, Save enabled
+                    $('#editButton').prop('disabled', true);
+                    $('#saveButton').prop('disabled', false).click(function () { saveContract(); });
+                    $('#cancelButton').prop('disabled', false).click(function () {
+                        const contractId = $('#contractId').val();
+                        if (contractId && mode === 'edit') {
+                            window.location.href = 'contractDetail.jsp?contractId=' + contractId + '&mode=view';
+                        } else {
+                            goBack();
+                        }
+                    });
+
+                    // Enable form fields in edit mode
+                    $('#contractForm input, #contractForm select, #contractForm textarea').prop('disabled', false);
+                    $('#contractId').prop('readonly', true); // ID field always readonly
+                }
+
+                // Add edit button click handler
+                $('#editButton').click(function () {
+                    const contractId = $('#contractId').val();
+                    window.location.href = 'contractDetail.jsp?contractId=' + contractId + '&mode=edit';
+                });
+            }
+
 
             function updatePaymentFields() {
                 const periods = parseInt($('#paymentPeriods').val());
@@ -656,7 +705,7 @@
 
                     const dateField = document.getElementById(dateFieldId);
                     const amountField = document.getElementById(amountFieldId);
-                    const methodField = document.getElementById(methodFieldId); 
+                    const methodField = document.getElementById(methodFieldId);
                     // Check if elements exist
                     if (!dateField) {
                         console.error(`Error: Field ${dateFieldId} not found`);
@@ -678,7 +727,7 @@
                         period: parseInt(i),
                         paydate: date,
                         amount: amount,
-                        paymentMethod:method
+                        paymentMethod: method
                     });
                 }
                 console.log("准备发送的付款期数据:", JSON.stringify(paymentPeriods));
@@ -739,7 +788,7 @@
 
                                 // Change mode flag
                                 isAddMode = false;
-                                $('#saveButton').html('Update Contract');
+                                $('#saveButton').html('Save');
                             }
                         } else {
                             // Show error message
@@ -913,7 +962,7 @@
                 const urlParams = new URLSearchParams(window.location.search);
                 const contractId = urlParams.get('contractId');
                 const mode = urlParams.get('mode');
-
+                updateButtonStates(mode || 'view');
                 // Initialize dropdown menu
                 $('.dropdown-toggle').dropdown();
 
@@ -967,7 +1016,7 @@
                         // 禁用所有输入字段
                         $('#contractForm input, #contractForm select, #contractForm textarea').prop('disabled', true);
 
-                        // 使用普通字符串拼接而非模板字符串，确保变量正确解析
+                        /*
                         $('.form-row.mt-4').html(
                             '<div class="col-md-6 mb-2">' +
                             '<button type="button" class="btn btn-primary btn-block" ' +
@@ -979,7 +1028,8 @@
                             '<button type="button" class="btn btn-secondary btn-block" ' +
                             'onclick="goBack()">Back to List</button>' +
                             '</div>'
-                        );
+                        );*/
+                        
                     } else {
                         // 编辑模式
                         document.getElementById('panelTitle').innerText = 'Edit Contract';
@@ -989,7 +1039,7 @@
                         $('#contractId').prop('readonly', true); // ID 字段始终只读
 
                         // 确保显示保存按钮
-                        $('#saveButton').show().html('Update Contract');
+                        $('#saveButton').show().html('Save');
                     }
                 } else if (mode === 'edit' || mode === 'view') {
                     // Handle edit/view mode without a contract ID
