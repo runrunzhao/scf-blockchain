@@ -167,6 +167,8 @@
                 background-color: #d4edda;
             }
         </style>
+              <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+              <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
     </head>
 
     <body>
@@ -263,7 +265,7 @@
                     </div>
                     <div class="wallet-info">
                         <div class="mb-1"><strong>Address:</strong> <span id="walletAddress">Not connected</span></div>
-                        <div class="mb-2"><strong>Balance:</strong> <span id="walletBalance">0 POL</span></div>
+                        <div class="mb-2"><strong>Gas Balance:</strong> <span id="walletBalance">0 POL</span></div>
                     </div>
                 </div>
             </div>
@@ -282,14 +284,14 @@
                                     <input type="text" class="form-control" id="fromAddress" readonly>
                                 </div>
                                 <div class="form-group">
-                                    <label for="walletBalance">Your Wallet Balance:</label>
-                                    <input type="text" class="form-control" id="walletBalance" readonly>
+                                    <label for="tokenBalance">Your CTT Balance: </label>
+                                    <button type="button" class="btn btn-success btn-action" onclick="showTokenBalance()">Query CTT</button>
+                                    <input type="text" class="form-control" id="tokenBalance" readonly>
                                 </div>
                                 <div class="form-group">
                                     <label for="toAddress">Payment Recipient Address:</label>
                                     <input type="text" class="form-control" id="toAddress" required>
-                                    <small class="form-text text-muted">This is the blockchain address that will receive
-                                        the payment.</small>
+                                    <small class="form-text text-muted">This is the blockchain address that will receive the payment.</small>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -303,15 +305,16 @@
                                     <input type="datetime-local" class="form-control" id="scheduledDate" required>
                                     <small class="form-text text-muted">When the payment should be executed.</small>
                                 </div>
-                                <div class="form-group mt-4 pt-2">
-                                    <button type="submit" class="btn btn-success btn-action" id="saveBtn">
-                                        <i class="fas fa-calendar-check mr-2"></i>Schedule Payment
-                                    </button>
-                                    <a href="invoice.jsp" class="btn btn-secondary btn-action ml-2">
-                                        <i class="fas fa-arrow-left mr-2"></i>Back to Invoices
-                                    </a>
-                                </div>
                             </div>
+                        </div>
+                       
+                        <div class="form-group text-center mt-4">
+                            <button type="submit" class="btn btn-success btn-action" id="saveBtn">
+                                <i class="fas fa-calendar-check mr-3"></i>Schedule Payment
+                            </button>
+                            <a href="invoice.jsp" class="btn btn-secondary btn-action ml-4">
+                                <i class="fas fa-arrow-left mr-3"></i>Back to Invoices
+                            </a>
                         </div>
                     </form>
                 </div>
@@ -445,36 +448,36 @@
 
             // Update UI for connected wallet
             async function updateUIForConnectedWallet(address) {
-                    // Update status indicators
-                    document.getElementById('connectionStatus').className = 'badge badge-success mr-2';
-                    document.getElementById('connectionStatus').textContent = 'Connected';
-                    document.getElementById('connectedWallet').textContent = formatAddress(address);
+                // Update status indicators
+                document.getElementById('connectionStatus').className = 'badge badge-success mr-2';
+                document.getElementById('connectionStatus').textContent = 'Connected';
+                document.getElementById('connectedWallet').textContent = formatAddress(address);
 
-                    // Update wallet address display
-                    document.getElementById('walletAddress').innerText = address;
+                // Update wallet address display
+                document.getElementById('walletAddress').innerText = address;
 
-                    // Update connect button
-                    const connectButton = document.getElementById('connectWalletBtn');
-                    connectButton.innerText = "Wallet Connected";
-                    connectButton.classList.remove('btn-primary');
-                    connectButton.classList.add('btn-success');
+                // Update connect button
+                const connectButton = document.getElementById('connectWalletBtn');
+                connectButton.innerText = "Wallet Connected";
+                connectButton.classList.remove('btn-primary');
+                connectButton.classList.add('btn-success');
 
-                    // Initialize Web3 if not already initialized
-                    if (!web3) {
-                        // web3 = new Web3(window.ethereum);
-                        window.web3 = new Web3(window.ethereum);
-                    }
-
-                    // Get and update balance
-                    getWalletBalance(address);
-
-                    // Update recipient field if it exists
-                    const recipientField = document.getElementById('fromAddress');
-                    if (recipientField && recipientField.value === "") {
-                        recipientField.value = address;
-                    }
-
+                // Initialize Web3 if not already initialized
+                if (!web3) {
+                    // web3 = new Web3(window.ethereum);
+                    window.web3 = new Web3(window.ethereum);
                 }
+
+                // Get and update balance
+                getWalletBalance(address);
+
+                // Update recipient field if it exists
+                const recipientField = document.getElementById('fromAddress');
+                if (recipientField && recipientField.value === "") {
+                    recipientField.value = address;
+                }
+
+            }
 
             // Reset UI when wallet is disconnected
             function resetWalletConnectionUI() {
@@ -519,6 +522,34 @@
                     console.error("Error getting wallet balance:", error);
                     document.getElementById('walletBalance').innerText = "Error";
                 }
+            }
+
+
+            async function showTokenBalance() {
+                const tokenAddress = "0x38e041d4f9a5c84D7b0D6a568811188559E84dd8"; // 替换为实际代币地址
+                const provider = new ethers.providers.Web3Provider(window.ethereum);
+                const signer = provider.getSigner();
+                const userAddress = await signer.getAddress();
+                console.log("User Address: ", userAddress);
+                if (!window.ethereum) {
+                    alert("Please install MetaMask to use this feature.");
+                    return;
+                }
+
+                if (!userAddress) {
+                    alert("Please connect your wallet first.");
+                    return;
+                }
+                const tokenABI = [
+                    "function balanceOf(address owner) view returns (uint256)",
+                    "function decimals() view returns (uint8)"
+                ];
+                const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
+                const rawBalance = await tokenContract.balanceOf(userAddress);
+                const decimals = await tokenContract.decimals();
+                const formattedBalance = parseFloat(ethers.utils.formatUnits(rawBalance, decimals)).toFixed(4);
+                console.log("CTT Balance: ", formattedBalance);
+                document.getElementById('tokenBalance').value = formattedBalance + " CTT "; // Changed from value to innerText
             }
 
 

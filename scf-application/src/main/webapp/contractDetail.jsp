@@ -517,6 +517,7 @@
 
                     // Disable form fields in view mode
                     $('#contractForm input, #contractForm select, #contractForm textarea').prop('disabled', true);
+                    $('#paymentPeriodsContainer').find('input, select').prop('disabled', true); 
                 } else {
                     // Edit/add mode: Edit disabled, Save enabled
                     $('#editButton').prop('disabled', true);
@@ -533,6 +534,8 @@
                     // Enable form fields in edit mode
                     $('#contractForm input, #contractForm select, #contractForm textarea').prop('disabled', false);
                     $('#contractId').prop('readonly', true); // ID field always readonly
+                    console.log($('#paymentPeriodsContainer').find('input, select').prop('disabled'));
+                    $('#paymentPeriodsContainer').find('input, select').prop('disabled', false); 
                 }
 
                 // Add edit button click handler
@@ -1042,6 +1045,7 @@
 
                         // 确保显示保存按钮
                         $('#saveButton').show().html('Save');
+                       
                     }
                 } else if (mode === 'edit' || mode === 'view') {
                     // Handle edit/view mode without a contract ID
@@ -1049,6 +1053,7 @@
                     window.location.href = 'contract.jsp';
                 } else {
                     updatePaymentFields();
+                     $('#paymentPeriodsContainer').find('input, select').prop('disabled', false);
 
                 }
                 // Update payment fields when amount changes

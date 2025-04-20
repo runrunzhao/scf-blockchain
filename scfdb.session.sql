@@ -1,1 +1,1 @@
-DESCRIBE invoice;
+select  * From scheduledTransfers
