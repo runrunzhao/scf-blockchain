@@ -327,6 +327,15 @@ jsp -->
             window.userAddress = undefined;
             let invoiceDetails = {};
 
+            // 添加代币合约地址和 ABI
+            const TOKEN_CONTRACT_ADDRESS = "0x38e041d4f9a5c84D7b0D6a568811188559E84dd8"; // 替换为你的代币合约地址
+            const TOKEN_ABI = [
+                "function transfer(address to, uint256 amount) returns (bool)",
+                "function balanceOf(address owner) view returns (uint256)",
+                "function decimals() view returns (uint8)",
+                "function symbol() view returns (string)"
+            ];
+
 
             $(document).ready(function () {
                 // Function to extract parameters from the URL
@@ -374,17 +383,16 @@ jsp -->
 
 
             async function sendMoney() {
-
-                const fromAddress = window.userAddress; //document.getElementById('fromAddress').value;
+                const fromAddress = window.userAddress;
                 const toAddress = document.getElementById('toAddress').value;
                 const amount = document.getElementById('amount').value;
 
                 // Validate inputs
-                if (!fromAddress || !web3.utils.isAddress(fromAddress)) {
+                if (!fromAddress) {
                     alert("Invalid from address. Please connect your wallet first.");
                     return;
                 }
-                if (!toAddress || !web3.utils.isAddress(toAddress)) {
+                if (!toAddress) {
                     alert("Invalid to address.");
                     return;
                 }
@@ -392,44 +400,46 @@ jsp -->
                     alert("Invalid amount.");
                     return;
                 }
+
                 try {
+                    const tokenAddress = "0x38e041d4f9a5c84D7b0D6a568811188559E84dd8"; // 使用与showTokenBalance相同的地址
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
 
-                    // Convert amount to Wei
-                    console.log("Amount (POL):", amount);
-                   const amountWei = web3.utils.toWei(amount, 'ether'); // Use 'ether' for POL
-                 //  const amountWei1 = (parseFloat(amount) * Math.pow(10, 18)).toString();
-                 //   console.log("Amount (Wei):", amountWei);
+                    // 使用与showTokenBalance相同的ABI
+                    const tokenABI = [
+                        "function balanceOf(address owner) view returns (uint256)",
+                        "function decimals() view returns (uint8)",
+                        "function transfer(address to, uint256 amount) returns (bool)"
+                    ];
 
-                 //   const hexAmountWei = web3.utils.numberToHex(amountWei);
-                  //  console.log("Hex Amount (Wei):", hexAmountWei);
-                    // Gas Price in Gwei
-                    const gasPriceGwei = '10'; // Example gas price in Gwei
-                    const gasPriceWei = web3.utils.toWei(gasPriceGwei, 'gwei');
+                    const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
 
-                    // Create transaction object
-                    const transactionParameters = {
-                        from: fromAddress,
-                        to: toAddress,
-                        value: web3.utils.numberToHex(amountWei),
-                        gas: '0x76c0', // 30400
-                        gasPrice: gasPriceWei,
-                    };
+                    // 获取代币精度
+                    const decimals = await tokenContract.decimals();
+                    console.log("Token decimals:", decimals);
 
-                    // Call eth_sendTransaction
-                    const txHash = await ethereum.request({
-                        method: 'eth_sendTransaction',
-                        params: [transactionParameters],
-                    });
+                    // 将金额转换为代币最小单位
+                    const amountInSmallestUnit = ethers.utils.parseUnits(amount.toString(), decimals);
+                    console.log("Amount in smallest unit:", amountInSmallestUnit.toString());
 
-                    alert(`Transaction sent! Hash: ${txHash}`);
+                    // 发送交易
+                    const tx = await tokenContract.transfer(toAddress, amountInSmallestUnit);
+                    console.log("Transaction sent:", tx.hash);
+                    alert(`Transaction sent! Hash: ${tx.hash}`);
+
+                    // 等待交易确认
+                    await tx.wait();
+                    console.log("Transaction confirmed!");
+
+                    // 刷新余额
+                    showTokenBalance();
                 } catch (error) {
                     console.error("Error sending transaction:", error);
                     alert("Transaction failed: " + error.message);
                 }
-
-                // Proceed with sending money
-                showStatus("Sending money...", false);
             }
+
 
             function showStatus(message, isError = false) {
                 // Check if status element exists, if not create it
