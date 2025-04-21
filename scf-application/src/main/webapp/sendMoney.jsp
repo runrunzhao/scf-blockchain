@@ -1,3 +1,4 @@
+jsp -->
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <!DOCTYPE html>
     <html lang="en">
@@ -166,6 +167,25 @@
                 color: #155724;
                 background-color: #d4edda;
             }
+
+            /* Custom styles */
+            .horizontal-balance {
+                display: flex;
+                align-items: center;
+            }
+
+            .horizontal-balance>label {
+                margin-right: 5px;
+            }
+
+            .horizontal-balance>input {
+                width: 100px;
+                margin-right: 5px;
+            }
+
+            .horizontal-balance>button {
+                margin-right: 5px;
+            }
         </style>
         <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -207,44 +227,6 @@
         </div>
 
         <div class="container">
-            <!-- Invoice Information Card -->
-            <div class="card">
-                <div class="card-header bg-primary text-white">
-                    <h5 class="mb-0">Invoice Details</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>Invoice ID:</label>
-                                <p id="invoiceId" class="font-weight-bold"></p>
-                            </div>
-                            <div class="form-group">
-                                <label>Invoice Amount:</label>
-                                <p id="invoiceAmount" class="font-weight-bold"></p>
-                            </div>
-                            <div class="form-group">
-                                <label>Payment Method:</label>
-                                <p id="paymentMethod"></p>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="form-group">
-                                <label>From Enterprise:</label>
-                                <p id="fromEnterprise"></p>
-                            </div>
-                            <div class="form-group">
-                                <label>To Enterprise:</label>
-                                <p id="toEnterprise"></p>
-                            </div>
-                            <div class="form-group">
-                                <label>Payment Due:</label>
-                                <p id="payDate" class="text-danger font-weight-bold"></p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
 
             <!-- Wallet Connection Section -->
             <div class="card wallet-section">
@@ -266,6 +248,13 @@
                     <div class="wallet-info">
                         <div class="mb-1"><strong>Address:</strong> <span id="walletAddress">Not connected</span></div>
                         <div class="mb-2"><strong>Gas Balance:</strong> <span id="walletBalance">0 POL</span></div>
+                        <div class="form-group horizontal-balance">
+                            <label for="tokenBalance">CTT Balance:</label>
+                            <input type="text" class="form-control" id="tokenBalance" readonly>
+                            <button type="button" class="btn btn-success btn-action" onclick="showTokenBalance()">Query
+                                CTT</button>
+
+                        </div>
                     </div>
                 </div>
             </div>
@@ -280,17 +269,12 @@
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="fromAddress">Your Wallet Address:</label>
+                                    <label for="fromAddress">From Address:</label>
                                     <input type="text" class="form-control" id="fromAddress" readonly>
                                 </div>
+
                                 <div class="form-group">
-                                    <label for="tokenBalance">Your CTT Balance: </label>
-                                    <button type="button" class="btn btn-success btn-action"
-                                        onclick="showTokenBalance()">Query CTT</button>
-                                    <input type="text" class="form-control" id="tokenBalance" readonly>
-                                </div>
-                                <div class="form-group">
-                                    <label for="toAddress">Payment Recipient Address:</label>
+                                    <label for="toAddress">To Address:</label>
                                     <input type="text" class="form-control" id="toAddress" required>
                                     <small class="form-text text-muted">This is the blockchain address that will receive
                                         the payment.</small>
@@ -311,8 +295,8 @@
                         </div>
 
                         <div class="form-group text-center mt-4">
-                            <button type="submit" class="btn btn-success btn-action" id="saveBtn">
-                                <i class="fas fa-calendar-check mr-3"></i>Schedule Payment
+                            <button type="button" class="btn btn-success btn-action" id="sendMoneyBtn">
+                                <i class="fas fa-calendar-check mr-3"></i>Send
                             </button>
                             <a href="invoice.jsp" class="btn btn-secondary btn-action ml-4">
                                 <i class="fas fa-arrow-left mr-3"></i>Back to Invoices
@@ -322,22 +306,7 @@
                 </div>
             </div>
 
-            <!-- Scheduled Payments List -->
-            <div class="card">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Your Scheduled Payments</h5>
-                </div>
-                <div class="card-body">
-                    <div class="table-responsive" id="scheduledPaymentsTable">
-                        <!-- Table will be loaded here -->
-                    </div>
-                    <div class="text-center mt-4">
-                        <button type="button" class="btn btn-primary" id="searchPaymentsBtn">
-                            <i class="fas fa-search mr-2"></i>Search
-                        </button>
-                    </div>
-                </div>
-            </div>
+
         </div>
 
 
@@ -358,6 +327,35 @@
             window.userAddress = undefined;
             let invoiceDetails = {};
 
+
+            $(document).ready(function () {
+                // Function to extract parameters from the URL
+                function getParameterByName(name, url = window.location.href) {
+                    name = name.replace(/[\[\]]/g, '\\$&');
+                    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                        results = regex.exec(url);
+                    if (!results) return null;
+                    if (!results[2]) return '';
+                    return decodeURIComponent(results[2].replace(/\+/g, ' '));
+                }
+
+                // Get parameters from the URL
+                var toAddress = getParameterByName('toAddress');
+                var amount = getParameterByName('amount');
+                var scheduledTime = getParameterByName('scheduledTime');
+
+                // Fill the form fields with the extracted values
+                if (toAddress) {
+                    $('#toAddress').val(toAddress);
+                }
+                if (amount) {
+                    $('#amount').val(amount);
+                }
+                if (scheduledTime) {
+                    $('#scheduledDate').val(scheduledTime);
+                }
+            });
+
             document.addEventListener('DOMContentLoaded', () => {
                 if (window.ethereum) {
                     window.ethereum.on('accountsChanged', (accounts) => {
@@ -371,8 +369,67 @@
                     window.ethereum.on('disconnect', () => resetWalletConnectionUI());
                 }
                 document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
-                document.getElementById('searchPaymentsBtn').addEventListener('click', searchPayments);
+                document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney); // Updated to call sendMoney function
             });
+
+
+            async function sendMoney() {
+
+                const fromAddress = window.userAddress; //document.getElementById('fromAddress').value;
+                const toAddress = document.getElementById('toAddress').value;
+                const amount = document.getElementById('amount').value;
+
+                // Validate inputs
+                if (!fromAddress || !web3.utils.isAddress(fromAddress)) {
+                    alert("Invalid from address. Please connect your wallet first.");
+                    return;
+                }
+                if (!toAddress || !web3.utils.isAddress(toAddress)) {
+                    alert("Invalid to address.");
+                    return;
+                }
+                if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
+                    alert("Invalid amount.");
+                    return;
+                }
+                try {
+
+                    // Convert amount to Wei
+                    console.log("Amount (POL):", amount);
+                   const amountWei = web3.utils.toWei(amount, 'ether'); // Use 'ether' for POL
+                 //  const amountWei1 = (parseFloat(amount) * Math.pow(10, 18)).toString();
+                 //   console.log("Amount (Wei):", amountWei);
+
+                 //   const hexAmountWei = web3.utils.numberToHex(amountWei);
+                  //  console.log("Hex Amount (Wei):", hexAmountWei);
+                    // Gas Price in Gwei
+                    const gasPriceGwei = '10'; // Example gas price in Gwei
+                    const gasPriceWei = web3.utils.toWei(gasPriceGwei, 'gwei');
+
+                    // Create transaction object
+                    const transactionParameters = {
+                        from: fromAddress,
+                        to: toAddress,
+                        value: web3.utils.numberToHex(amountWei),
+                        gas: '0x76c0', // 30400
+                        gasPrice: gasPriceWei,
+                    };
+
+                    // Call eth_sendTransaction
+                    const txHash = await ethereum.request({
+                        method: 'eth_sendTransaction',
+                        params: [transactionParameters],
+                    });
+
+                    alert(`Transaction sent! Hash: ${txHash}`);
+                } catch (error) {
+                    console.error("Error sending transaction:", error);
+                    alert("Transaction failed: " + error.message);
+                }
+
+                // Proceed with sending money
+                showStatus("Sending money...", false);
+            }
 
             function showStatus(message, isError = false) {
                 // Check if status element exists, if not create it
@@ -558,266 +615,8 @@
                 const decimals = await tokenContract.decimals();
                 const formattedBalance = parseFloat(ethers.utils.formatUnits(rawBalance, decimals)).toFixed(4);
                 console.log("CTT Balance: ", formattedBalance);
-                document.getElementById('tokenBalance').value = formattedBalance + " CTT "; // Changed from value to innerText
+                document.getElementById('tokenBalance').value = formattedBalance; // Changed from value to innerText
             }
-
-
-            // Load invoice details
-            function loadInvoiceDetails() {
-                const urlParams = new URLSearchParams(window.location.search);
-                const invoiceId = urlParams.get('invoiceId');
-
-                if (!invoiceId) {
-                    alert("No invoice ID provided");
-                    window.location.href = "invoice.jsp";
-                    return;
-                }
-
-                $.ajax({
-                    url: 'getSingleInvoice?invoiceId=' + invoiceId,
-                    method: 'GET',
-                    success: function (data) {
-                        if (data) {
-                            invoiceDetails = data;
-
-                            // Update invoice details section
-                            document.getElementById('invoiceId').textContent = invoiceDetails.invoiceID;
-                            document.getElementById('invoiceAmount').textContent = invoiceDetails.amount + ' ' + (invoiceDetails.currency || 'USD');
-                            document.getElementById('paymentMethod').textContent = invoiceDetails.paymentMethod;
-
-                            // For enterprise names, get enterprise names if they're not included
-                            if (invoiceDetails.fromEnterpriseID) {
-                                getEnterpriseName(invoiceDetails.fromEnterpriseID, 'fromEnterprise');
-                            }
-                            if (invoiceDetails.toEnterpriseID) {
-                                getEnterpriseName(invoiceDetails.toEnterpriseID, 'toEnterprise');
-                            }
-
-                            document.getElementById('payDate').textContent = formatDate(invoiceDetails.payDate);
-
-                            // Pre-fill payment details
-                            document.getElementById('amount').value = invoiceDetails.amount;
-                            document.getElementById('toAddress').value = invoiceDetails.recipientAddress || '';
-                            getContractDetails(invoiceDetails.contractID);
-
-                            // Set default scheduled date to payment due date
-                            if (invoiceDetails.payDate) {
-                                const dueDate = new Date(invoiceDetails.payDate);
-                                document.getElementById('scheduledDate').value = formatDateTimeLocal(dueDate);
-                            }
-                        } else {
-                            alert("Failed to load invoice details");
-                            window.location.href = "invoice.jsp";
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error loading invoice:", error);
-                        alert("Error loading invoice details");
-                        window.location.href = "invoice.jsp";
-                    }
-                });
-            }
-
-            function getContractDetails(contractID) {
-                $.ajax({
-                    url: 'getContract?contractId=' + contractID,
-                    method: 'GET',
-                    success: function (contract) {
-                        if (contract) {
-                            // Get enterprise names from contract details
-                            const fromEnterpriseId = contract.fromEnterpriseId;
-                            const toEnterpriseId = contract.toEnterpriseId;
-
-                            if (fromEnterpriseId) {
-                                getEnterpriseName(fromEnterpriseId, 'fromEnterprise');
-                            } else {
-                                document.getElementById('fromEnterprise').textContent = 'N/A';
-                            }
-
-                            if (toEnterpriseId) {
-                                getEnterpriseName(toEnterpriseId, 'toEnterprise');
-                            } else {
-                                document.getElementById('toEnterprise').textContent = 'N/A';
-                            }
-                        } else {
-                            console.warn("Failed to load contract details for contract ID: " + contractID);
-                            document.getElementById('fromEnterprise').textContent = 'N/A';
-                            document.getElementById('toEnterprise').textContent = 'N/A';
-                        }
-                    },
-                    error: function () {
-                        console.error("Error loading contract details for contract ID: " + contractID);
-                        document.getElementById('fromEnterprise').textContent = 'N/A';
-                        document.getElementById('toEnterprise').textContent = 'N/A';
-                    }
-                });
-            }
-
-            // Helper function to get enterprise names if needed
-            function getEnterpriseName(enterpriseID, elementId) {
-                $.ajax({
-                    url: 'getEnterprise?id=' + enterpriseID,
-                    method: 'GET',
-                    success: function (data) {
-                        if (data && data.enterpriseName) {
-                            document.getElementById(elementId).textContent = data.enterpriseName;
-                        } else {
-                            document.getElementById(elementId).textContent = enterpriseID;
-                        }
-                    },
-                    error: function () {
-                        document.getElementById(elementId).textContent = enterpriseID;
-                    }
-                });
-            }
-
-            function searchPayments() {
-                const fromAddress = document.getElementById('fromAddress').value;
-                const toAddress = document.getElementById('toAddress').value;
-                // Validate inputs
-                if (!fromAddress || !web3.utils.isAddress(fromAddress)) {
-                    alert("Invalid from address. Please connect your wallet first.");
-                    return;
-                }
-
-                userAddress = fromAddress;
-
-                // Load scheduled payments
-                loadScheduledPayments();
-            }
-
-            function loadScheduledPayments() {
-                if (!userAddress) return;
-
-                $.ajax({
-                    url: 'getScheduledTransfers?address=' + userAddress,
-                    method: 'GET',
-                    success: function (data) {
-                        let tableHtml = '';
-
-                        if (data && data.success && data.transfers && data.transfers.length > 0) {
-                            tableHtml = "<table class=\"table table-striped\">" +
-                                "<thead>" +
-                                "<tr>" +
-                                "<th>To Address</th>" +
-                                "<th>Amount</th>" +
-                                "<th>Scheduled Date</th>" +
-                                "<th>Status</th>" +
-                                "<th>Actions</th>" +
-                                "</tr>" +
-                                "</thead>" +
-                                "<tbody>";
-
-                            data.transfers.forEach(function (transfer) {
-                                let statusClass = '';
-                                let statusIcon = '';
-
-                                switch (transfer.status) {
-                                    case 'COMPLETED':
-                                        statusClass = 'status-completed';
-                                        statusIcon = 'fa-check-circle';
-                                        break;
-                                    case 'FAILED':
-                                        statusClass = 'status-failed';
-                                        statusIcon = 'fa-times-circle';
-                                        break;
-                                    default:
-                                        statusClass = 'status-pending';
-                                        statusIcon = 'fa-clock';
-                                        break;
-                                }
-
-                                tableHtml += "<tr>" +
-                                    "<td>" + shortenAddress(transfer.toAddress) + "</td>" +
-                                    "<td>" + transfer.amount + "</td>" +
-                                    "<td>" + formatDateTime(transfer.scheduledTime) + "</td>" +
-                                    "<td><span class=\"status-indicator " + statusClass + "\"></span> " +
-                                    transfer.status + " <i class=\"fas " + statusIcon + " ml-1\"></i></td>" +
-                                    "<td>" +
-                                    "<a class=\"btn btn-primary btn-sm\" href=\"sendMoney.jsp?toAddress=" + transfer.toAddress + "&amount=" + transfer.amount + "&scheduledTime=" + transfer.scheduledTime + "\">" +
-                                    "<i class=\"fas fa-paper-plane mr-1\"></i>Send</a>" +
-                                    "</td>" +
-                                    "</tr>";
-                            });
-
-                            tableHtml += "</tbody></table>";
-                        } else {
-                            tableHtml = '<div class="alert alert-info">No scheduled payments found</div>';
-                        }
-
-                        document.getElementById('scheduledPaymentsTable').innerHTML = tableHtml;
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error loading scheduled payments:", error);
-                        document.getElementById('scheduledPaymentsTable').innerHTML =
-                            '<div class="alert alert-danger">Failed to load scheduled payments</div>';
-                    }
-                });
-            }
-
-
-
-            // Submit form handler
-            $('#schedulePaymentForm').submit(function (e) {
-                e.preventDefault();
-
-                const fromAddress = document.getElementById('fromAddress').value;
-                const toAddress = document.getElementById('toAddress').value;
-                const amount = document.getElementById('amount').value;
-                const scheduledDate = document.getElementById('scheduledDate').value;
-
-                // Validate inputs
-                if (!fromAddress || !web3.utils.isAddress(fromAddress)) {
-                    alert("Invalid from address. Please connect your wallet first.");
-                    return;
-                }
-
-                if (!toAddress || !web3.utils.isAddress(toAddress)) {
-                    alert("Invalid recipient address. Please check the address and try again.");
-                    return;
-                }
-
-                if (!amount || isNaN(amount) || parseFloat(amount) <= 0) {
-                    alert("Please enter a valid amount greater than 0.");
-                    return;
-                }
-
-                if (!scheduledDate) {
-                    alert("Please select a scheduled payment date.");
-                    return;
-                }
-
-                const scheduledTime = new Date(scheduledDate).getTime();
-                if (scheduledTime <= Date.now()) {
-                    alert("Scheduled date must be in the future.");
-                    return;
-                }
-
-                // Submit the data
-                $.ajax({
-                    url: 'scheduleTransfer',
-                    method: 'POST',
-                    data: {
-                        fromAddress: fromAddress,
-                        toAddress: toAddress,
-                        amount: amount,
-                        scheduledTime: scheduledDate,
-                        invoiceId: invoiceDetails.invoiceID || ''
-                    },
-                    success: function (response) {
-                        if (response && response.success) {
-                            alert("Payment scheduled successfully!");
-                            loadScheduledPayments();
-                        } else {
-                            alert("Failed to schedule payment: " + (response.message || "Unknown error"));
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("Error scheduling payment:", error);
-                        alert("Error scheduling payment. Please try again later.");
-                    }
-                });
-            });
 
             // Helper function to format date
             function formatDate(dateStr) {
@@ -833,16 +632,7 @@
                 return date.toLocaleDateString() + ' ' + date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             }
 
-            // Format date for datetime-local input - FIXED VERSION with no template literals
-            function formatDateTimeLocal(date) {
-                const year = date.getFullYear();
-                const month = String(date.getMonth() + 1).padStart(2, '0');
-                const day = String(date.getDate()).padStart(2, '0');
-                const hours = String(date.getHours()).padStart(2, '0');
-                const minutes = String(date.getMinutes()).padStart(2, '0');
 
-                return year + "-" + month + "-" + day + "T" + hours + ":" + minutes;
-            }
 
             // Helper function to shorten blockchain address
             function shortenAddress(address) {
@@ -850,11 +640,7 @@
                 return address.substring(0, 6) + '...' + address.substring(address.length - 4);
             }
 
-            // Initialize when document is ready
-            $(document).ready(function () {
-                loadInvoiceDetails();
-                //connectWallet(); // Prevent auto-connect
-            });
+
 
 
         </script>

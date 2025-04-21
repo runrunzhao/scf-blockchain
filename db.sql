@@ -10,7 +10,8 @@ docker exec -i scf-mysql mysql -u root -ppassword SCFDB < /workspaces/scf-blockc
 git add .                        
 git commit -m "02261824"     
 git push origin main    
-
+ git push second  main
+ 
 select * from  users;
 -- 用户表 - 存储注册用户信息
 CREATE TABLE  users (
