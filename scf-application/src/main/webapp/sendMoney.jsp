@@ -326,9 +326,10 @@ jsp -->
             window.web3 = undefined;
             window.userAddress = undefined;
             let invoiceDetails = {};
+            let currentContractAddress = null;
 
-            // 添加代币合约地址和 ABI
-            const TOKEN_CONTRACT_ADDRESS = "0x38e041d4f9a5c84D7b0D6a568811188559E84dd8"; // 替换为你的代币合约地址
+
+            
             const TOKEN_ABI = [
                 "function transfer(address to, uint256 amount) returns (bool)",
                 "function balanceOf(address owner) view returns (uint256)",
@@ -352,6 +353,8 @@ jsp -->
                 var toAddress = getParameterByName('toAddress');
                 var amount = getParameterByName('amount');
                 var scheduledTime = getParameterByName('scheduledTime');
+
+
 
                 // Fill the form fields with the extracted values
                 if (toAddress) {
@@ -377,10 +380,32 @@ jsp -->
                     window.ethereum.on('chainChanged', () => window.location.reload());
                     window.ethereum.on('disconnect', () => resetWalletConnectionUI());
                 }
+                currentContractAddress = getLatestScTransAddr();
+                if (currentContractAddress) {
+                    console.log("Initialized contract address:", currentContractAddress);
+                } else {
+                    console.error("Failed to initialize contract address");
+                }
+
                 document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
                 document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney); // Updated to call sendMoney function
             });
 
+            async function getLatestScTransAddr() {
+                try {
+                    const response = await fetch('/api/contract/latest-address');
+                    const data = await response.json();
+                    if (data.success) {
+                        return data.scTransAddr;
+                    } else {
+                        console.error("Error getting contract address:", data.message);
+                        return null;
+                    }
+                } catch (error) {
+                    console.error("Failed to get contract address:", error);
+                    return null;
+                }
+            }
 
             async function sendMoney() {
                 const fromAddress = window.userAddress;
@@ -400,9 +425,9 @@ jsp -->
                     alert("Invalid amount.");
                     return;
                 }
-
+      
                 try {
-                    const tokenAddress = "0x38e041d4f9a5c84D7b0D6a568811188559E84dd8"; // 使用与showTokenBalance相同的地址
+                    const tokenAddress = currentContractAddress; // 使用与showTokenBalance相同的地址
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     const signer = provider.getSigner();
 
@@ -602,7 +627,7 @@ jsp -->
 
 
             async function showTokenBalance() {
-                const tokenAddress = "0x38e041d4f9a5c84D7b0D6a568811188559E84dd8"; // 替换为实际代币地址
+                const tokenAddress =currentContractAddress; // 替换为实际代币地址
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
                 const userAddress = await signer.getAddress();

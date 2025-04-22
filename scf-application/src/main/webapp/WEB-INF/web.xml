@@ -338,4 +338,12 @@
     <url-pattern>/getScheduledTransfers</url-pattern>
 </servlet-mapping>
 
+<servlet>
+    <servlet-name>scTransAddressServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.scTransAddressServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>scTransAddressServlet</servlet-name>
+    <url-pattern>/api/contract/latest-address</url-pattern>
+</servlet-mapping>
 </web-app>

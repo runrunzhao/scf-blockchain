@@ -19,7 +19,9 @@
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateProfileServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/blockchain/service/CTTTokenService.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/model/PaymentPeriod.java
+/workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/scTransAddressServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GetSingleInvoiceServlet.java
+/workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/util/scTransAddressUtil.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GenerateCTTFromInvoiceServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/SingleInvoiceServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/LogoutServlet.java
