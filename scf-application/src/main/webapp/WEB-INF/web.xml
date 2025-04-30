@@ -365,4 +365,14 @@
     <url-pattern>/api/financing/records</url-pattern>
 </servlet-mapping>
 
+<servlet>
+    <servlet-name>GetFinancingRecordById</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.GetFinancingRecordByIdServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>GetFinancingRecordById</servlet-name>
+    <url-pattern>/api/financing/id</url-pattern>
+</servlet-mapping>
+
+
 </web-app>

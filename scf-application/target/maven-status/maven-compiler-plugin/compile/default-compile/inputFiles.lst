@@ -55,6 +55,7 @@
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/model/Enterprise.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/RegisterUserServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/util/PasswordUtil.java
+/workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GetFinancingRecordByIdServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GenerateCTTServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/model/Contract.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateSCAddressServlet.java

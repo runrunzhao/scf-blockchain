@@ -1,11 +1,11 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="true" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
     <!DOCTYPE html>
     <html lang="en">
 
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>AutoPay Invoice - Supply Chain Finance</title>
+        <title>buy CTT on Chain - Supply Chain Finance</title>
         <!-- Bootstrap CSS -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
@@ -185,36 +185,6 @@
             .horizontal-balance>button {
                 margin-right: 5px;
             }
-
-            .btn-lg {
-                padding: 15px 30px;
-                font-size: 1.2rem;
-                border-radius: 8px;
-                box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-                transition: all 0.3s ease;
-            }
-
-            .btn-lg:hover {
-                transform: translateY(-2px);
-                box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
-            }
-
-            .financing-btn-container {
-                margin: 40px 0;
-                padding: 20px;
-                background: rgba(255, 255, 255, 0.9);
-                border-radius: 10px;
-            }
-
-            #financingTable tbody tr.selected {
-                background-color: #e2e6ea !important;
-                cursor: pointer;
-            }
-
-            #financingTable tbody tr:hover {
-                background-color: #f5f5f5;
-                cursor: pointer;
-            }
         </style>
         <script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
@@ -284,119 +254,61 @@
                                 CTT</button>
 
                         </div>
-                        <div class="form-group horizontal-expriation">
-                            <label for="tokenBalance">CTT Expiration:</label>
-                            <input type="text" class="form-control" id="tokenExpiration" readonly>
-
-                        </div>
-                        <div class="text-center mb-4">
-                            <button type="button" class="btn btn-primary btn-lg" data-toggle="modal"
-                                data-target="#financingModal" id="financingBtn">
-                                <i class="fas fa-money-bill-wave mr-2"></i>Start Financing
-                            </button>
-                        </div>
                     </div>
                 </div>
             </div>
 
-            <div class="modal fade" id="financingModal" tabindex="-1" role="dialog"
-                aria-labelledby="financingModalLabel" aria-hidden="true">
-                <div class="modal-dialog" role="document">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h5 class="modal-title" id="financingModalLabel">CTT Financing</h5>
-                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                <span aria-hidden="true">&times;</span>
-                            </button>
-                        </div>
-                        <div class="modal-body">
-                            <form id="financingForm">
-                                <div class="form-group">
-                                    <label for="financingAmount">CTT Amount to Finance</label>
-                                    <input type="number" class="form-control" id="financingAmount" step="0.01" required>
-                                    <small class="form-text text-muted">Enter the amount of CTT you want to
-                                        finance</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="interestRate">Interest Rate (%)</label>
-                                    <input type="number" class="form-control" id="interestRate" step="0.01" required>
-                                    <small class="form-text text-muted">Annual interest rate percentage 360 Days</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="acceptableDate">Acceptable Date</label>
-                                    <input type="date" class="form-control" id="acceptableDate" required>
-                                    <small class="form-text text-muted">Select the acceptable date for financing</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="cttExpiration">CTT Expiration</label>
-                                    <input type="text" class="form-control" id="modalCttExpiration" readonly>
-                                    <small class="form-text text-muted">Original CTT expiration date</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="financingDays">Financing Days</label>
-                                    <input type="text" class="form-control" id="financingDays" readonly>
-                                    <small class="form-text text-muted">Days between cttExpiration and acceptable
-                                        date</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="settlementAmount">Settlement Amount</label>
-                                    <input type="number" class="form-control" id="settlementAmount" readonly>
-                                    <small class="form-text text-muted">Amount you will receive after interest
-                                        deduction</small>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="confirmFinancingBtn">Confirm
-                                Financing</button>
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Financing Lists Table -->
-            <div class="card mt-4">
+            <!-- Schedule Auto Payment Card -->
+            <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">Financing History</h5>
+                    <h5 class="mb-0">CTT Financing Info</h5>
                 </div>
                 <div class="card-body">
-                    <div class="table-responsive">
-                        <table class="table table-striped" id="financingTable">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>CTT Amount</th>
-                                    <th>Interest Rate</th>
-                                    <th>Acceptable Date</th>
-                                    <th>Settlement Amount</th>
-                                    <th>Status</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <!-- Financing records will be dynamically inserted here -->
-                            </tbody>
-                        </table>
-                    </div>
+                    <form id="schedulePaymentForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="fromAddress">From Address:</label>
+                                    <input type="text" class="form-control" id="fromAddress" readonly>
+                                </div>
+
+                                <div class="form-group">
+                                    <label for="toAddress">To Address:</label>
+                                    <input type="text" class="form-control" id="toAddress" required>
+                                    <small class="form-text text-muted">This is the blockchain address that will receive
+                                        the payment.</small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="amount">CTT Amount:</label>
+                                    <input type="number" step="0.000001" class="form-control" id="amount" required>
+                                    <small class="form-text text-muted">The amount of tokens to transfer.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="acceptableDate">Acceptable Date:</label>
+                                    <input type="datetime-local" class="form-control" id="acceptableDate" required>
+                                    <small class="form-text text-muted">When last acceptable date.</small>
+                                </div>
+                                <div class="form-group">
+                                    <label for="expirationDate">Expiration Date:</label>
+                                    <input type="datetime-local" class="form-control" id="expirationDate" required>
+                                    <small class="form-text text-muted">When CTT expires.</small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group text-center mt-4">
+                            <button type="button" class="btn btn-success btn-action" id="sendMoneyBtn">
+                                <i class="fas fa-calendar-check mr-3"></i>Send
+                            </button>
+                            <a href="invoice.jsp" class="btn btn-secondary btn-action ml-4">
+                                <i class="fas fa-arrow-left mr-3"></i>Back to Invoices
+                            </a>
+                        </div>
+                    </form>
                 </div>
             </div>
-
-            <div class="form-group text-center mt-4">
-                <button type="button" class="btn btn-success btn-action ml-4" id="searchFinancingBtn">
-                    <i class="fas fa-calendar-check mr-2"></i>Search
-                </button>
-                <button type="button" class="btn btn-success btn-action ml-4" id="buyCTTBtn">
-                    <i class="fas fa-calendar-check mr-2"></i>Buy
-                </button>
-                <a href="index.jsp" class="btn btn-secondary btn-action ml-4">
-                    <i class="fas fa-arrow-left mr-2"></i>Back to Home
-                </a>
-            </div>
-            </form>
-        </div>
-        </div>
 
 
         </div>
@@ -419,7 +331,7 @@
             window.userAddress = undefined;
             let invoiceDetails = {};
             let currentContractAddress = null;
-            let cttExpiration = null;
+
 
 
             const TOKEN_ABI = [
@@ -429,36 +341,48 @@
                 "function symbol() view returns (string)"
             ];
 
+            function getParameterByName(name, url = window.location.href) {
+                name = name.replace(/[\[\]]/g, '\\$&');
+                var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
+                    results = regex.exec(url);
+                if (!results) return null;
+                if (!results[2]) return '';
+                return decodeURIComponent(results[2].replace(/\+/g, ' '));
+            }
 
             $(document).ready(function () {
-                // Function to extract parameters from the URL
-                function getParameterByName(name, url = window.location.href) {
-                    name = name.replace(/[\[\]]/g, '\\$&');
-                    var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
-                        results = regex.exec(url);
-                    if (!results) return null;
-                    if (!results[2]) return '';
-                    return decodeURIComponent(results[2].replace(/\+/g, ' '));
-                }
-
-                // Get parameters from the URL
-                var toAddress = getParameterByName('toAddress');
-                var amount = getParameterByName('amount');
-                var scheduledTime = getParameterByName('scheduledTime');
-
-
-
-                // Fill the form fields with the extracted values
-                if (toAddress) {
-                    $('#toAddress').val(toAddress);
-                }
-                if (amount) {
-                    $('#amount').val(amount);
-                }
-                if (scheduledTime) {
-                    $('#scheduledDate').val(scheduledTime);
+                const recordId = getParameterByName('recordId');
+                console.log(recordId);
+                if (recordId) {
+                    fetchFinancingDetails(recordId);
                 }
             });
+
+            async function fetchFinancingDetails(recordId) {
+                try {
+                    console.log('Fetching record ID:', recordId); // Debug log
+                    const response = await fetch(`/api/financing/id?recordId=${recordId}`);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    const data = await response.json();
+                    console.log('Received data:', data); // Debug log
+                    if (data.success) {
+                        console.log(data.record);
+
+                        $('#amount').val(data.cttAmount);
+                        $('#fromAddress').val(data.fromAddress);
+                        $('#acceptableDate').val(data.dueDate);
+                        $('#expirationDate').val(data.expirationDate);
+                    } else {
+                        alert('Failed to fetch financing details');
+                    }
+                } catch (error) {
+                    console.error('Error fetching financing details:', error);
+                    alert('Error loading financing details');
+                }
+            }
 
             document.addEventListener('DOMContentLoaded', () => {
                 if (window.ethereum) {
@@ -480,45 +404,7 @@
                 }
 
                 document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
-
-                document.getElementById('searchFinancingBtn').addEventListener('click', searchFinancingHistory);
-                document.getElementById('buyCTTBtn').addEventListener('click', buyCTTonChain);
-                document.getElementById('confirmFinancingBtn').addEventListener('click', confirmFinancing);
-
-                // Financing button click handler
-                document.getElementById('financingBtn').addEventListener('click', function () {
-                    if (!window.ethereum) {
-                        alert("Please install MetaMask to use this feature.");
-                        return;
-                    }
-                    // Reset form
-                    document.getElementById('financingForm').reset();
-                    document.getElementById('modalCttExpiration').value = cttExpiration;
-
-
-                    // Set minimum date for maturity date (tomorrow)
-                    const tomorrow = new Date();
-                    tomorrow.setDate(tomorrow.getDate() + 1);
-                    const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
-                    document.getElementById('acceptableDate').min = tomorrowFormatted;
-
-                    // Add this to your DOMContentLoaded event listener
-                    document.getElementById('acceptableDate').addEventListener('change', function () {
-                        calculateFinancingDays();
-                        calculateSettlement();
-                    });
-
-
-
-
-                    // Show modal
-                    $('#financingModal').modal('show');
-                });
-
-                // Add input event listeners for automatic calculation
-                document.getElementById('financingAmount').addEventListener('input', calculateSettlement);
-                document.getElementById('interestRate').addEventListener('input', calculateSettlement);
-
+                document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney); // Updated to call sendMoney function
             });
 
             async function getLatestScTransAddr() {
@@ -536,7 +422,6 @@
                     return null;
                 }
             }
-
 
             async function sendMoney() {
                 const fromAddress = window.userAddress;
@@ -782,49 +667,13 @@
                 const formattedBalance = parseFloat(ethers.utils.formatUnits(rawBalance, decimals)).toFixed(4);
                 console.log("CTT Balance: ", formattedBalance);
                 document.getElementById('tokenBalance').value = formattedBalance; // Changed from value to innerText
-                checkTokenExpiration();
             }
-
-            async function checkTokenExpiration() {
-                try {
-                    const tokenAddress = currentContractAddress;
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-
-                    const tokenABI = [
-                        "function getExpirationStatus() view returns (uint256 expiryTime, bool isExpired)"
-                    ];
-
-                    const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
-                    const expiryInfo = await tokenContract.getExpirationStatus();
-
-                    // Convert timestamp to readable date
-                    const expirationDate = new Date(expiryInfo.expiryTime * 1000);
-                    const formattedDate = expirationDate.toLocaleString();
-
-                    cttExpiration = formatDate(expirationDate);
-
-                    // Update UI with expiration info
-                    document.getElementById('tokenExpiration').value = cttExpiration;
-                    console.log("Expiration date:", formatDate(expirationDate));
-
-
-                } catch (error) {
-                    console.error("Error checking expiration:", error);
-                    document.getElementById('tokenExpiration').value = "Error fetching expiration";
-                }
-            }
-
 
             // Helper function to format date
             function formatDate(dateStr) {
                 if (!dateStr) return '-';
                 const date = new Date(dateStr);
-                // Use toLocaleDateString() instead of toLocaleString() to only show date
-                return date.toLocaleDateString('en-US', {
-                    year: 'numeric',
-                    month: '2-digit',
-                    day: '2-digit'
-                });
+                return date.toLocaleDateString();
             }
 
             // Helper function to format datetime
@@ -844,225 +693,6 @@
 
 
 
-
-            function validateFinancingForm() {
-                const form = document.getElementById('financingForm');
-                if (!form.checkValidity()) {
-                    form.reportValidity();
-                    return false;
-                }
-                return true;
-            }
-
-            function addFinancingToTable(financing) {
-                const table = document.getElementById('financingTable').getElementsByTagName('tbody')[0];
-                const row = table.insertRow();
-
-                // Create current date string
-                const currentDate = new Date();
-                const dateStr = currentDate.getFullYear() + '-' +
-                    String(currentDate.getMonth() + 1).padStart(2, '0') + '-' +
-                    String(currentDate.getDate()).padStart(2, '0');
-
-                // Create maturity date string
-                const acceptableDate = new Date(financing.acceptableDate);
-                const acceptableDateStr = acceptableDate.toLocaleDateString();
-                console.log('Acceptable date:', acceptableDate);
-
-                // Create table row content
-                const rowContent = `
-        <td>${dateStr}</td>
-        <td>${financing.cttAmount}</td>
-        <td>${financing.interestRate}%</td>
-        <td>${acceptableDateStr}</td>
-        <td>${financing.settlementAmount}</td>
-        <td><span class="badge badge-warning">Pending</span></td>
-        <td>
-            <button class="btn btn-sm btn-info" onclick="viewDetails('${financing.userAddress}')">
-                <i class="fas fa-eye"></i>
-            </button>
-        </td>
-    `;
-
-                row.innerHTML = rowContent;
-            }
-
-
-            // Add function to calculate financing days
-            function calculateFinancingDays() {
-                const acceptableDate = new Date(document.getElementById('acceptableDate').value);
-
-                const cttExpirationDate = new Date(cttExpiration); // Convert string to Date object
-
-                // Calculate difference in days
-                const diffTime = Math.abs(cttExpirationDate - acceptableDate); // Use cttExpirationDate here
-
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-
-                // Update financing days field
-                document.getElementById('financingDays').value = diffDays + ' days';
-
-                // Also recalculate settlement amount if needed
-                // calculateSettlement();
-            }
-
-            function calculateSettlement() {
-                const amount = parseFloat(document.getElementById('financingAmount').value) || 0;
-                const rate = parseFloat(document.getElementById('interestRate').value) || 0;
-                const amountDays = parseInt(document.getElementById('financingDays').value);
-                const settlement = amount - amount * (rate / 100) * amountDays / 360;
-                document.getElementById('settlementAmount').value = settlement.toFixed(2);
-            }
-
-            function confirmFinancing() {
-                const financingAmount = document.getElementById('financingAmount').value;
-                const interestRate = document.getElementById('interestRate').value;
-                const acceptableDate = document.getElementById('acceptableDate').value;
-                const settlementAmount = document.getElementById('settlementAmount').value;
-                const userAddress = window.userAddress;
-                console.log('userAddress:', window.userAddress);
-
-                if (!financingAmount || !interestRate || !acceptableDate || !settlementAmount) {
-                    alert("Please fill in all fields.");
-                    return;
-                }
-
-                // 构造请求参数
-                const params = new URLSearchParams();
-                params.append('userAddress', userAddress);
-                params.append('cttAmount', financingAmount);
-                params.append('interestRate', interestRate);
-                params.append('dueDate', acceptableDate);
-                params.append('settlementAmount', settlementAmount);
-
-                fetch('api/financing', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: params.toString()
-                })
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.success) {
-                            // 插入表格
-                            addFinancingToTable({
-                                cttAmount: financingAmount,
-                                interestRate: interestRate,
-                                acceptableDate: acceptableDate,
-                                settlementAmount: settlementAmount,
-                                userAddress: userAddress
-                            });
-                            $('#financingModal').modal('hide');
-                            showStatus('Financing request submitted successfully!');
-                        } else {
-                            alert("Failed to submit financing: " + (data.message || 'Unknown error'));
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert("Error submitting financing: " + error);
-                    });
-            }
-
-            async function loadFinancingHistory() {
-                if (!window.userAddress) {
-                    alert("Please connect your wallet first.");
-                    return;
-                }
-                const userAddress = window.userAddress;
-                const requestUrl = '/api/financing/records?userAddress=' + encodeURIComponent(userAddress);
-
-                console.log("Request URL:", requestUrl);
-
-                try {
-                    const response = await fetch(requestUrl);
-                    const data = await response.json();
-                    console.log("Data received from server:", data);
-
-                    if (data.success && data.records && data.records.length > 0) {
-                        const records = data.records;
-                        const tableBody = document.getElementById('financingTable').getElementsByTagName('tbody')[0];
-                        tableBody.innerHTML = ''; // Clear existing rows
-
-                        records.forEach(record => {
-                            const row = tableBody.insertRow();
-                            const badgeClass = record.status === 'PENDING' ? 'badge-warning' : 'badge-success';
-
-                            row.innerHTML = `
-                            <td style="display:none;">${record.id}</td>
-                            <td>${record.createdAt || '-'}</td>
-                     <td>${record.cttAmount || '-'}</td>
-                     <td>${record.interestRate ? record.interestRate + '%' : '-'}</td>
-                     <td>${record.dueDate || '-'}</td>
-                     <td>${record.settlementAmount || '-'}</td>
-                     <td><span class="badge ${badgeClass}">${record.status || 'UNKNOWN'}</span></td>
-                     <td>
-                         <button class="btn btn-sm btn-info" onclick="viewDetails(${record.id})">
-                             <i class="fas fa-eye"></i>
-                         </button>
-                     </td>`;
-
-                            row.dataset.acceptableDate = record.dueDate || '';
-                            row.dataset.expirationDate = record.expirationDate || '';
-                            row.dataset.id = record.id;
-
-                            // 添加点击事件
-                            row.addEventListener('click', function () {
-                                // 移除其他行的选中状态
-                                document.querySelectorAll('#financingTable tbody tr').forEach(tr => {
-                                    tr.classList.remove('selected');
-                                });
-                                // 添加当前行的选中状态
-                                this.classList.add('selected');
-                            });
-                        });
-
-                        console.log('Table rows added:', tableBody.rows.length);
-                    } else {
-                        console.log('No records found or data.success is false');
-                        showStatus('No financing records found.', false);
-                    }
-                } catch (error) {
-                    console.error('Error loading financing records:', error);
-                    showStatus('Error loading financing records', true);
-                }
-            }
-
-
-            function searchFinancingHistory() {
-                if (!window.userAddress) {
-                    alert("Please connect your wallet first.");
-                    return;
-                }
-                loadFinancingHistory();
-            }
-
-
-            function viewDetails(recordId) {
-                console.log("View details for record ID:", recordId);
-                // Add your logic here to display the details of the record
-            }
-
-            async function buyCTTonChain() {
-                const selectedRow = document.querySelector('#financingTable tbody tr.selected');
-
-                if (!selectedRow) {
-                    alert('Please select a financing record first.');
-                    return;
-                }
-
-                const status = selectedRow.querySelector('td:nth-child(7) span').textContent;
-                if (status !== 'PENDING') {
-                    alert('Only pending records can be processed for CTT buying.');
-                    return;
-                }
-
-                // 只传递记录ID
-                const recordId = selectedRow.dataset.id;
-                window.location.href = `buyCTTonChain.jsp?recordId=${recordId}`;
-                
-            }
 
         </script>
     </body>
