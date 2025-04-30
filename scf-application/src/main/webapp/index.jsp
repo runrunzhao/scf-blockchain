@@ -254,8 +254,10 @@
                 <div class="dropdown-menu" aria-labelledby="cttDropdown">
                     <a class="dropdown-item" href="signSC.jsp">Sign SC</a>
                     <a class="dropdown-item" href="TGE.jsp">TGE</a>
+                    <a class="dropdown-item" href="waitConfirm.jsp">Confirm TGE</a>
                     <a class="dropdown-item" href="CTTinfo.jsp">Detail</a>
                     <a class="dropdown-item" href="autoPay.jsp"">AutoPay</a>
+                    <a class="dropdown-item" href="CTTFinancing.jsp"">Financing</a>
                 </div>
             </div>
 

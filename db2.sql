@@ -124,4 +124,14 @@ CREATE TABLE scheduledTransfers (
   status VARCHAR(10) DEFAULT 'PENDING'
 );
 
-
+CREATE TABLE financing_records (
+    id BIGINT PRIMARY KEY AUTO_INCREMENT,
+    user_address VARCHAR(42) NOT NULL,
+    ctt_amount DECIMAL(18,8) NOT NULL,
+    interest_rate DECIMAL(5,2) NOT NULL,
+    due_date DATE NOT NULL,
+    settlement_amount DECIMAL(18,8) NOT NULL,
+    status VARCHAR(20) DEFAULT 'PENDING',
+    created_at  DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

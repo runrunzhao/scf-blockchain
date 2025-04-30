@@ -434,7 +434,7 @@
                             <div class="form-group col-md-6">
                                 <label for="amount">Token Amount: <span class="text-danger">*</span></label>
                                 <input type="number" class="form-control" id="amount" name="amount"
-                                    placeholder="Enter Token Amount" required>
+                                    placeholder="Enter Token Amount" readonly>
                             </div>
                         </div>
 
@@ -445,15 +445,7 @@
                                     <i class="fas fa-search mr-1"></i> Search Latest SC
                                 </button>
                             </div>
-                            <div class="col-md-4">
-                                <button type="button" id="saveTokenInfoButton" class="btn btn-info btn-block">
-                                    <i class="fas fa-save mr-1"></i> Save TokenInfo Server
-                                </button>
-                            </div>
-                            <div class="col-md-4">
-                                <button type="submit" id="generateTokenButton"
-                                    class="btn btn-generate btn-block">Generate Token BlockChain</button>
-                            </div>
+                           
                         </div>
                     </form>
                 </div>
@@ -493,7 +485,22 @@
                         <small class="text-muted">Click "Load Pending Transactions" to view.</small>
                     </div>
 
+                    <!-- Row 4: Transaction Actions -->
+                    <div class="form-row align-items-end">
+                        <div class="form-group col-md-4">
+                            <label for="txIndexInput">Transaction Index:</label>
+                            <input type="number" class="form-control" id="txIndexInput" placeholder="Enter Index #">
+                        </div>
+                        <div class="form-group col-md-8">
+                            <label>&nbsp;</label> <!-- Spacer label for alignment -->
+                            <div class="d-flex">
+                                <button id="confirmTxButton" class="btn btn-success flex-grow-1 mr-2">
+                                    <i class="fas fa-check mr-1"></i> Confirm Tx
+                                </button>
 
+                            </div>
+                        </div>
+                    </div>
                 </div> <!-- End card-body -->
             </div> <!-- End card -->
 
@@ -1842,8 +1849,7 @@
 
                     // Check owner status and update UI accordingly
                     const isOwner = await checkAddressOwner();
-                    if(!isOwner)
-                    {
+                    if (!isOwner) {
                         document.getElementById('saveTokenInfoButton').disabled = true;
                         document.getElementById('generateTokenButton').disabled = true;
                     }
@@ -1955,7 +1961,7 @@
                                 document.getElementById('tokenName').value = token.tokenName;
                                 document.getElementById('tokenSymbol').value = token.tokenSymbol;
                                 document.getElementById('invalidDate').value = token.scexpireDate;
-                                document.getElementById('amount').value=token.tokenAmount;
+                                document.getElementById('amount').value = token.tokenAmount;
                                 // Display creation time if available
                                 if (token.sccreateTime) {
                                     document.getElementById('creationTime').value = token.sccreateTime;
@@ -2208,6 +2214,14 @@
                             return;
                         }
 
+                        // 新增: 检查当前钱包地址是否是交易的接收地址
+                        const recipient = tx.to;
+                        const isRecipient = recipient.toLowerCase() === window.userAddress.toLowerCase();
+                        if (isRecipient) {
+                            showStatus("Error: You cannot confirm your own transaction. Please switch to another authorized signer address.", true);
+                            return;
+                        }
+
                         const networkId = await web3.eth.net.getId();
                         console.log("Current network ID:", networkId);
 
@@ -2248,7 +2262,7 @@
                         }
 
 
-                        await loadPendingTransactions();
+                      //  await loadPendingTransactions();
 
                     } catch (error) {
                         console.error("Error confirming transaction:", error);
@@ -2511,7 +2525,118 @@
                 }
 
 
-             
+                async function checkMultiSigTokenAddress() {
+                    try {
+                        const multiSigAddress = document.getElementById('connScMultiAddress').value;
+                        if (!multiSigAddress) {
+                            showStatus("Multi-sig contract address not found.", true);
+                            return;
+                        }
+                        const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigAddress);
+
+                        showStatus("Checking token address stored in multi-sig contract...");
+                        const storedTokenAddr = await multiSigContract.methods.tokenContract().call();
+
+                        const expectedTokenAddr = document.getElementById('contractAddressDisplay').value;
+
+                        console.log("Address stored in Multi-Sig Contract (tokenContract):", storedTokenAddr);
+                        console.log("Expected Token Contract Address:", expectedTokenAddr);
+
+                        if (!expectedTokenAddr) {
+                            showStatus("Expected Token Contract address is missing in the UI.", true);
+                            return;
+                        }
+
+                        if (storedTokenAddr.toLowerCase() === expectedTokenAddr.toLowerCase()) {
+                            showStatus("Multi-sig contract has the correct token contract address set.", false);
+                        } else if (storedTokenAddr === "0x0000000000000000000000000000000000000000") {
+                            showStatus("ERROR: Token contract address is NOT SET in the multi-sig contract!", true);
+                        } else {
+                            showStatus("ERROR: Multi-sig contract has the WRONG token contract address set!", true);
+                            showStatus("Expected: " + expectedTokenAddr + "<br>Got: " + storedTokenAddr, true, true);
+                        }
+                    } catch (error) {
+                        console.error("Error checking multi-sig's token address:", error);
+                        showStatus("Failed to check multi-sig's token address: " + error.message, true);
+                    }
+                }
+
+                async function checkMultiSigSettings() {
+                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
+                    const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
+
+                    const requiredConfirmations = await multiSigContract.methods.requiredConfirmations().call();
+                    console.log("Required confirmations:", requiredConfirmations);
+
+                    const signerCount = await multiSigContract.methods.getSignerCount().call();
+                    console.log("Total signers:", signerCount);
+
+                    showStatus(`Multi-sig contract requires ${requiredConfirmations} of ${signerCount} confirmations`);
+                }
+
+                async function changeRequiredConfirmations(newValue) {
+                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
+                    const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
+
+                    await multiSigContract.methods.changeRequiredConfirmations(newValue).send({
+                        from: userAddress
+                    });
+
+                    showStatus(`Required confirmations changed to ${newValue}`);
+                }
+
+                async function checkMultiSigSigners() {
+                    if (!window.web3) {
+                        showStatus("Web3 not initialized. Please connect your wallet first.", true);
+                        return;
+                    }
+
+                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
+                    if (!multiSigContractAddress || !window.web3.utils.isAddress(multiSigContractAddress)) {
+                        showStatus("Invalid multi-signature contract address", true);
+                        return;
+                    }
+
+                    try {
+                        const multiSigContract = new window.web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
+
+                        // Get all authorized signers
+                        const signers = await multiSigContract.methods.getAllSigners().call();
+                        console.log("Authorized signers:", signers);
+
+                        // Get required confirmations
+                        const required = await multiSigContract.methods.requiredConfirmations().call();
+
+                        // Use string concatenation instead of template literals
+                        let signerList = '';
+                        for (let i = 0; i < signers.length; i++) {
+                            const addr = signers[i];
+                            const isCurrentUser = addr.toLowerCase() === window.userAddress.toLowerCase();
+                            signerList += (i + 1) + '. ' + addr + ' ' + (isCurrentUser ? '(You)' : '') + '<br>';
+                        }
+
+                        showStatus('<strong>Multi-Signature Contract Signers (' + required + ' of ' + signers.length + ' required)</strong>:<br>' + signerList, false, true);
+
+                        // Check if current user is a signer
+                        let isCurrentUserSigner = false;
+                        for (let i = 0; i < signers.length; i++) {
+                            if (signers[i].toLowerCase() === window.userAddress.toLowerCase()) {
+                                isCurrentUserSigner = true;
+                                break;
+                            }
+                        }
+
+                        if (!isCurrentUserSigner) {
+                            showStatus("Warning: Your current wallet address is NOT authorized as a signer on this contract", true);
+                        }
+
+                        return signers;
+                    } catch (error) {
+                        console.error("Error fetching signers:", error);
+                        showStatus("Failed to retrieve signers: " + error.message, true);
+                        return [];
+                    }
+                }
                 // Update the showStatus function to accept HTML content
                 function showStatus(message, isError = false, isHTML = false) {
                     let statusDiv = document.getElementById('status');
@@ -2544,7 +2669,80 @@
                 }
 
 
-                
+                async function executeTransaction(txIndex) {
+                    if (!window.web3) {
+                        showStatus("Wallet not connected. Please connect wallet first.", true);
+                        return;
+                    }
+
+                    const multiSigContractAddress = document.getElementById('connScMultiAddress').value;
+                    if (!multiSigContractAddress) {
+                        showStatus("Multi-signature contract address not found.", true);
+                        return;
+                    }
+
+                    try {
+                        const multiSigContract = new web3.eth.Contract(customTokenMultiABI, multiSigContractAddress);
+
+                        showStatus("Executing transaction, please confirm in your wallet...");
+
+                        const tx = await multiSigContract.methods.executeTransaction(txIndex).send({
+                            from: userAddress,
+                            gas: 500000,
+                            gasPrice: await web3.eth.getGasPrice()
+                        });
+
+                        showStatus(`Transaction ${txIndex} executed successfully!`);
+                        await loadPendingTransactions(); // Refresh the list
+                    } catch (error) {
+                        console.error("Error executing transaction:", error);
+                        showStatus("Failed to execute transaction: " + error.message, true);
+                    }
+                }
+
+                async function checkTokenExpiration() {
+                    const tokenContract = new web3.eth.Contract(
+                        customTokenTransferABI,
+                        document.getElementById('contractAddressDisplay').value
+                    );
+
+                    const expiryInfo = await tokenContract.methods.getExpirationStatus().call();
+                    console.log("Expiration date:", new Date(expiryInfo.expiryTime * 1000).toLocaleString());
+                    console.log("Is expired:", expiryInfo.isExpired);
+
+                    showStatus('Token expiration date: ' + new Date(expiryInfo.expiryTime * 1000).toLocaleString() + '<br>Is expired: ' + (expiryInfo.isExpired ? "Yes" : "No"), false, true);
+                }
+
+
+                async function checkTokenMultiSigAddress() {
+                    try {
+                        const tokenAddress = document.getElementById('contractAddressDisplay').value;
+                        if (!tokenAddress) {
+                            showStatus("Token contract address not found.", true);
+                            return;
+                        }
+                        const tokenContract = new web3.eth.Contract(customTokenTransferABI, tokenAddress);
+                        const storedMultiSigAddr = await tokenContract.methods.multiSigContract().call();
+
+                        const expectedMultiSigAddr = document.getElementById('connScMultiAddress').value;
+
+                        console.log("Address stored in Token Contract (multiSigContract):", storedMultiSigAddr);
+                        console.log("Expected Multi-Sig Contract Address:", expectedMultiSigAddr);
+
+                        if (storedMultiSigAddr.toLowerCase() === expectedMultiSigAddr.toLowerCase()) {
+                            showStatus("Token contract has the correct multi-sig address set.", false);
+                        } else if (storedMultiSigAddr === "0x0000000000000000000000000000000000000000") {
+                            showStatus("ERROR: Multi-sig address is NOT SET in the token contract!", true);
+                        } else {
+                            showStatus("ERROR: Token contract has the WRONG multi-sig address set!", true);
+                            showStatus("Expected: " + expectedMultiSigAddr + "<br>Got: " + storedMultiSigAddr, true, true);
+                        }
+                    } catch (error) {
+                        console.error("Error checking token's multi-sig address:", error);
+                        showStatus("Failed to check token's multi-sig address: " + error.message, true);
+                    }
+                }
+
                 async function checkTokenTotalSupply() {
                     try {
                         const tokenAddress = document.getElementById('contractAddressDisplay').value;

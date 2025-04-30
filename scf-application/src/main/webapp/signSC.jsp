@@ -506,8 +506,7 @@
                                         <div class="form-group col-md-6">
                                             <label for="requiredConfirmation">Required confirmation：</label>
                                             <input type="number" class="form-control" id="requiredConfirmations"
-                                                name="requiredConfirmations" placeholder="required confirmation" min="1"
-                                                step="1" required>
+                                                name="requiredConfirmations" placeholder="required confirmation" value="2"  readonly>
                                         </div>
                                     </div>
 
