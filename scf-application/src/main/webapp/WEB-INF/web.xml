@@ -346,4 +346,23 @@
     <servlet-name>scTransAddressServlet</servlet-name>
     <url-pattern>/api/contract/latest-address</url-pattern>
 </servlet-mapping>
+
+<servlet>
+    <servlet-name>CTTFinancingServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.CTTFinancingServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>CTTFinancingServlet</servlet-name>
+    <url-pattern>/api/financing</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>GetFinancingRecordsServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.GetFinancingRecordsServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>GetFinancingRecordsServlet</servlet-name>
+    <url-pattern>/api/financing/records</url-pattern>
+</servlet-mapping>
+
 </web-app>

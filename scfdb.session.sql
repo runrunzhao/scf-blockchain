@@ -1,1 +1,1 @@
-select  * From scheduledTransfers
+SELECT *  from financing_records;

@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" isELIgnored="true" %>
     <!DOCTYPE html>
     <html lang="en">
 
@@ -310,12 +310,12 @@
                                 <div class="form-group">
                                     <label for="interestRate">Interest Rate (%)</label>
                                     <input type="number" class="form-control" id="interestRate" step="0.01" required>
-                                    <small class="form-text text-muted">Annual interest rate percentage</small>
+                                    <small class="form-text text-muted">Annual interest rate percentage 360 Days</small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="maturityDate">Maturity Date</label>
-                                    <input type="date" class="form-control" id="maturityDate" required>
-                                    <small class="form-text text-muted">Select the maturity date for financing</small>
+                                    <label for="acceptableDate">Acceptable Date</label>
+                                    <input type="date" class="form-control" id="acceptableDate" required>
+                                    <small class="form-text text-muted">Select the acceptable date for financing</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="cttExpiration">CTT Expiration</label>
@@ -325,7 +325,8 @@
                                 <div class="form-group">
                                     <label for="financingDays">Financing Days</label>
                                     <input type="text" class="form-control" id="financingDays" readonly>
-                                    <small class="form-text text-muted">Days between now and maturity date</small>
+                                    <small class="form-text text-muted">Days between cttExpiration and acceptable
+                                        date</small>
                                 </div>
                                 <div class="form-group">
                                     <label for="settlementAmount">Settlement Amount</label>
@@ -336,7 +337,7 @@
                             </form>
                         </div>
                         <div class="modal-footer">
-                            <button type="button" class="btn btn-primary" id="confirmFinancing">Confirm
+                            <button type="button" class="btn btn-primary" id="confirmFinancingBtn">Confirm
                                 Financing</button>
                             <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
 
@@ -358,7 +359,7 @@
                                     <th>Date</th>
                                     <th>CTT Amount</th>
                                     <th>Interest Rate</th>
-                                    <th>Maturity Date</th>
+                                    <th>Acceptable Date</th>
                                     <th>Settlement Amount</th>
                                     <th>Status</th>
                                     <th>Actions</th>
@@ -373,8 +374,8 @@
             </div>
 
             <div class="form-group text-center mt-4">
-                <button type="button" class="btn btn-success btn-action" id="sendMoneyBtn">
-                    <i class="fas fa-calendar-check mr-3"></i>Send
+                <button type="button" class="btn btn-success btn-action" id="searchFinancingBtn">
+                    <i class="fas fa-calendar-check mr-3"></i>Search
                 </button>
                 <a href="index.jsp" class="btn btn-secondary btn-action ml-4"> <!-- Fixed the href attribute -->
                     <i class="fas fa-arrow-left mr-3"></i>Back to Home
@@ -466,26 +467,35 @@
                 }
 
                 document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
-                document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney);
+
+                document.getElementById('searchFinancingBtn').addEventListener('click', searchFinancingBtn);
+                document.getElementById('confirmFinancingBtn').addEventListener('click', confirmFinancing);
 
                 // Financing button click handler
                 document.getElementById('financingBtn').addEventListener('click', function () {
-                    console.log('Financing button clicked');
-                    if (!window.userAddress) {
-                        showStatus('Please connect your wallet first', true);
+                    if (!window.ethereum) {
+                        alert("Please install MetaMask to use this feature.");
                         return;
                     }
-
                     // Reset form
                     document.getElementById('financingForm').reset();
+                    document.getElementById('modalCttExpiration').value = cttExpiration;
+
 
                     // Set minimum date for maturity date (tomorrow)
                     const tomorrow = new Date();
                     tomorrow.setDate(tomorrow.getDate() + 1);
                     const tomorrowFormatted = tomorrow.toISOString().split('T')[0];
-                    document.getElementById('maturityDate').min = tomorrowFormatted;
+                    document.getElementById('acceptableDate').min = tomorrowFormatted;
 
-                    document.getElementById('modalCttExpiration').value = cttExpiration;
+                    // Add this to your DOMContentLoaded event listener
+                    document.getElementById('acceptableDate').addEventListener('change', function () {
+                        calculateFinancingDays();
+                        calculateSettlement();
+                    });
+
+
+
 
                     // Show modal
                     $('#financingModal').modal('show');
@@ -495,24 +505,6 @@
                 document.getElementById('financingAmount').addEventListener('input', calculateSettlement);
                 document.getElementById('interestRate').addEventListener('input', calculateSettlement);
 
-                // Handle form submission
-                document.getElementById('confirmFinancing').addEventListener('click', function () {
-                    if (!validateFinancingForm()) {
-                        return;
-                    }
-
-                    const financingData = {
-                        cttAmount: document.getElementById('financingAmount').value,
-                        interestRate: document.getElementById('interestRate').value,
-                        maturityDate: document.getElementById('maturityDate').value,
-                        settlementAmount: document.getElementById('settlementAmount').value,
-                        userAddress: window.userAddress
-                    };
-
-                    addFinancingToTable(financingData);
-                    $('#financingModal').modal('hide');
-                    showStatus('Financing request submitted successfully!');
-                });
             });
 
             async function getLatestScTransAddr() {
@@ -531,7 +523,7 @@
                 }
             }
 
-       
+
             async function sendMoney() {
                 const fromAddress = window.userAddress;
                 const toAddress = document.getElementById('toAddress').value;
@@ -795,7 +787,7 @@
                     const expirationDate = new Date(expiryInfo.expiryTime * 1000);
                     const formattedDate = expirationDate.toLocaleString();
 
-                    cttExpiration=formatDate(expirationDate);
+                    cttExpiration = formatDate(expirationDate);
 
                     // Update UI with expiration info
                     document.getElementById('tokenExpiration').value = cttExpiration;
@@ -837,12 +829,7 @@
             }
 
 
-            function calculateSettlement() {
-                const amount = parseFloat(document.getElementById('financingAmount').value) || 0;
-                const rate = parseFloat(document.getElementById('interestRate').value) || 0;
-                const settlement = amount * (1 - (rate / 100));
-                document.getElementById('settlementAmount').value = settlement.toFixed(2);
-            }
+
 
             function validateFinancingForm() {
                 const form = document.getElementById('financingForm');
@@ -864,17 +851,16 @@
                     String(currentDate.getDate()).padStart(2, '0');
 
                 // Create maturity date string
-                const maturityDate = new Date(financing.maturityDate);
-                const maturityDateStr = maturityDate.getFullYear() + '-' +
-                    String(maturityDate.getMonth() + 1).padStart(2, '0') + '-' +
-                    String(maturityDate.getDate()).padStart(2, '0');
+                const acceptableDate = new Date(financing.acceptableDate);
+                const acceptableDateStr = acceptableDate.toLocaleDateString();
+                console.log('Acceptable date:', acceptableDate);
 
                 // Create table row content
                 const rowContent = `
         <td>${dateStr}</td>
         <td>${financing.cttAmount}</td>
         <td>${financing.interestRate}%</td>
-        <td>${financing.maturityDate}</td>
+        <td>${acceptableDateStr}</td>
         <td>${financing.settlementAmount}</td>
         <td><span class="badge badge-warning">Pending</span></td>
         <td>
@@ -890,17 +876,143 @@
 
             // Add function to calculate financing days
             function calculateFinancingDays() {
-                const maturityDate = new Date(document.getElementById('maturityDate').value);
-                
+                const acceptableDate = new Date(document.getElementById('acceptableDate').value);
+
+                const cttExpirationDate = new Date(cttExpiration); // Convert string to Date object
+
                 // Calculate difference in days
-                const diffTime = Math.abs(cttExpiration- maturityDate );
+                const diffTime = Math.abs(cttExpirationDate - acceptableDate); // Use cttExpirationDate here
+
                 const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
                 // Update financing days field
                 document.getElementById('financingDays').value = diffDays + ' days';
 
                 // Also recalculate settlement amount if needed
-                calculateSettlement();
+                // calculateSettlement();
+            }
+
+            function calculateSettlement() {
+                const amount = parseFloat(document.getElementById('financingAmount').value) || 0;
+                const rate = parseFloat(document.getElementById('interestRate').value) || 0;
+                const amountDays = parseInt(document.getElementById('financingDays').value);
+                const settlement = amount - amount * (rate / 100) * amountDays / 360;
+                document.getElementById('settlementAmount').value = settlement.toFixed(2);
+            }
+
+            function confirmFinancing() {
+                const financingAmount = document.getElementById('financingAmount').value;
+                const interestRate = document.getElementById('interestRate').value;
+                const acceptableDate = document.getElementById('acceptableDate').value;
+                const settlementAmount = document.getElementById('settlementAmount').value;
+                const userAddress = window.userAddress;
+                console.log('userAddress:', window.userAddress);
+
+                if (!financingAmount || !interestRate || !acceptableDate || !settlementAmount) {
+                    alert("Please fill in all fields.");
+                    return;
+                }
+
+                // 构造请求参数
+                const params = new URLSearchParams();
+                params.append('userAddress', userAddress);
+                params.append('cttAmount', financingAmount);
+                params.append('interestRate', interestRate);
+                params.append('dueDate', acceptableDate);
+                params.append('settlementAmount', settlementAmount);
+
+                fetch('api/financing', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: params.toString()
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // 插入表格
+                            addFinancingToTable({
+                                cttAmount: financingAmount,
+                                interestRate: interestRate,
+                                acceptableDate: acceptableDate,
+                                settlementAmount: settlementAmount,
+                                userAddress: userAddress
+                            });
+                            $('#financingModal').modal('hide');
+                            showStatus('Financing request submitted successfully!');
+                        } else {
+                            alert("Failed to submit financing: " + (data.message || 'Unknown error'));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert("Error submitting financing: " + error);
+                    });
+            }
+
+            async function loadFinancingHistory() {
+                if (!window.userAddress) {
+                    alert("Please connect your wallet first.");
+                    return;
+                }
+                const userAddress = window.userAddress;
+                const requestUrl = '/api/financing/records?userAddress=' + encodeURIComponent(userAddress);
+
+                console.log("Request URL:", requestUrl);
+
+                try {
+                    const response = await fetch(requestUrl);
+                    const data = await response.json();
+                    console.log("Data received from server:", data);
+
+                    if (data.success && data.records && data.records.length > 0) {
+                        const records = data.records;
+                        const tableBody = document.getElementById('financingTable').getElementsByTagName('tbody')[0];
+                        tableBody.innerHTML = ''; // Clear existing rows
+
+                        records.forEach(record => {
+                            const row = tableBody.insertRow();
+                            const badgeClass = record.status === 'PENDING' ? 'badge-warning' : 'badge-success';
+
+                            row.innerHTML = 
+                    `<td>${record.createdAt || '-'}</td>
+                     <td>${record.cttAmount || '-'}</td>
+                     <td>${record.interestRate ? record.interestRate + '%' : '-'}</td>
+                     <td>${record.dueDate || '-'}</td>
+                     <td>${record.settlementAmount || '-'}</td>
+                     <td><span class="badge ${badgeClass}">${record.status || 'UNKNOWN'}</span></td>
+                     <td>
+                         <button class="btn btn-sm btn-info" onclick="viewDetails(${record.id})">
+                             <i class="fas fa-eye"></i>
+                         </button>
+                     </td>`;
+                        });
+
+                        console.log('Table rows added:', tableBody.rows.length);
+                    } else {
+                        console.log('No records found or data.success is false');
+                        showStatus('No financing records found.', false);
+                    }
+                } catch (error) {
+                    console.error('Error loading financing records:', error);
+                    showStatus('Error loading financing records', true);
+                }
+            }
+
+
+            function searchFinancingBtn() {
+                if (!window.userAddress) {
+                    alert("Please connect your wallet first.");
+                    return;
+                }
+                loadFinancingHistory();
+            }
+
+
+            function viewDetails(recordId) {
+                console.log("View details for record ID:", recordId);
+                // Add your logic here to display the details of the record
             }
 
         </script>
