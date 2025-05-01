@@ -28,7 +28,8 @@ public class GetFinancingRecordByIdServlet extends HttpServlet {
         try {
             // Get record ID from request
             String recordId = request.getParameter("recordId");
-            System.out.println("QueryString: " + request.getQueryString());
+         //   System.out.println("QueryString: " + request.getQueryString());
+          
             if (recordId == null || recordId.trim().isEmpty()) {
                 jsonResponse.put("success", false);
                 jsonResponse.put("message", "Missing recordId parameter");
@@ -73,7 +74,7 @@ public class GetFinancingRecordByIdServlet extends HttpServlet {
             jsonResponse.put("message", "Error: " + e.getMessage());
             e.printStackTrace();
         }
-
+      //  System.out.println("JSON Response: " + jsonResponse.toString()); // Add this line
         out.print(jsonResponse.toString());
     }
 }

@@ -278,6 +278,11 @@
                                     <small class="form-text text-muted">This is the blockchain address that will receive
                                         the payment.</small>
                                 </div>
+                                <div class="form-group">
+                                    <label for="interestRate">interest Rate:</label>
+                                    <input type="interestRate" class="form-control" id="interestRate" readonly>
+                                    <small class="form-text text-muted">the annuar discount rate .</small>
+                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -286,15 +291,16 @@
                                     <small class="form-text text-muted">The amount of tokens to transfer.</small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="acceptableDate">Acceptable Date:</label>
-                                    <input type="datetime-local" class="form-control" id="acceptableDate" required>
-                                    <small class="form-text text-muted">When last acceptable date.</small>
+                                    <label for="settlementAmount">settlement Amount:</label>
+                                    <input type="number" step="0.000001" class="form-control" id="settlementAmount" required>
+                                    <small class="form-text text-muted">The amount of tokens to transfer.</small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="expirationDate">Expiration Date:</label>
-                                    <input type="datetime-local" class="form-control" id="expirationDate" required>
-                                    <small class="form-text text-muted">When CTT expires.</small>
+                                    <label for="acceptableDate">Acceptable Date:</label>
+                                    <input type="date" class="form-control" id="acceptableDate" readonly>
+                                    <small class="form-text text-muted">When last acceptable date.</small>
                                 </div>
+                    
                             </div>
                         </div>
 
@@ -360,21 +366,28 @@
 
             async function fetchFinancingDetails(recordId) {
                 try {
-                    console.log('Fetching record ID:', recordId); // Debug log
-                    const response = await fetch(`/api/financing/id?recordId=${recordId}`);
-                    
+                    //console.log('Fetching record ID:', recordId); // Debug log
+                   // const response = await fetch(`/getFinancingRecordById?recordId=${recordId}`);
+
+                    //   console.log('Fetching record ID:', recordId); // Debug log
+                    const url = new URL('/getFinancingRecordById', window.location.origin); // Updated URL
+                    const params = new URLSearchParams({ recordId: recordId });
+                    url.search = params.toString();
+                    const response = await fetch(url);
+
                     if (!response.ok) {
                         throw new Error(`HTTP error! status: ${response.status}`);
                     }
                     const data = await response.json();
-                    console.log('Received data:', data); // Debug log
+                   
                     if (data.success) {
-                        console.log(data.record);
-
-                        $('#amount').val(data.cttAmount);
-                        $('#fromAddress').val(data.fromAddress);
-                        $('#acceptableDate').val(data.dueDate);
-                        $('#expirationDate').val(data.expirationDate);
+                       
+                        $('#amount').val(data.record.cttAmount);
+                        $('#fromAddress').val(data.record.userAddress); // Updated to access fromAddress correctly
+                         $('#acceptableDate').val(data.record.dueDate); // Updated to access dueDate correctly
+                        $('#interestRate').val(data.record.interestRate); // Updated to access interestRate correctly
+                        $('#settlementAmount').val(data.record.settlementAmount); // Updated to access settlementAmount correctly
+                        
                     } else {
                         alert('Failed to fetch financing details');
                     }
@@ -572,6 +585,8 @@
 
                 // Update wallet address display
                 document.getElementById('walletAddress').innerText = address;
+
+                document.getElementById('toAddress').value = address;
 
                 // Update connect button
                 const connectButton = document.getElementById('connectWalletBtn');
