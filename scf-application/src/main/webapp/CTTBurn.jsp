@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>CTT Finance From bank- Supply Chain Finance</title>
+        <title>CTT Burn- Supply Chain Finance</title>
         <!-- Bootstrap CSS -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
@@ -261,11 +261,11 @@
             <!-- Schedule Auto Payment Card -->
             <div class="card">
                 <div class="card-header bg-info text-white">
-                    <h5 class="mb-0">CTT Financing Info</h5>
+                    <h5 class="mb-0">CTT Burn Info</h5>
                 </div>
                 <input type="hidden" id="recordId" name="recordId">
                 <div class="card-body">
-                    <form id="accetpCTTFinancingInfoForm">
+                    <form id="CTTBurnInfoForm">
                         <div class="row">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -275,82 +275,31 @@
 
                                 <div class="form-group">
                                     <label for="toAddress">To Address:</label>
-                                    <input type="text" class="form-control" id="toAddress" required>
-                                    <small class="form-text text-muted">This is the blockchain address that will receive
-                                        the payment.</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="cttAmount">CTT Amount:</label>
-                                    <input type="number" step="0.000001" class="form-control" id="cttAmount" required>
-                                    <small class="form-text text-muted">The amount of tokens to transfer.</small>
+                                    <input type="text" class="form-control" id="toAddress" value="0x0000000000000000000000000000000000000000" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="settlementAmount">Settlement Amount:</label>
+                                    <label for="settlementAmount">CTT Amount:</label>
                                     <input type="number" step="0.000001" class="form-control" id="settlementAmount"
                                         required>
-                                    <small class="form-text text-muted">The amount of tokens to transfer.</small>
+                                    <small class="form-text text-muted">The amount of tokens to burn.</small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="acceptableDate">Acceptable Date:</label>
-                                    <input type="date" class="form-control" id="acceptableDate" required>
-                                    <small class="form-text text-muted">When the payment should be executed.</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="interestRate">Interest Rate:</label>
-                                    <input type="number" step="0.01" class="form-control" id="interestRate" required>
-                                    <small class="form-text text-muted">The interest rate for the transaction.</small>
+                                    <label for="correspondpingTX">Correspondping TX:</label>
+                                    <input type="text" class="form-control" id="correspondpingTX" required>
+                                    <small class="form-text text-muted">Transaction details for the corresponding payment.</small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group text-center mt-4">
                             <button type="button" class="btn btn-success btn-action" id="sendMoneyBtn">
-                                <i class="fas fa-calendar-check mr-3"></i>Send
+                                <i class="fas fa-calendar-check mr-3"></i>Burn
                             </button>
                             <a href="invoice.jsp" class="btn btn-secondary btn-action ml-4">
                                 <i class="fas fa-arrow-left mr-3"></i>Back to Invoices
                             </a>
-                        </div>
-                        <hr class="my-4">
-
-                        <div class="card bg-light">
-                            <div class="card-body">
-                                <div class="form-group">
-                                    <label for="signTx"><strong>sendCTTFinancingTx BlockChain:</strong></label>
-                                    <!-- Removed input-group -->
-                                    <input type="text" class="form-control" id="sendCTTFinancingTx" readonly>
-                                </div>
-
-                                <div class="form-group"> <!-- Adjusted margin -->
-                                    <label for="signTxTimeDisplay"><strong>sendCTTFinancingTx
-                                            CreateTime:</strong></label>
-                                    <input type="text" class="form-control" id="sendCTTFinancingTxTimeDisplay" readonly>
-                                </div>
-
-                                <!-- Buttons moved below CreateTime, arranged in a row with spacing -->
-                                <div class="form-row mt-3 justify-content-around">
-                                    <div class="col-auto">
-                                        <button class="btn btn-outline-primary" type="button"
-                                            onclick="refreshFinancingTx()">
-                                            <i class="fas fa-sync-alt"></i> Refresh
-                                        </button>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button class="btn btn-outline-secondary" type="button"
-                                            onclick="copyFinancingTx()">
-                                            <i class="fas fa-copy"></i> Copy
-                                        </button>
-                                    </div>
-                                    <div class="col-auto">
-                                        <button class="btn btn-outline-success" type="button"
-                                            onclick="saveFinancingTx2DB()">
-                                            <i class="fas fa-save"></i> Save to DB
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
                         </div>
                     </form>
                 </div>
@@ -422,12 +371,11 @@
 
                     if (data.success) {
                         //console.log('Financing details:', data.record);
-                        $('#cttAmount').val(data.record.cttAmount);
+                        $('#settlementAmount').val(data.record.cttAmount);
                         $('#fromAddress').val(data.record.userAddress); // Updated to access fromAddress correctly
                         $('#toAddress').val(data.record.bankAddress); // Updated to access toAddress correctly
                         $('#acceptableDate').val(data.record.dueDate); // Updated to access dueDate correctly
-                        $('#settlementAmount').val(data.record.settlementAmount);
-                        $('#interestRate').val(data.record.interestRate); // Updated to access interestRate correctly
+                        $('#settlementAmount').val(data.record.settlementAmount); // Updated to access settlementAmount correctly
 
                     } else {
                         alert('Failed to fetch financing details');
@@ -459,9 +407,7 @@
                 }
 
                 document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
-                document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney);
-                document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney);
-                document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney);
+                document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney); // Updated to call sendMoney function
             });
 
             async function getLatestScTransAddr() {
@@ -766,108 +712,7 @@
                 return address.substring(0, 6) + '...' + address.substring(address.length - 4);
             }
 
-            async function refreshFinancingTx() {
-                if (!window.web3 || !window.userAddress) {
-                    showStatus("Wallet not connected. Please connect your wallet first.", true);
-                    return;
-                }
-                try {
-                    showStatus("Searching for latest transaction...");
 
-                    // Get recent transactions for the user's address
-                    const apiUrl = "https://api-amoy.polygonscan.com/api?module=account&action=txlist&address=" +
-                        window.userAddress + "&sort=desc&limit=10";
-
-                    console.log("Requesting from API:", apiUrl);
-                    const response = await fetch(apiUrl);
-                    if (!response.ok) {
-                        throw new Error("API request failed");
-                    }
-
-                    const data = await response.json();
-                    if (data.status !== "1") {
-                        throw new Error(`API error: ${data.message}`);
-                    }
-
-                    // Check if there are any transactions
-                    if (!data.result || data.result.length === 0) {
-                        showStatus("No transactions found for this address", true);
-                        return;
-                    }
-
-                    // Get the most recent transaction
-                    const latestTx = data.result[0];
-                    console.log("Found latest transaction:", latestTx.hash);
-
-                    // Update the UI
-                    document.getElementById('signTx').value = latestTx.hash;
-
-                    // Format and update timestamp
-                    if (latestTx.timeStamp) {
-                        const timestamp = parseInt(latestTx.timeStamp);
-                        const date = new Date(timestamp * 1000);
-                        const formattedDate = date.toLocaleString('en-US', {
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit',
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                        }).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2');
-
-                        document.getElementById('signTxCreateTimeDisplay').value = formattedDate;
-                    }
-
-                    showStatus("Latest transaction hash refreshed successfully");
-                } catch (error) {
-                    console.error("Error refreshing transaction:", error);
-                    showStatus("Failed to refresh transaction: " + error.message, true);
-                }
-            }
-
-
-            function saveFinancingTx2DB() {
-                const loanAmount = document.getElementById('cttAmount').value;
-                const correspondpingTX = document.getElementById('correspondpingTX').value;
-               
-
-                if (!correspondpingTX) {
-                    showStatus("No transaction hash found. Please sign connection or refresh first", true);
-                    return;
-                }
-
-                // Show status during saving
-                showStatus("Saving transaction hash to server...");
-
-                // Send to server
-                fetch('createLoanRecord', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
-                    },
-                    body: new URLSearchParams({
-                        'loanAmount': loanAmount,
-                        'correspondpingTX': correspondpingTX
-                    }).toString()
-                })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        return response.json();
-                    })
-                    .then(data => {
-                        if (data.success) {
-                            showStatus("Transaction hash saved to database successfully!");
-                        } else {
-                            showStatus("Failed to save transaction hash: " + data.message, true);
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error saving transaction hash:', error);
-                        showStatus("Failed to save transaction hash: " + error.message, true);
-                    });
-            }
 
 
         </script>

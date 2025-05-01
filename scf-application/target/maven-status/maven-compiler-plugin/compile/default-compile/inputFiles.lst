@@ -38,6 +38,7 @@
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/CreateEnterpriseServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/dao/ContractDAO.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/ScheduleTransferServlet.java
+/workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/CreateLoanRecordServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/blockchain/service/InvoiceBlockchainService.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/LoginServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/dao/EnterpriseDAO.java
@@ -53,6 +54,7 @@
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GetInvoicesServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/filter/AuthenticationFilter.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/SaveContractServlet.java
+/workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GetLoanRecordServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/model/Enterprise.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/RegisterUserServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/util/PasswordUtil.java

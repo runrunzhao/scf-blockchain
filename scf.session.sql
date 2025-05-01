@@ -1,1 +1,12 @@
-select  * from   financing_records
+CREATE TABLE loanRecord (
+    loanIssueID INT AUTO_INCREMENT PRIMARY KEY,
+    enterpriseID CHAR(8) NOT NULL,
+    loanAmount DECIMAL(15, 2) NOT NULL,
+    interestRate DECIMAL(5, 2) NOT NULL,
+    loanDueDate DATE NOT NULL,
+    correspondpingTX VARCHAR(255) NOT NULL,
+    correspondpingTXDate VARCHAR(255) NOT NULL,
+    loanDescription TEXT,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);

@@ -258,8 +258,22 @@
                     <a class="dropdown-item" href="CTTinfo.jsp">Detail</a>
                     <a class="dropdown-item" href="autoPay.jsp"">AutoPay</a>
                     <a class="dropdown-item" href="CTTFinancing.jsp"">Financing</a>
+                    <a class="dropdown-item" href="CTTBurn.jsp"">Financing</a>
                 </div>
             </div>
+
+                        <!-- Loan menu -->
+                        <div class="dropdown d-inline-block">
+                            <a class="dropdown-toggle" href="#" role="button" id="loanDropdown" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                Loan
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="loanDropdown">
+                                <a class="dropdown-item" href="issueLoan.jsp">Issue Loan</a>
+                                <a class="dropdown-item" href="searchLoan.jsp">Search Loan</a>
+                        
+                            </div>
+                        </div>
 
          </div>
     </div>

@@ -383,4 +383,24 @@
     <url-pattern>/updateFinancingRecord</url-pattern>
 </servlet-mapping>
 
+    <servlet>
+        <servlet-name>CreateLoanRecordServlet</servlet-name>
+        <servlet-class>com.supplychainfinance.servlet.CreateLoanRecordServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>CreateLoanRecordServlet</servlet-name>
+        <url-pattern>/createLoanRecord</url-pattern>
+    </servlet-mapping>
+
+    <servlet>
+        <servlet-name>GetLoanRecordServlet</servlet-name>
+        <servlet-class>com.supplychainfinance.servlet.GetLoanRecordServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>GetLoanRecordServlet</servlet-name>
+        <url-pattern>/getLoanRecord</url-pattern>
+    </servlet-mapping>
+    
 </web-app>
