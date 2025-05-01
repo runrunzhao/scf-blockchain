@@ -258,7 +258,7 @@
                     <a class="dropdown-item" href="CTTinfo.jsp">Detail</a>
                     <a class="dropdown-item" href="autoPay.jsp"">AutoPay</a>
                     <a class="dropdown-item" href="CTTFinancing.jsp"">Financing</a>
-                    <a class="dropdown-item" href="CTTBurn.jsp"">Financing</a>
+                    <a class="dropdown-item" href="CTTBurn.jsp"">Burning</a>
                 </div>
             </div>
 

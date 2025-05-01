@@ -142,12 +142,13 @@ ADD COLUMN bank_address VARCHAR(42) NOT NULL AFTER user_address;
 
 CREATE TABLE loanRecord (
     loanIssueID INT AUTO_INCREMENT PRIMARY KEY,
-    enterpriseID CHAR(8) NOT NULL,
+    enterpriseID CHAR(8)  ,
     loanAmount DECIMAL(15, 2) NOT NULL,
-    interestRate DECIMAL(5, 2) NOT NULL,
-    loanDueDate DATE NOT NULL,
-    correspondpingTX VARCHAR(72) NOT NULL,
-    correspondpingTXDate DATETIME NOT NULL,
+    interestRate DECIMAL(5, 2)  ,
+    issueDate DATE
+    loanDueDate  DATE ,
+    correspondpingTX VARCHAR(72)  ,
+    correspondpingTXDate DATE  ,
     loanDescription TEXT,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP

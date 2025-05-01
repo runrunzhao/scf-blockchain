@@ -1,1 +1,1 @@
-SELECT *  from financing_records;
+SELECT * from loanRecord

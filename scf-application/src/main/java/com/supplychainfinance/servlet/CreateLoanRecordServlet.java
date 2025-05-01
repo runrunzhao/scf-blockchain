@@ -11,7 +11,8 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.Locale;
+
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -41,57 +42,50 @@ public class CreateLoanRecordServlet extends HttpServlet {
             // 1. Parse JSON data
             JsonObject jsonObject = gson.fromJson(data, JsonObject.class);
 
-            // 2. Extract data from JSON
-            String enterpriseID = jsonObject.has("enterpriseID") && !jsonObject.get("enterpriseID").isJsonNull()
-                    ? jsonObject.get("enterpriseID").getAsString()
-                    : null;
             double loanAmount = jsonObject.has("loanAmount") && !jsonObject.get("loanAmount").isJsonNull()
                     ? jsonObject.get("loanAmount").getAsDouble()
                     : 0;
-            double interestRate = jsonObject.has("interestRate") && !jsonObject.get("interestRate").isJsonNull()
-                    ? jsonObject.get("interestRate").getAsDouble()
-                    : 0;
-            String loanDueDateStr = jsonObject.has("loanDueDate") && !jsonObject.get("loanDueDate").isJsonNull()
-                    ? jsonObject.get("loanDueDate").getAsString()
-                    : null;
-            String correspondpingTX = jsonObject.has("correspondpingTX") && !jsonObject.get("correspondpingTX").isJsonNull()
-                    ? jsonObject.get("correspondpingTX").getAsString()
-                    : null;
-            String correspondpingTXDate = jsonObject.has("correspondpingTXDate") && !jsonObject.get("correspondpingTXDate").isJsonNull()
-                    ? jsonObject.get("correspondpingTXDate").getAsString()
-                    : null;
-            String loanDescription = jsonObject.has("loanDescription") && !jsonObject.get("loanDescription").isJsonNull()
-                    ? jsonObject.get("loanDescription").getAsString()
-                    : "";
 
-            // 3. Validate data
-            if (enterpriseID == null || enterpriseID.isEmpty() || loanAmount <= 0 || interestRate <= 0 || loanDueDateStr == null || loanDueDateStr.isEmpty() || correspondpingTX == null || correspondpingTX.isEmpty() || correspondpingTXDate == null || correspondpingTXDate.isEmpty()) {
-                throw new IllegalArgumentException("Missing or invalid data");
+            String correspondpingTX = jsonObject.has("correspondpingTX")
+                    && !jsonObject.get("correspondpingTX").isJsonNull()
+                            ? jsonObject.get("correspondpingTX").getAsString()
+                            : null;
+            String correspondpingTXDateString = jsonObject.has("correspondpingTXDate")
+                    && !jsonObject.get("correspondpingTXDate").isJsonNull()
+                            ? jsonObject.get("correspondpingTXDate").getAsString()
+                            : null;
+            System.err.println(correspondpingTXDateString);
+
+            String loanDescription = jsonObject.has("loanDescription")
+                    && !jsonObject.get("loanDescription").isJsonNull()
+                            ? jsonObject.get("loanDescription").getAsString()
+                            : "";
+
+            java.sql.Date formattedDate = null;
+            if (correspondpingTXDateString != null && !correspondpingTXDateString.isEmpty()) {
+                try {
+                    SimpleDateFormat inputFormat = new SimpleDateFormat("yyyy-MM-dd, hh:mm:ss a", Locale.US);
+                    java.util.Date parsedDate = inputFormat.parse(correspondpingTXDateString);
+                    // 使用 Date 而不是 Timestamp，因为数据库字段是 date 类型
+                    formattedDate = new java.sql.Date(parsedDate.getTime());
+                } catch (ParseException e) {
+                    System.err.println("Error parsing date: " + e.getMessage());
+                    // 解析失败时使用当前时间
+                    formattedDate = new java.sql.Date(System.currentTimeMillis());
+                }
             }
-
-            // 4. Parse the loanDueDate string to a Date object
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date loanDueDate;
-            try {
-                loanDueDate = dateFormat.parse(loanDueDateStr);
-            } catch (ParseException e) {
-                throw new IllegalArgumentException("日期格式不正确");
-            }
-
             // 5. Database insertion
             Connection conn = null;
             PreparedStatement pstmt = null;
             try {
                 conn = DBUtil.getConnection();
-                String sql = "INSERT INTO loanRecord (enterpriseID, loanAmount, interestRate, loanDueDate, correspondpingTX, correspondpingTXDate, loanDescription) VALUES (?, ?, ?, ?, ?, ?, ?)";
+                String sql = "INSERT INTO loanRecord ( loanAmount,  correspondpingTX, correspondpingTXDate, loanDescription) VALUES (?,?, ?, ?)";
                 pstmt = conn.prepareStatement(sql);
-                pstmt.setString(1, enterpriseID);
-                pstmt.setDouble(2, loanAmount);
-                pstmt.setDouble(3, interestRate);
-                pstmt.setDate(4, new java.sql.Date(loanDueDate.getTime()));
-                pstmt.setString(5, correspondpingTX);
-                pstmt.setString(6, correspondpingTXDate);
-                pstmt.setString(7, loanDescription);
+
+                pstmt.setDouble(1, loanAmount);
+                pstmt.setString(2, correspondpingTX);
+                pstmt.setDate(3, formattedDate);
+                pstmt.setString(4, loanDescription);
 
                 int rowsAffected = pstmt.executeUpdate();
 
@@ -102,7 +96,7 @@ public class CreateLoanRecordServlet extends HttpServlet {
                 out.print(gson.toJson(responseJson));
 
             } catch (SQLException e) {
-                throw new SQLException("数据库操作失败: " + e.getMessage());
+                throw new SQLException("dabase connection error: " + e.getMessage());
             } finally {
                 if (pstmt != null) {
                     try {
@@ -124,7 +118,7 @@ public class CreateLoanRecordServlet extends HttpServlet {
             // 7. Handle errors
             JsonObject errorResponse = new JsonObject();
             errorResponse.addProperty("success", false);
-            errorResponse.addProperty("message", "操作失败: " + e.getMessage());
+            errorResponse.addProperty("message", "error: " + e.getMessage());
             out.print(gson.toJson(errorResponse));
 
             e.printStackTrace();

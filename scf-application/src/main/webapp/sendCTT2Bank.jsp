@@ -800,7 +800,7 @@
                     console.log("Found latest transaction:", latestTx.hash);
 
                     // Update the UI
-                    document.getElementById('signTx').value = latestTx.hash;
+                    document.getElementById('sendCTTFinancingTx').value = latestTx.hash;
 
                     // Format and update timestamp
                     if (latestTx.timeStamp) {
@@ -815,7 +815,7 @@
                             second: '2-digit'
                         }).replace(/(\d+)\/(\d+)\/(\d+)/, '$3-$1-$2');
 
-                        document.getElementById('signTxCreateTimeDisplay').value = formattedDate;
+                        document.getElementById('sendCTTFinancingTxTimeDisplay').value = formattedDate;
                     }
 
                     showStatus("Latest transaction hash refreshed successfully");
@@ -827,28 +827,36 @@
 
 
             function saveFinancingTx2DB() {
+                // Get all required values
                 const loanAmount = document.getElementById('cttAmount').value;
-                const correspondpingTX = document.getElementById('correspondpingTX').value;
-               
+                const correspondpingTX = document.getElementById('sendCTTFinancingTx').value;
+                const correspondpingTXDate = document.getElementById('sendCTTFinancingTxTimeDisplay').value;
 
                 if (!correspondpingTX) {
                     showStatus("No transaction hash found. Please sign connection or refresh first", true);
                     return;
                 }
 
+                if (!correspondpingTXDate) {
+                    showStatus("No transaction date found. Please refresh first", true);
+                    return;
+                }
+
                 // Show status during saving
                 showStatus("Saving transaction hash to server...");
 
-                // Send to server
-                fetch('createLoanRecord', {
+                // Send to server as JSON
+                fetch('/createLoanRecord', {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/x-www-form-urlencoded'
+                        'Content-Type': 'application/json'
                     },
-                    body: new URLSearchParams({
-                        'loanAmount': loanAmount,
-                        'correspondpingTX': correspondpingTX
-                    }).toString()
+                    body: JSON.stringify({
+                        loanAmount: loanAmount,
+                        correspondpingTX: correspondpingTX,
+                        correspondpingTXDate: correspondpingTXDate,
+                        loanDescription: "CTT Financing Transaction"
+                    })
                 })
                     .then(response => {
                         if (!response.ok) {
@@ -858,7 +866,7 @@
                     })
                     .then(data => {
                         if (data.success) {
-                            showStatus("Transaction hash saved to database successfully!");
+                            showStatus("Transaction hash saved to database successfully! ID: " + data.id);
                         } else {
                             showStatus("Failed to save transaction hash: " + data.message, true);
                         }
