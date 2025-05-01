@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>buy CTT on Chain - Supply Chain Finance</title>
+        <title>CTT Finance From bank- Supply Chain Finance</title>
         <!-- Bootstrap CSS -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
         <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" rel="stylesheet">
@@ -263,11 +263,11 @@
                 <div class="card-header bg-info text-white">
                     <h5 class="mb-0">CTT Financing Info</h5>
                 </div>
+                <input type="hidden" id="recordId" name="recordId">
                 <div class="card-body">
-                    <form id="schedulePaymentForm">
+                    <form id="accetpCTTFinancingInfoForm">
                         <div class="row">
                             <div class="col-md-6">
-                                <input type="hidden" id="recordId" name=" recordId">
                                 <div class="form-group">
                                     <label for="fromAddress">From Address:</label>
                                     <input type="text" class="form-control" id="fromAddress" readonly>
@@ -279,36 +279,25 @@
                                     <small class="form-text text-muted">This is the blockchain address that will receive
                                         the payment.</small>
                                 </div>
-                                <div class="form-group">
-                                    <label for="interestRate">interest Rate:</label>
-                                    <input type="interestRate" class="form-control" id="interestRate" readonly>
-                                    <small class="form-text text-muted">the annuar discount rate .</small>
-                                </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="amount">CTT Amount:</label>
-                                    <input type="number" step="0.000001" class="form-control" id="amount" required>
-                                    <small class="form-text text-muted">The amount of tokens to transfer.</small>
-                                </div>
-                                <div class="form-group">
-                                    <label for="settlementAmount">settlement Amount:</label>
+                                    <label for="settlementAmount">Settlement Amount:</label>
                                     <input type="number" step="0.000001" class="form-control" id="settlementAmount"
                                         required>
                                     <small class="form-text text-muted">The amount of tokens to transfer.</small>
                                 </div>
                                 <div class="form-group">
-                                    <label for="acceptableDate">Acceptable Date:</label>
-                                    <input type="date" class="form-control" id="acceptableDate" readonly>
-                                    <small class="form-text text-muted">When last acceptable date.</small>
+                                    <label for="scheduledDate">Acceptable Date:</label>
+                                    <input type="date" class="form-control" id="acceptableDate" required>
+                                    <small class="form-text text-muted">When the payment should be executed.</small>
                                 </div>
-
                             </div>
                         </div>
 
                         <div class="form-group text-center mt-4">
-                            <button type="button" class="btn btn-success btn-action" id="acceptCTTBtn">
-                                <i class="fas fa-calendar-check mr-3"></i>Accept
+                            <button type="button" class="btn btn-success btn-action" id="sendMoneyBtn">
+                                <i class="fas fa-calendar-check mr-3"></i>Send
                             </button>
                             <a href="invoice.jsp" class="btn btn-secondary btn-action ml-4">
                                 <i class="fas fa-arrow-left mr-3"></i>Back to Invoices
@@ -359,20 +348,19 @@
             }
 
             $(document).ready(function () {
+
                 const recordId = getParameterByName('recordId');
 
                 document.getElementById('recordId').value = recordId;
                 if (recordId) {
                     fetchFinancingDetails(recordId);
                 }
+
             });
 
             async function fetchFinancingDetails(recordId) {
                 try {
-                    //console.log('Fetching record ID:', recordId); // Debug log
-                    // const response = await fetch(`/getFinancingRecordById?recordId=${recordId}`);
 
-                    //   console.log('Fetching record ID:', recordId); // Debug log
                     const url = new URL('/getFinancingRecordById', window.location.origin); // Updated URL
                     const params = new URLSearchParams({ recordId: recordId });
                     url.search = params.toString();
@@ -384,11 +372,11 @@
                     const data = await response.json();
 
                     if (data.success) {
-
-                        $('#amount').val(data.record.cttAmount);
+                        //console.log('Financing details:', data.record);
+                        $('#settlementAmount').val(data.record.cttAmount);
                         $('#fromAddress').val(data.record.userAddress); // Updated to access fromAddress correctly
+                        $('#toAddress').val(data.record.bankAddress); // Updated to access toAddress correctly
                         $('#acceptableDate').val(data.record.dueDate); // Updated to access dueDate correctly
-                        $('#interestRate').val(data.record.interestRate); // Updated to access interestRate correctly
                         $('#settlementAmount').val(data.record.settlementAmount); // Updated to access settlementAmount correctly
 
                     } else {
@@ -399,6 +387,7 @@
                     alert('Error loading financing details');
                 }
             }
+
 
             document.addEventListener('DOMContentLoaded', () => {
                 if (window.ethereum) {
@@ -412,10 +401,15 @@
                     window.ethereum.on('chainChanged', () => window.location.reload());
                     window.ethereum.on('disconnect', () => resetWalletConnectionUI());
                 }
-
+                currentContractAddress = getLatestScTransAddr();
+                if (currentContractAddress) {
+                    console.log("Initialized contract address:", currentContractAddress);
+                } else {
+                    console.error("Failed to initialize contract address");
+                }
 
                 document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
-                document.getElementById('acceptCTTBtn').addEventListener('click', accetpCTTFinancing); // Updated to call sendMoney function
+                document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney); // Updated to call sendMoney function
             });
 
             async function getLatestScTransAddr() {
@@ -434,53 +428,81 @@
                 }
             }
 
-
-
-
-            async function accetpCTTFinancing() {
+            async function sendMoney() {
+                const fromAddress = document.getElementById('fromAddress').value;
                 const toAddress = document.getElementById('toAddress').value;
-                const recordId = getParameterByName('recordId');
-                console.log('Fetching record ID:', recordId);
-
+                const amountStr = document.getElementById('settlementAmount').value;
+                const connectAddr = window.userAddress;
+                const acceptableDateStr = document.getElementById('acceptableDate').value;
+                // Validate inputs
+                if (!fromAddress) {
+                    alert("Invalid from address. Please connect your wallet first.");
+                    return;
+                }
+                if (connectAddr !== fromAddress) {
+                    alert("Please connect a your own address.");
+                    return;
+                }
                 if (!toAddress) {
                     alert("Invalid to address.");
                     return;
                 }
+                const acceptableDate = new Date(acceptableDateStr);
+                const now = new Date();
+
+                // Set hours, minutes, seconds, and milliseconds to 0 for accurate date comparison
+                acceptableDate.setHours(0, 0, 0, 0);
+                now.setHours(0, 0, 0, 0);
+
+                if (now > acceptableDate) {
+                    alert("The current date is after the acceptable date.  Transaction is not allowed.");
+                    return;
+                }
+
                 try {
-                    // Construct the URL for the update endpoint
-                    //const url = `/updateFinancingRecord?recordId=${recordId}`;
-                    const url = new URL('/updateFinancingRecord', window.location.origin);
-                    const params = new URLSearchParams({ recordId: recordId });
-                    url.search = params.toString();
+                    const tokenAddress = currentContractAddress; // 使用与showTokenBalance相同的地址
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
 
-                    const response = await fetch(url, {
-                        method: 'POST', // Use POST method for updating data
-                        headers: {
-                            'Content-Type': 'application/json' // Specify content type as JSON
-                        },
-                        body: JSON.stringify({ toAddress: toAddress }) // Send toAddress in the request body
-                    });
+                    // 使用与showTokenBalance相同的ABI
+                    const tokenABI = [
+                        "function balanceOf(address owner) view returns (uint256)",
+                        "function decimals() view returns (uint8)",
+                        "function transfer(address to, uint256 amount) returns (bool)"
+                    ];
 
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
+                    const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+
+                    // 获取代币精度
+                    const decimals = await tokenContract.decimals();
+                    console.log("Token decimals:", decimals);
+
+                    const amount = Number(amountStr);
+                    if (isNaN(amount)) {
+                        alert("Invalid settlement amount. Please enter a valid number.");
+                        return;
                     }
 
-                    const data = await response.json();
+                    // 将金额转换为代币最小单位
+                    const amountInSmallestUnit = ethers.utils.parseUnits(amount.toString(), decimals);
+                    console.log("Amount in smallest unit:", amountInSmallestUnit.toString());
 
-                    if (data.success) {
-                        showStatus("Successfully update", true);
-                        // Optionally, refresh the page or update the UI
-                    } else {
-                        alert('Failed to update financing record: ' + data.message);
-                    }
+                    // 发送交易
+                    const tx = await tokenContract.transfer(toAddress, amountInSmallestUnit);
+                    console.log("Transaction sent:", tx.hash);
+                    alert(`Transaction sent! Hash: ${tx.hash}`);
+
+                    // 等待交易确认
+                    await tx.wait();
+                    console.log("Transaction confirmed!");
+
+
+
                 } catch (error) {
-                    console.error('Error updating financing record:', error);
-                    alert('Error updating financing record');
+                    console.error("Error sending transaction:", error);
+                    alert("Transaction failed: " + error.message);
                 }
             }
-
-
-
 
 
             function showStatus(message, isError = false) {
@@ -573,8 +595,6 @@
 
                 // Update wallet address display
                 document.getElementById('walletAddress').innerText = address;
-
-                document.getElementById('toAddress').value = address;
 
                 // Update connect button
                 const connectButton = document.getElementById('connectWalletBtn');

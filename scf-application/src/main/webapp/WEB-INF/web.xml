@@ -319,7 +319,6 @@
     <url-pattern>/updateTokenAmount</url-pattern>
 </servlet-mapping>
 
-<!-- Auto Payment Servlets -->
 <servlet>
     <servlet-name>ScheduleTransferServlet</servlet-name>
     <servlet-class>com.supplychainfinance.servlet.ScheduleTransferServlet</servlet-class>
@@ -374,5 +373,14 @@
     <url-pattern>/getFinancingRecordById</url-pattern>
 </servlet-mapping>
 
+
+<servlet>
+    <servlet-name>UpdateFinancingRecordServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.UpdateFinancingRecordServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UpdateFinancingRecordServlet</servlet-name>
+    <url-pattern>/updateFinancingRecord</url-pattern>
+</servlet-mapping>
 
 </web-app>

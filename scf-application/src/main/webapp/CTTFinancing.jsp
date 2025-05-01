@@ -390,6 +390,9 @@
                 <button type="button" class="btn btn-success btn-action ml-4" id="buyCTTBtn">
                     <i class="fas fa-calendar-check mr-2"></i>Buy
                 </button>
+                <button type="button" class="btn btn-success btn-action ml-4" id="sendCTT2BankBtn">
+                    <i class="fas fa-calendar-check mr-2"></i>Send
+                </button>
                 <a href="index.jsp" class="btn btn-secondary btn-action ml-4">
                     <i class="fas fa-arrow-left mr-2"></i>Back to Home
                 </a>
@@ -484,6 +487,8 @@
                 document.getElementById('searchFinancingBtn').addEventListener('click', searchFinancingHistory);
                 document.getElementById('buyCTTBtn').addEventListener('click', buyCTTonChain);
                 document.getElementById('confirmFinancingBtn').addEventListener('click', confirmFinancing);
+
+                document.getElementById('sendCTT2BankBtn').addEventListener('click', sendCTT2Bank);
 
                 // Financing button click handler
                 document.getElementById('financingBtn').addEventListener('click', function () {
@@ -1062,6 +1067,25 @@
                 const recordId = selectedRow.dataset.id;
                 window.location.href = `buyCTTonChain.jsp?recordId=${recordId}`;
                 
+            }
+
+            function sendCTT2Bank() {
+                const selectedRow = document.querySelector('#financingTable tbody tr.selected');
+
+                if (!selectedRow) {
+                    alert('Please select a financing record first.');
+                    return;
+                }
+
+                const status = selectedRow.querySelector('td:nth-child(7) span').textContent;
+                if (status !== 'ACCEPTED') {
+                    alert('Only accepted records can be processed for CTT sending.');
+                    return;
+                }
+
+                // 只传递记录ID
+                const recordId = selectedRow.dataset.id;
+                window.location.href = `sendCTT2Bank.jsp?recordId=${recordId}`;
             }
 
         </script>

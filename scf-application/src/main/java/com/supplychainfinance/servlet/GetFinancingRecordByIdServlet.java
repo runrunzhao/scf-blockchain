@@ -39,7 +39,7 @@ public class GetFinancingRecordByIdServlet extends HttpServlet {
 
             // Query database for the specific financing record
             Connection conn = DBUtil.getConnection();
-            String sql = "SELECT id, user_address, ctt_amount, interest_rate, due_date, settlement_amount, status, created_at "
+            String sql = "SELECT id, user_address, ctt_amount, interest_rate, due_date, settlement_amount, status, created_at, bank_address "
                     + "FROM financing_records WHERE id = ?";
             PreparedStatement pstmt = conn.prepareStatement(sql);
             pstmt.setLong(1, Long.parseLong(recordId));
@@ -56,6 +56,7 @@ public class GetFinancingRecordByIdServlet extends HttpServlet {
                 record.put("settlementAmount", rs.getBigDecimal("settlement_amount"));
                 record.put("status", rs.getString("status"));
                 record.put("createdAt", dateFormat.format(rs.getTimestamp("created_at")));
+                record.put("bankAddress", rs.getString("bank_address"));
 
                 jsonResponse.put("success", true);
                 jsonResponse.put("record", record);

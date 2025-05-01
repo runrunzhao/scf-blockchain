@@ -32,6 +32,7 @@
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/controller/MainController.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/EnterpriseRelationController.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/SearchBySignerAddressServlet.java
+/workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateFinancingRecordServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/CoreEnterpriseServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/SearchEnterprisesServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/CreateEnterpriseServlet.java
