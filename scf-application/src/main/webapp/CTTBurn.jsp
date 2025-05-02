@@ -434,7 +434,7 @@
                 "function confirmTransaction(uint256 txIndex) returns (bool)",
                 "function executeTransaction(uint256 txIndex) returns (bool)",
                 "function getConfirmationCount(uint256 txIndex) view returns (uint256)",
-                "function isConfirmedByAddress(uint256 txIndex, address signer) view returns (bool)",
+                "function isTransactionConfirmedBy(uint256 txIndex, address signer) view returns (bool)", 
 
                 // 管理功能
                 "function getRequiredConfirmations() view returns (uint256)",
@@ -989,10 +989,10 @@
 
                         try {
                             const tx = await multiSigContract.getTransaction(i);
-                            console.log(`Transaction ${i} details:`, tx);
+                           // console.log(`Transaction ${i} details:`, tx);
 
                             // 跳过已执行的交易
-                            if (tx.executed) continue;
+                         if (tx.executed) continue;
 
                             pendingCount++;
                             const row = document.createElement('tr');
@@ -1009,36 +1009,51 @@
                             // 格式化金额
                             const amountFormatted = ethers.utils.formatUnits(tx.amount, decimals);
 
-                            // ===== 修改部分开始 =====
-                            // 检查当前用户是否已确认此提案
+
                             let isConfirmed = false;
                             try {
-                                isConfirmed = await multiSigContract.isConfirmedByAddress(i, userAddress);
+                                // Log before checking signer status
+                                console.log(`[Tx ${i}] Checking signer status for user ${userAddress}...`);
+                                const isSigner = await multiSigContract.isSigner(userAddress);
+                                // Log the result of the signer check
+                                console.log(`[Tx ${i}] Is user ${userAddress} a signer? ${isSigner}`);
+
+                                if (isSigner) {
+                                    //         console.log(`[Tx ${i}] User is signer. Attempting isConfirmedByAddress(${i}, ${userAddress})...`);
+                                    // Call the function
+                                    isConfirmed = await multiSigContract.isTransactionConfirmedBy(i, userAddress); 
+                                    // Log the result if successful
+                                    //console.log(`[Tx ${i}] Confirmation status checked successfully: ${isConfirmed}`);
+                                } else {
+                                    console.log(`[Tx ${i}] User ${userAddress} is not a signer, skipping confirmation check.`);
+                                    isConfirmed = false; // Explicitly set to false
+                                }
                             } catch (confirmError) {
-                                console.warn(`Couldn't check confirmation status for tx ${i}:`, confirmError);
-                                // 继续执行，默认未确认
+                                
+                                console.error(`[Tx ${i}] Error calling isConfirmedByAddress(${i}, ${userAddress}):`, confirmError);
+                                                     isConfirmed = false;
                             }
-                            // ===== 修改部分结束 =====
+
 
                             // 创建操作按钮
                             let actionButton = '';
                             if (!tx.executed && !isConfirmed) {
-                                actionButton = `<button class="btn btn-sm btn-primary" onclick="confirmSpecificTx(${i})">Confirm</button>`;
+                                const buttonId = 'confirmBtn-' + i;
+                                actionButton = '<button type="button" class="btn btn-sm btn-primary" onclick="confirmSpecificTx(' + i + ')">Confirm</button>';
                             } else if (!tx.executed && isConfirmed) {
                                 actionButton = `<span class="badge badge-success">Confirmed</span>`;
                             } else {
                                 actionButton = `<span class="badge badge-secondary">Executed</span>`;
                             }
 
-                            row.innerHTML = `
-                                <td>\${i}</td>
-                                <td>\${shortenAddress(tx.to)}</td>
-                                <td>\${amountFormatted} CTT</td>
-                                <td>\${typeText}</td>
-                                <td>\${tx.executed ? '<span class="badge badge-success">Executed</span>' : '<span class="badge badge-warning">Pending</span>'}</td>
-                                <td>\${tx.numConfirmations}/\${requiredConfirmations}</td>
-                                <td>\${actionButton}</td>
-                                `;
+                            row.innerHTML =
+                                "<td>" + i + "</td>" +
+                                "<td>" + shortenAddress(tx.to) + "</td>" +
+                                "<td>" + amountFormatted + " CTT</td>" +
+                                "<td>" + typeText + "</td>" +
+                                "<td>" + (tx.executed ? '<span class="badge badge-success">Executed</span>' : '<span class="badge badge-warning">Pending</span>') + "</td>" +
+                                "<td>" + tx.numConfirmations + "/" + requiredConfirmations + "</td>" +
+                                "<td>" + actionButton + "</td>";
 
                             tableBody.appendChild(row);
                         } catch (txError) {
@@ -1061,7 +1076,20 @@
 
             // 为表格中的确认按钮添加功能
             async function confirmSpecificTx(txIndex) {
+
+                const buttonId = `confirmBtn-${txIndex}`; // ID format
+                const confirmButton = document.getElementById(buttonId); // Tries to find button by ID
+
                 try {
+                    // Disable button immediately
+                    if (confirmButton) { // Only runs if button is found
+                        confirmButton.disabled = true;
+                        confirmButton.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Confirming...';
+                    } else {
+                        // Add a log if the button wasn't found - this helps debugging
+                        console.warn(`Button with ID ${buttonId} not found for disabling.`);
+                    }
+
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     const signer = provider.getSigner();
                     const multiSigAddr = document.getElementById('manualMultiSigAddress').value;
@@ -1069,6 +1097,7 @@
 
                     // 确认提案
                     showStatus(`Confirming transaction #${txIndex}...`);
+                    console.log("Calling confirmTransaction with txIndex: " + txIndex + " (Type: " + typeof txIndex + ")");
                     const tx = await multiSigContract.confirmTransaction(txIndex);
                     console.log("Confirmation transaction sent:", tx.hash);
 
