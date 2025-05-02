@@ -343,46 +343,7 @@
 
                             </div> <!-- End card-body -->
                         </div> <!-- End card -->
-                        <div id="proposalDetails" class="d-none">
-                            <div class="card">
-                                <div class="card-header">
-                                    Proposal #<span id="displayProposalId"></span>
-                                </div>
-                                <div class="card-body">
-                                    <table class="table table-bordered">
-                                        <tbody>
-                                            <tr>
-                                                <th>From Address:</th>
-                                                <td id="proposalFromAddress"></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Amount:</th>
-                                                <td id="proposalAmount"></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Status:</th>
-                                                <td><span id="proposalStatus" class="badge"></span></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Confirmations:</th>
-                                                <td><span id="proposalConfirmations"></span> / <span
-                                                        id="proposalRequiredConfirmations"></span></td>
-                                            </tr>
-                                            <tr>
-                                                <th>Your Status:</th>
-                                                <td id="yourConfirmationStatus"></td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                    <div class="text-center mt-3">
-                                        <button type="button" class="btn btn-success" id="confirmProposalBtn"
-                                            onclick="confirmProposal()">
-                                            Confirm Proposal
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                       
                 </div>
             </div>
             </form>
@@ -443,7 +404,8 @@
                 "function getSignerCount() view returns (uint256)",
 
                 // 事件
-                "event TransactionSubmitted(uint256 indexed txIndex, address indexed creator, address to, uint256 amount, uint8 txType)",
+               "event TransactionSubmitted(uint256 indexed txIndex, address indexed to, uint256 amount, uint8 txType)",
+              //  "event TransactionSubmitted(uint256 indexed txIndex, address indexed creator, address to, uint256 amount, uint8 txType)",
                 "event TransactionConfirmed(uint256 indexed txIndex, address indexed signer)",
                 "event TransactionExecuted(uint256 indexed txIndex, address indexed executor)"
             ];
@@ -626,14 +588,20 @@
                     console.log("Submitting burn proposal to multi-sig contract:", multiSigContractAddress);
                     console.log("From address:", fromAddress, "Amount:", amountInSmallestUnit.toString());
 
-                    // 调用多签合约的 submitBurnTransaction 而不是直接调用 burn
+                    const feeData = await provider.getFeeData();
+                const increasedPriorityFee = feeData.maxPriorityFeePerGas ? feeData.maxPriorityFeePerGas.mul(150).div(100) : undefined;
+                const maxFee = feeData.maxFeePerGas;
+
+                const overrides = {
+                    gasLimit: 800000, // Explicitly set a high limit (e.g., 800k, adjust if needed)
+                    maxPriorityFeePerGas: increasedPriorityFee,
+                    maxFeePerGas: maxFee
+                };
 
                     const tx = await multiSigContract.submitBurnTransaction(
                         fromAddress,
                         amountInSmallestUnit,
-                        {
-                            gasLimit: 500000 // 明确设置 gas 限制
-                        }
+                        overrides
                     );
                     console.log("Proposal transaction sent:", tx.hash);
 
@@ -657,7 +625,10 @@
 
                     if (txIndex !== null) {
                         // 记录提案到数据库
-                        //    await recordBurnOperation(fromAddress, amount, tx.hash, correspondpingTX, txIndex);
+                        console.log(amountStr+":::",  tx.hash);
+
+
+                      await recordBurnOperation( amountStr, tx.hash);
 
                         // 先获取所需确认数
                         const requiredConfirmations = await multiSigContract.getRequiredConfirmations();
@@ -665,9 +636,7 @@
                         // 显示提案ID (分离 await 操作)
                         alert(`Burn proposal #${txIndex} has been created successfully. Required signatures: ${requiredConfirmations}`);
 
-                        // 提案创建后自动加载该提案详情
-                        document.getElementById('proposalId').value = txIndex;
-                        await checkProposal();
+                     
                     }
 
                 } catch (error) {
@@ -678,7 +647,7 @@
 
             }
 
-            async function recordBurnOperation(address, amount, txHash, correspondpingTX) {
+            async function recordBurnOperation( amountStr, txHash) {
                 try {
                     const response = await fetch('/createCTTBurnRecord', {
                         method: 'POST',
@@ -686,7 +655,7 @@
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            amount: amount,
+                            amount: amountStr,
                             txHash: txHash,
                             operationDate: new Date().toISOString().split('T')[0] // Format as YYYY-MM-DD
                         })
@@ -793,6 +762,9 @@
 
                 // Update wallet address display
                 document.getElementById('walletAddress').innerText = address;
+                window.userAddress = address;
+                document.getElementById('fromAddress').value = address; // Fixed the ID here
+
 
                 // Update connect button
                 const connectButton = document.getElementById('connectWalletBtn');
@@ -1096,15 +1068,15 @@
                     const multiSigContract = new ethers.Contract(multiSigAddr, MULTI_SIG_ABI, signer);
 
                     // 确认提案
-                    showStatus(`Confirming transaction #${txIndex}...`);
-                    console.log("Calling confirmTransaction with txIndex: " + txIndex + " (Type: " + typeof txIndex + ")");
+                    showStatus("Confirming transaction #" + txIndex + "...");
+                   // console.log("Calling confirmTransaction with txIndex: " + txIndex + " (Type: " + typeof txIndex + ")");
                     const tx = await multiSigContract.confirmTransaction(txIndex);
-                    console.log("Confirmation transaction sent:", tx.hash);
+                   // console.log("Confirmation transaction sent:", tx.hash);
 
                     // 等待交易确认
-                    showStatus(`Waiting for confirmation of transaction #${txIndex}...`);
+                    showStatus("Waiting for confirmation of transaction #" + txIndex + "...");
                     await tx.wait();
-                    showStatus(`Successfully confirmed transaction #${txIndex}`);
+                    showStatus("Successfully confirmed transaction #" + txIndex + "..."); 
 
                     // 重新加载交易列表
                     await loadPendingTransactions();
@@ -1116,103 +1088,6 @@
             }
 
 
-            async function checkProposal() {
-                const txIndex = document.getElementById('proposalId').value;
-                if (!txIndex || isNaN(parseInt(txIndex))) {
-                    alert("Please enter a valid proposal ID");
-                    return;
-                }
-
-                try {
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    const signer = provider.getSigner();
-                    const userAddress = await signer.getAddress();
-
-                    const multiSigContract = new ethers.Contract(multiSigContractAddress, MULTI_SIG_ABI, signer);
-                    const tokenContract = new ethers.Contract(currentContractAddress, TOKEN_ABI, provider);
-                    const decimals = await tokenContract.decimals();
-
-                    // 获取提案详情
-                    const tx = await multiSigContract.getTransaction(txIndex);
-                    const confirmationCount = tx.numConfirmations;
-                    const requiredConfirmations = tx.requiredConfirmations;
-                    const isConfirmed = await multiSigContract.isConfirmedByAddress(txIndex, userAddress);
-
-                    // 更新UI
-                    document.getElementById('displayProposalId').textContent = txIndex;
-                    document.getElementById('proposalFromAddress').textContent = tx.to;
-                    document.getElementById('proposalAmount').textContent = ethers.utils.formatUnits(tx.amount, decimals) + " CTT";
-
-                    const statusBadge = document.getElementById('proposalStatus');
-                    if (tx.executed) {
-                        statusBadge.textContent = "EXECUTED";
-                        statusBadge.className = "badge badge-success";
-                    } else if (confirmationCount.gte(requiredConfirmations)) {
-                        statusBadge.textContent = "READY TO EXECUTE";
-                        statusBadge.className = "badge badge-warning";
-                    } else {
-                        statusBadge.textContent = "PENDING";
-                        statusBadge.className = "badge badge-info";
-                    }
-
-                    document.getElementById('proposalConfirmations').textContent = confirmationCount.toString();
-                    document.getElementById('proposalRequiredConfirmations').textContent = requiredConfirmations.toString();
-
-                    const confirmBtnEl = document.getElementById('confirmProposalBtn');
-                    if (tx.executed) {
-                        document.getElementById('yourConfirmationStatus').textContent = "Proposal already executed";
-                        confirmBtnEl.disabled = true;
-                        confirmBtnEl.textContent = "Already Executed";
-                    } else if (isConfirmed) {
-                        document.getElementById('yourConfirmationStatus').textContent = "You have confirmed this proposal";
-                        confirmBtnEl.disabled = true;
-                        confirmBtnEl.textContent = "Already Confirmed";
-                    } else {
-                        document.getElementById('yourConfirmationStatus').textContent = "You have not confirmed this proposal yet";
-                        confirmBtnEl.disabled = false;
-                        confirmBtnEl.textContent = "Confirm Proposal";
-                    }
-
-                    // 显示提案详情区域
-                    document.getElementById('proposalDetails').classList.remove('d-none');
-
-                } catch (error) {
-                    console.error("Error checking proposal:", error);
-                    alert("Failed to check proposal: " + error.message);
-                }
-            }
-
-
-            async function confirmProposal() {
-                const txIndex = document.getElementById('proposalId').value;
-                if (!txIndex || isNaN(parseInt(txIndex))) {
-                    alert("Invalid proposal ID");
-                    return;
-                }
-
-                try {
-                    const provider = new ethers.providers.Web3Provider(window.ethereum);
-                    const signer = provider.getSigner();
-
-                    const multiSigContract = new ethers.Contract(multiSigContractAddress, MULTI_SIG_ABI, signer);
-
-                    // 确认提案
-                    const tx = await multiSigContract.confirmTransaction(txIndex);
-                    console.log("Confirmation transaction sent:", tx.hash);
-                    alert("Confirmation submitted! Please wait for transaction confirmation.");
-
-                    // 等待交易确认
-                    await tx.wait();
-                    console.log("Confirmation transaction confirmed");
-
-                    // 刷新提案状态
-                    await checkProposal();
-
-                } catch (error) {
-                    console.error("Error confirming proposal:", error);
-                    alert("Failed to confirm proposal: " + error.message);
-                }
-            }
         </script>
     </body>
 
