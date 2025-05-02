@@ -4,7 +4,7 @@ docker ps -a | grep scf-mysql
 docker start scf-mysql
 docker exec -it scf-mysql bash ;
 
-docker exec -it scf-mysql mysqldump -u root -ppassword  SCFDB > backup0430.sql
+docker exec -it scf-mysql mysqldump -u root -ppassword  SCFDB > backup250502.sql
 
 docker exec -i scf-mysql mysql -u root -ppassword SCFDB < /workspaces/scf-blockchain/backup0418.sql
 
