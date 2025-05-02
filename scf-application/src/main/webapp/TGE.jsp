@@ -1671,6 +1671,7 @@
 
                     });
 
+                    /*
                     // Add this to your JavaScript
                     document.getElementById('confirmTxButton').addEventListener('click', async function () {
                         const txIndex = document.getElementById('txIndexInput').value;
@@ -1680,7 +1681,8 @@
                         }
                         await confirmTransaction(txIndex);
                     });
-
+                */
+               
                     document.getElementById('loadTxsButton').addEventListener('click', loadPendingTransactions);
 
                     if (window.ethereum) {

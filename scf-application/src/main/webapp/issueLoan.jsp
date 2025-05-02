@@ -5,7 +5,7 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Enterprise Details - Supply Chain Finance</title>
+        <title>Issue CTT Loan Details - Supply Chain Finance</title>
         <!-- Bootstrap CSS -->
         <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
         <style>
@@ -142,19 +142,27 @@
                 <div class="col-12">
                     <div class="detail-panel">
                         <form id="loanForm">
+
+                            <input type="hidden" id="loanIssueID" name="loanIssueID">
                             <div class="form-group">
                                 <label for="coreEnterprise">The coreEnterprise </label>
-                                <input type="text" class="form-control" id="coreEnterprise" required>
+                                <input type="hidden" id="enterpriseID" name="enterpriseID" value="E2937293">
+                                <input type="text" class="form-control" id="coreEnterprise" value="core enterprise"
+                                    readonly>
                             </div>
                             <div class="form-group">
                                 <label for="loanAmount">Loan Amount:</label>
                                 <input type="number" class="form-control" id="loanAmount" required>
                             </div>
                             <div class="form-group">
-                                <label for="interestRate">Interest Rate:</label>
+                                <label for="interestRate">Interest Rate(Annual APR %):</label>
                                 <input type="number" class="form-control" id="interestRate" step="0.01" required>
                             </div>
-                             <div class="form-group">
+                            <div class="form-group">
+                                <label for="issueDate">Loan Issue Date:</label>
+                                <input type="date" class="form-control" id="issueDate" required>
+                            </div>
+                            <div class="form-group">
                                 <label for="loanDueDate">Loan Due Date:</label>
                                 <input type="date" class="form-control" id="loanDueDate" required>
                             </div>
@@ -163,7 +171,7 @@
                                 <input type="text" class="form-control" id="correspondpingTX" required>
                             </div>
                             <div class="form-group">
-                                <label for="correspondpingTXDate">correspondpingTX  Date:</label>
+                                <label for="correspondpingTXDate">correspondpingTX Date:</label>
                                 <input type="text" class="form-control" id="correspondpingTXDate" required>
                             </div>
                             <div class="form-group">
@@ -190,202 +198,184 @@
         <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
-        <script>
-            // 变量和基础函数定义
-            let isAddMode = false;
 
-            // 返回到搜索页面
+        <script>
+
             function goBack() {
                 window.location.href = "CTTLoanSearch.jsp";
             }
 
-            // 切换编辑模式
-            function toggleEditMode() {
-                const viewMode = document.getElementById('viewMode');
-                const editMode = document.getElementById('editMode');
-                const editBtn = document.getElementById('editBtn');
-                const saveBtn = document.getElementById('saveBtn');
 
-                if (editMode.style.display === 'block') {
-                    // 切换到查看模式
-                    viewMode.style.display = 'block';
-                    editMode.style.display = 'none';
-                    editBtn.style.display = 'inline-block';
-                    saveBtn.style.display = 'none';
-                } else {
-                    // 切换到编辑模式
-                    viewMode.style.display = 'none';
-                    editMode.style.display = 'block';
-                    editBtn.style.display = 'none';
-                    saveBtn.style.display = 'inline-block';
-                }
-            }
-
-            // 保存企业信息
-            function saveEnterprise() {
-                // 获取表单数据
-                const enterpriseData = {
-                    // 如果是添加模式，不传ID；如果是编辑模式，传原ID
-                    id: isAddMode ? "" : document.getElementById('editId').value,
-                    name: document.getElementById('editName').value,
-                    type: document.getElementById('editType').value,
-                    contact: document.getElementById('editContact').value,
-                    address: document.getElementById('editAddress').value,
-                    memo: document.getElementById('editMemo').value,
-                    tier: document.getElementById('editTier').value
-                };
-
-                // 表单验证
-                if (!enterpriseData.name.trim()) {
-                    alert("Enterprise name is required");
-                    return;
+            function loadCTTLoanDetails(loanIssueID) {
+                if (!loanIssueID) {
+                    console.log("No loan ID provided, assuming Create mode.");
+                    // Set UI for create mode
+                    $('h1').first().text('Issue New CTT Loan');
+                    document.title = 'Issue New CTT Loan - Supply Chain Finance';
+                    $('#loanForm button.btn-success').text('Issue Loan');
+                    return; // Exit if no ID
                 }
 
-                // AJAX保存企业数据
+                console.log("Loading loan details for ID:", loanIssueID);
+
                 $.ajax({
-                    url: 'createEnterprise',
-                    type: 'POST',
-                    contentType: 'application/json',
-                    data: JSON.stringify(enterpriseData),
-                    success: function (response) {
-                        if (response.success) {
-                            // 如果是添加模式并成功创建，更新ID字段显示
-                            if (isAddMode && response.enterpriseID) {
-                                document.getElementById('editId').value = response.enterpriseID;
-
-                                // 更新查看模式的显示
-                                document.getElementById('detailId').textContent = response.enterpriseID;
-                                document.getElementById('detailName').textContent = enterpriseData.name;
-                                document.getElementById('detailType').textContent = getTypeDisplayText(enterpriseData.type);
-                                document.getElementById('detailTier').textContent = getTierDisplayText(enterpriseData.tier);
-                                document.getElementById('detailContact').textContent = enterpriseData.contact || '-';
-                                document.getElementById('detailAddress').textContent = enterpriseData.address || '-';
-                                document.getElementById('detailMemo').textContent = enterpriseData.memo || '-';
-
-                                // 更新页面模式 - 从添加模式变为查看/编辑模式
-                                isAddMode = false;
-                                document.getElementById('pageTitle').textContent = 'Enterprise Details';
-                                document.title = `Enterprise Details: ${enterpriseData.name} - Supply Chain Finance`;
-
-                                // 修改URL以包含企业ID (不刷新页面)
-                                history.pushState(null, '', `singleEnterprise.jsp?id=${response.enterpriseID}`);
-                            }
-
-                            alert('Save successful!');
-
-                            // 切换回查看模式
-                            toggleEditMode();
-
-                            // 不再跳转到不存在的页面
-                            // window.location.href = 'enterpriseList.jsp';
-                        } else {
-                            alert('Error: ' + (response.message || '未知错误'));
-                        }
-                    },
-                    error: function (xhr, status, error) {
-                        console.error("保存企业信息错误:", xhr.responseText);
-                        alert('保存失败: ' + error);
-                    }
-                });
-            }
-
-            // 获取企业类型显示文本
-            function getTypeDisplayText(type) {
-                switch (type) {
-                    case 'Core': return 'Core Enterprise';
-                    case 'Bank': return 'Bank';
-                    case 'Supplier': return 'Supplier';
-                    case 'Distributor': return 'Distributor';
-                    default: return type;
-                }
-            }
-
-            // Helper function to format tier display
-            function getTierDisplayText(tierValue) {
-                // 如果值已经包含 "Tier" 前缀，直接返回
-                if (String(tierValue).toLowerCase().includes('tier')) {
-                    return tierValue;
-                }
-
-                // 否则，添加 "Tier" 前缀
-                return 'Tier ' + tierValue;
-            }
-
-
-
-            // 加载企业详情
-            function loadEnterpriseDetails() {
-  
-
-                // 从服务器获取企业数据
-                $.ajax({
-                    url: 'getEnterprise?id=' + id,
+                    url: 'getLoanRecord', // Ensure this servlet URL is correct
                     type: 'GET',
+                    data: { loanIssueID: loanIssueID },
                     dataType: 'json',
                     success: function (data) {
-                        if (data) {
-                            console.log("Received data from server:", data);
+                        console.log("Raw server response:", JSON.stringify(data));
 
-                            // 更新查看模式 - 使用正确的格式化函数
-                            document.getElementById('detailId').textContent = data.enterpriseID;
-                            document.getElementById('detailName').textContent = data.enterpriseName;
-                            document.getElementById('detailType').textContent = getTypeDisplayText(data.role);
-                            document.getElementById('detailTier').textContent = getTierDisplayText(data.tier || '1');
-                            document.getElementById('detailContact').textContent = data.telephone;
-                            document.getElementById('detailAddress').textContent = data.address;
-                            document.getElementById('detailMemo').textContent = data.memo || '-';
 
-                            // 更新编辑模式 - 使用正确的值格式
-                            document.getElementById('editId').value = data.enterpriseID;
-                            document.getElementById('editName').value = data.enterpriseName;
-                            document.getElementById('editType').value = data.role;
-                            // 修复: 直接显示 tier 数字，而不是用 getTierDisplayText 函数处理
-                            if (typeof data.tier === 'number') {
-                                document.getElementById('detailTier').textContent = 'Tier ' + data.tier;
-                            } else {
-                                // 兼容字符串或其他情况
-                                document.getElementById('detailTier').textContent = getTierDisplayText(data.tier || '1');
+                        let loan = null;
+                        if (data && data.success === true && data.loanRecord) {
+                            loan = data.loanRecord;
+                        } else if (data && data.loanIssueID) { // Direct object case
+                            loan = data;
+                        }
+
+                        if (loan && loan.loanIssueID) {
+                            console.log("Loan data loaded:", loan);
+
+                            // Ensure hidden input exists and populate it
+                            if ($('#loanIssueID').length === 0) {
+                                $('<input>').attr({ type: 'hidden', id: 'loanIssueID', name: 'loanIssueID' }).appendTo('#loanForm');
                             }
-                            document.getElementById('editContact').value = data.telephone;
-                            document.getElementById('editAddress').value = data.address;
-                            document.getElementById('editMemo').value = data.memo || '';
+                            $('#loanIssueID').val(loan.loanIssueID);
 
-                            // 设置页面标题
-                            document.title = `Enterprise Details: ${data.enterpriseName} - Supply Chain Finance`;
+                            // Populate form fields using the 'loan' object
+                            $('#loanAmount').val(loan.loanAmount !== undefined ? loan.loanAmount : '');
+                            $('#interestRate').val(loan.interestRate !== undefined ? loan.interestRate : '');
+                            $('#loanDueDate').val(loan.loanDueDate || '');
+                            $('#correspondpingTX').val(loan.correspondpingTX || '');
+                            $('#correspondpingTXDate').val(loan.correspondpingTXDate || '');
+                            $('#loanDescription').val(loan.loanDescription || '');
+                            $('#issueDate').val(loan.issueDate || ''); // Populate issue date if available
+
+
+                            // Update UI for edit mode
+                            $('h1').first().text('Edit CTT Loan Details');
+                            document.title = 'Edit CTT Loan - Supply Chain Finance';
+                            $('#loanForm button.btn-success').text('Update Loan');
+
                         } else {
-                            alert('Enterprise not found');
-                            goBack();
+                            // Handle cases where data is missing or format is wrong
+                            const errorMessage = data && data.message ? data.message : "Could not find or load loan details for the specified ID.";
+                            console.error("Error loading loan data:", errorMessage, "Raw data:", data);
+                            alert(errorMessage);
+                            // Optionally disable form or redirect
                         }
                     },
                     error: function (xhr, status, error) {
-                        console.error("Error loading enterprise:", error);
-                        console.error("Response:", xhr.responseText);
-                        alert('Error loading enterprise details');
+                        console.error("Error loading loan details:", error);
+                        console.error("Server response:", xhr.responseText);
+                        alert("Error loading loan details. Please try again later.");
+                    },
+                    complete: function () {
+                        // Hide loading indicator if you have one
+                        // $('#loadingIndicator').hide();
                     }
                 });
             }
 
-            // 文档就绪函数 - 初始化页面
+            function issueLoan(event) {
+                // 1. Prevent default form submission behavior
+                if (event) event.preventDefault();
+
+                // 2. Get Loan ID (Should always exist in update-only scenario)
+                const loanIssueID = $('#loanIssueID').val();
+
+                // 3. Check if loanIssueID is present (essential for update)
+                if (!loanIssueID) {
+                    alert('Error: Loan ID is missing. Cannot update.');
+                    console.error("Update attempt failed: loanIssueID is missing from the hidden input.");
+                    return; // Stop if ID is missing
+                }
+
+                // 4. Gather data from form fields
+                const loanData = {
+                    loanIssueID: loanIssueID, // Always include the ID for update
+                    loanAmount: $('#loanAmount').val(),
+                    interestRate: $('#interestRate').val(),
+                    loanDueDate: $('#loanDueDate').val(),
+                    issueDate: $('#issueDate').val(), // Make sure this field exists in your form
+                };
+
+                // 5. Basic Client-Side Validation (Optional but Recommended)
+                if (!loanData.loanAmount || !loanData.interestRate || !loanData.issueDate || !loanData.loanDueDate) {
+                    alert('Please fill in all required fields (Loan Amount, Interest Rate, Issue Date, Due Date).');
+                    return; // Stop submission if validation fails
+                }
+
+                // 6. Define the Servlet URL (Hardcoded for update)
+                const actionUrl = 'updateLoanRecord';
+
+                // 7. Log data being sent (for debugging)
+                console.log(`Submitting update request to ${actionUrl}`, loanData);
+
+                // 8. Update UI - Disable button and show loading text
+                const $submitButton = $('#loanForm button.btn-success'); // Assumes the button always starts as "Update Loan"
+                $submitButton.prop('disabled', true).text('Updating...');
+
+                // 9. Perform AJAX POST request
+                $.ajax({
+                    url: actionUrl, // Hardcoded update URL
+                    type: 'POST',
+                    contentType: 'application/json', // Sending data as JSON
+                    data: JSON.stringify(loanData), // Convert JS object to JSON string
+                    success: function (response) {
+                        // 10. Handle Success Response
+                        if (response && response.success) {
+                            alert('Loan updated successfully!');
+                            window.location.href = 'CTTLoanSearch.jsp'; // Redirect back to search page
+                        } else {
+                            // Server indicated failure
+                            alert(`Update failed: ${response ? response.message : 'Unknown server error'}`);
+                            // Re-enable button on failure
+                            $submitButton.prop('disabled', false).text('Update Loan');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        // 11. Handle AJAX Error
+                        console.error("Error updating loan:", error, xhr.responseText);
+                        alert(`Error updating loan. Status: ${status}. Please check console for details.`);
+                        // Re-enable button on error
+                        $submitButton.prop('disabled', false).text('Update Loan');
+                    }
+                });
+            }
+
+
+            // --- Document Ready ---
             $(document).ready(function () {
                 console.log("页面加载 - 初始化");
 
-                // 1. 加载企业详情
-              //  loadEnterpriseDetails();
+                // Get the loanIssueID from URL parameter
+                const urlParams = new URLSearchParams(window.location.search);
+                const loanIssueID = urlParams.get('loanIssueID');
 
-                // 2. 初始化下拉菜单
+                // Load details if ID exists
+                loadCTTLoanDetails(loanIssueID);
+
+                // Initialize Bootstrap dropdowns
                 $('.dropdown-toggle').dropdown();
 
-                // 3. 添加悬停效果处理
+                // Add hover effect for dropdowns (optional)
                 $('.dropdown').hover(
-                    function () {
-                        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100);
-                    },
-                    function () {
-                        $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100);
-                    }
+                    function () { $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeIn(100); },
+                    function () { $(this).find('.dropdown-menu').stop(true, true).delay(100).fadeOut(100); }
                 );
-            });
+
+                // Ensure buttons don't cause default form submission
+                $('#loanForm button').each(function () {
+                    if (!$(this).attr('type')) {
+                        $(this).attr('type', 'button');
+                    }
+                });
+
+            }); // End of $(document).ready()
         </script>
+
     </body>
 
     </html>

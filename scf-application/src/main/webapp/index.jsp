@@ -269,8 +269,8 @@
                                 Loan
                             </a>
                             <div class="dropdown-menu" aria-labelledby="loanDropdown">
-                                <a class="dropdown-item" href="issueLoan.jsp">Issue Loan</a>
-                                <a class="dropdown-item" href="searchLoan.jsp">Search Loan</a>
+                                <a class="dropdown-item" href="CTTLoanSearch.jsp">Search Loan</a>
+                                <a class="dropdown-item" href="issueLoan.jsp">Issue Loan</a>                             
                         
                             </div>
                         </div>

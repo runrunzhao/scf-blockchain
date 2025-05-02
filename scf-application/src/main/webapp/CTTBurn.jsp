@@ -275,7 +275,8 @@
 
                                 <div class="form-group">
                                     <label for="toAddress">To Address:</label>
-                                    <input type="text" class="form-control" id="toAddress" value="0x0000000000000000000000000000000000000000" required>
+                                    <input type="text" class="form-control" id="toAddress"
+                                        value="0x0000000000000000000000000000000000000000" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -288,22 +289,105 @@
                                 <div class="form-group">
                                     <label for="correspondpingTX">Correspondping TX:</label>
                                     <input type="text" class="form-control" id="correspondpingTX" required>
-                                    <small class="form-text text-muted">Transaction details for the corresponding payment.</small>
+                                    <small class="form-text text-muted">Transaction details for the corresponding
+                                        payment.</small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="form-group text-center mt-4">
-                            <button type="button" class="btn btn-success btn-action" id="sendMoneyBtn">
+                            <button type="button" class="btn btn-success btn-action" id="burnCTTBtn">
                                 <i class="fas fa-calendar-check mr-3"></i>Burn
                             </button>
                             <a href="invoice.jsp" class="btn btn-secondary btn-action ml-4">
                                 <i class="fas fa-arrow-left mr-3"></i>Back to Invoices
                             </a>
                         </div>
-                    </form>
+                        <!-- 在表单下方添加这个新的卡片 -->
+                        <div class="card mt-4">
+                            <div class="card-header bg-primary text-white">
+                                <h5 class="mb-0">Pending Transactions & Multi-Sig Actions</h5>
+                            </div>
+                            <!-- Pending Transactions Card -->
+                            <div class="card-body">
+                                <!-- Row 1: Search Multi Address and Display -->
+                                <div class="form-row mb-3 align-items-center">
+                                    <div class="col-md-4">
+                                        <button type="button" id="SearchMultiSigAddressBtn"
+                                            class="btn btn-primary btn-block">
+                                            <i class="fas fa-search mr-1"></i> Search Multi Address
+                                        </button>
+                                    </div>
+                                    <div class="col-md-8">
+                                        <input type="text" class="form-control" id="manualMultiSigAddress"
+                                            placeholder="Search for Multi-Sig Address (0x...)" rea>
+                                    </div>
+                                </div>
+
+                                <!-- Row 2: Load Transactions Button -->
+                                <div class="form-row mb-3">
+                                    <div class="col-12">
+                                        <button type="button" id="loadTxsButton" class="btn btn-info btn-block">
+                                            <i class="fas fa-sync-alt mr-1"></i> Load Pending Transactions
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Row 3: Pending Transactions Display Area -->
+                                <div id="pendingTransactions" class="mb-3"
+                                    style="min-height: 100px; border: 1px solid #eee; padding: 10px; border-radius: 5px; background-color: #f8f9fa;">
+                                    <!-- Transactions table will be loaded here by JavaScript -->
+                                    <small class="text-muted">Click "Load Pending Transactions" to view.</small>
+                                </div>
+
+
+                            </div> <!-- End card-body -->
+                        </div> <!-- End card -->
+                        <div id="proposalDetails" class="d-none">
+                            <div class="card">
+                                <div class="card-header">
+                                    Proposal #<span id="displayProposalId"></span>
+                                </div>
+                                <div class="card-body">
+                                    <table class="table table-bordered">
+                                        <tbody>
+                                            <tr>
+                                                <th>From Address:</th>
+                                                <td id="proposalFromAddress"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Amount:</th>
+                                                <td id="proposalAmount"></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Status:</th>
+                                                <td><span id="proposalStatus" class="badge"></span></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Confirmations:</th>
+                                                <td><span id="proposalConfirmations"></span> / <span
+                                                        id="proposalRequiredConfirmations"></span></td>
+                                            </tr>
+                                            <tr>
+                                                <th>Your Status:</th>
+                                                <td id="yourConfirmationStatus"></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                    <div class="text-center mt-3">
+                                        <button type="button" class="btn btn-success" id="confirmProposalBtn"
+                                            onclick="confirmProposal()">
+                                            Confirm Proposal
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                 </div>
             </div>
+            </form>
+        </div>
+        </div>
 
 
         </div>
@@ -326,14 +410,42 @@
             window.userAddress = undefined;
             let invoiceDetails = {};
             let currentContractAddress = null;
+            let multiSigContractAddress = null;
 
-
-
+            // 添加在MULTI_SIG_ABI常量之前
             const TOKEN_ABI = [
-                "function transfer(address to, uint256 amount) returns (bool)",
                 "function balanceOf(address owner) view returns (uint256)",
                 "function decimals() view returns (uint8)",
                 "function symbol() view returns (string)"
+            ];
+
+
+            const MULTI_SIG_ABI = [
+                // 交易提交函数
+                "function submitMintTransaction(address to, uint256 amount) returns (uint256)",
+                "function submitBurnTransaction(address from, uint256 amount) returns (uint256)",
+                "function submitRedeemTransaction(address from, uint256 amount) returns (uint256)",
+
+                // 交易查询函数 - 修正为5个参数
+                "function getTransaction(uint256 txIndex) view returns (address to, uint256 amount, uint8 txType, bool executed, uint256 numConfirmations)",
+                "function getTransactionCount() view returns (uint256)",
+
+                // 确认功能
+                "function confirmTransaction(uint256 txIndex) returns (bool)",
+                "function executeTransaction(uint256 txIndex) returns (bool)",
+                "function getConfirmationCount(uint256 txIndex) view returns (uint256)",
+                "function isConfirmedByAddress(uint256 txIndex, address signer) view returns (bool)",
+
+                // 管理功能
+                "function getRequiredConfirmations() view returns (uint256)",
+                "function requiredConfirmations() view returns (uint256)",  // 增加这个函数，某些合约使用这个命名
+                "function isSigner(address account) view returns (bool)",
+                "function getSignerCount() view returns (uint256)",
+
+                // 事件
+                "event TransactionSubmitted(uint256 indexed txIndex, address indexed creator, address to, uint256 amount, uint8 txType)",
+                "event TransactionConfirmed(uint256 indexed txIndex, address indexed signer)",
+                "event TransactionExecuted(uint256 indexed txIndex, address indexed executor)"
             ];
 
             function getParameterByName(name, url = window.location.href) {
@@ -387,7 +499,7 @@
             }
 
 
-            document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', async () => {
                 if (window.ethereum) {
                     window.ethereum.on('accountsChanged', (accounts) => {
                         if (accounts.length > 0) {
@@ -399,7 +511,8 @@
                     window.ethereum.on('chainChanged', () => window.location.reload());
                     window.ethereum.on('disconnect', () => resetWalletConnectionUI());
                 }
-                currentContractAddress = getLatestScTransAddr();
+
+                currentContractAddress = await getLatestScTransAddr();
                 if (currentContractAddress) {
                     console.log("Initialized contract address:", currentContractAddress);
                 } else {
@@ -407,7 +520,18 @@
                 }
 
                 document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
-                document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney); // Updated to call sendMoney function
+                document.getElementById('burnCTTBtn').addEventListener('click', burnCTT);
+
+
+                multiSigContractAddress = await getMultiSigContractAddress();
+                if (multiSigContractAddress) {
+                    console.log("Initialized multi-sig contract address:", multiSigContractAddress);
+                } else {
+                    console.error("Failed to initialize multi-sig contract address");
+                }
+                SearchMultiSigAddressBtn
+                document.getElementById('SearchMultiSigAddressBtn').addEventListener('click', SearchMultiSigAddress);
+                document.getElementById('loadTxsButton').addEventListener('click', loadPendingTransactions);
             });
 
             async function getLatestScTransAddr() {
@@ -426,82 +550,158 @@
                 }
             }
 
-            async function sendMoney() {
+
+
+
+            async function getMultiSigContractAddress() {
+                try {
+                    const response = await fetch('/api/contract/multisig-address');
+                    const data = await response.json();
+                    if (data.success) {
+                        return data.scMultiAddress;
+                    } else {
+                        console.error("Error getting multi-sig contract address:", data.message);
+                        return null;
+                    }
+                } catch (error) {
+                    console.error("Failed to get multi-sig contract address:", error);
+                    return null;
+                }
+            }
+
+            function SearchMultiSigAddress() {
+                document.getElementById('manualMultiSigAddress').value = multiSigContractAddress;
+            }
+
+
+            async function burnCTT() {
                 const fromAddress = document.getElementById('fromAddress').value;
-                const toAddress = document.getElementById('toAddress').value;
                 const amountStr = document.getElementById('settlementAmount').value;
+                const correspondpingTX = document.getElementById('correspondpingTX').value;
                 const connectAddr = window.userAddress;
-                const acceptableDateStr = document.getElementById('acceptableDate').value;
-                // Validate inputs
+
+                document.getElementById('correspondpingTX').value
+
+                // 验证输入
                 if (!fromAddress) {
                     alert("Invalid from address. Please connect your wallet first.");
                     return;
                 }
                 if (connectAddr !== fromAddress) {
-                    alert("Please connect a your own address.");
-                    return;
-                }
-                if (!toAddress) {
-                    alert("Invalid to address.");
-                    return;
-                }
-                const acceptableDate = new Date(acceptableDateStr);
-                const now = new Date();
-
-                // Set hours, minutes, seconds, and milliseconds to 0 for accurate date comparison
-                acceptableDate.setHours(0, 0, 0, 0);
-                now.setHours(0, 0, 0, 0);
-
-                if (now > acceptableDate) {
-                    alert("The current date is after the acceptable date.  Transaction is not allowed.");
+                    alert("Please connect your own address.");
                     return;
                 }
 
                 try {
-                    const tokenAddress = currentContractAddress; // 使用与showTokenBalance相同的地址
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     const signer = provider.getSigner();
 
-                    // 使用与showTokenBalance相同的ABI
-                    const tokenABI = [
-                        "function balanceOf(address owner) view returns (uint256)",
-                        "function decimals() view returns (uint8)",
-                        "function transfer(address to, uint256 amount) returns (bool)"
-                    ];
-
-                    const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+                    // 检查当前用户是否是签名者
+                    const multiSigContract = new ethers.Contract(multiSigContractAddress, MULTI_SIG_ABI, signer);
+                    const isSignerResult = await multiSigContract.isSigner(connectAddr);
+                    if (!isSignerResult) {
+                        alert("Your address is not authorized to submit burn proposals. Only designated signers can submit proposals.");
+                        return;
+                    }
 
                     // 获取代币精度
+                    const tokenContract = new ethers.Contract(currentContractAddress, TOKEN_ABI, signer);
                     const decimals = await tokenContract.decimals();
-                    console.log("Token decimals:", decimals);
 
                     const amount = Number(amountStr);
-                    if (isNaN(amount)) {
-                        alert("Invalid settlement amount. Please enter a valid number.");
+                    if (isNaN(amount) || amount <= 0) {
+                        alert("Invalid burn amount. Please enter a positive number.");
                         return;
                     }
 
                     // 将金额转换为代币最小单位
                     const amountInSmallestUnit = ethers.utils.parseUnits(amount.toString(), decimals);
-                    console.log("Amount in smallest unit:", amountInSmallestUnit.toString());
 
-                    // 发送交易
-                    const tx = await tokenContract.transfer(toAddress, amountInSmallestUnit);
-                    console.log("Transaction sent:", tx.hash);
-                    alert(`Transaction sent! Hash: ${tx.hash}`);
+                    // 确认弹窗
+                    if (!confirm(`Are you sure you want to submit a proposal to burn ${amount} CTT tokens from ${fromAddress}? This will require multi-signature approval.`)) {
+                        return;
+                    }
+
+                    // 提交销毁提案
+                    console.log("Submitting burn proposal to multi-sig contract:", multiSigContractAddress);
+                    console.log("From address:", fromAddress, "Amount:", amountInSmallestUnit.toString());
+
+                    // 调用多签合约的 submitBurnTransaction 而不是直接调用 burn
+
+                    const tx = await multiSigContract.submitBurnTransaction(
+                        fromAddress,
+                        amountInSmallestUnit,
+                        {
+                            gasLimit: 500000 // 明确设置 gas 限制
+                        }
+                    );
+                    console.log("Proposal transaction sent:", tx.hash);
+
+                    // 显示交易信息
+                    alert(`Burn proposal submitted! Transaction hash: ${tx.hash}\n\nPlease wait for other signers to confirm the proposal.`);
 
                     // 等待交易确认
-                    await tx.wait();
-                    console.log("Transaction confirmed!");
+                    const receipt = await tx.wait();
+                    console.log("Proposal transaction confirmed:", receipt);
 
+                    // 从交易日志中提取提案ID (如果可能)
+                    let txIndex = null;
+                    if (receipt && receipt.events) {
+                        for (let event of receipt.events) {
+                            if (event.event === "TransactionSubmitted") {
+                                txIndex = event.args.txIndex.toString();
+                                break;
+                            }
+                        }
+                    }
 
+                    if (txIndex !== null) {
+                        // 记录提案到数据库
+                        //    await recordBurnOperation(fromAddress, amount, tx.hash, correspondpingTX, txIndex);
+
+                        // 先获取所需确认数
+                        const requiredConfirmations = await multiSigContract.getRequiredConfirmations();
+
+                        // 显示提案ID (分离 await 操作)
+                        alert(`Burn proposal #${txIndex} has been created successfully. Required signatures: ${requiredConfirmations}`);
+
+                        // 提案创建后自动加载该提案详情
+                        document.getElementById('proposalId').value = txIndex;
+                        await checkProposal();
+                    }
 
                 } catch (error) {
-                    console.error("Error sending transaction:", error);
-                    alert("Transaction failed: " + error.message);
+                    console.error("Error submitting burn proposal:", error);
+                    alert("Failed to submit burn proposal: " + error.message);
                 }
+
+
             }
 
+            async function recordBurnOperation(address, amount, txHash, correspondpingTX) {
+                try {
+                    const response = await fetch('/createCTTBurnRecord', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            amount: amount,
+                            txHash: txHash,
+                            operationDate: new Date().toISOString().split('T')[0] // Format as YYYY-MM-DD
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (data.success) {
+                        console.log("Burn operation recorded successfully");
+                    } else {
+                        console.error("Failed to record burn operation:", data.message);
+                    }
+                } catch (error) {
+                    console.error("Error recording burn operation:", error);
+                }
+            }
 
             function showStatus(message, isError = false) {
                 // Check if status element exists, if not create it
@@ -712,9 +912,278 @@
                 return address.substring(0, 6) + '...' + address.substring(address.length - 4);
             }
 
+            async function loadPendingTransactions() {
+                console.log("Loading pending transactions...");
+                showStatus("Loading pending transactions...");
+
+                // 检查钱包连接
+                if (!window.ethereum) {
+                    console.error("No wallet provider available");
+                    showStatus("Wallet not connected. Please connect wallet first.", true);
+                    return;
+                }
+
+                // 获取多签合约地址
+                const multiSigAddr = document.getElementById('manualMultiSigAddress').value;
+                console.log("Multi-sig contract address:", multiSigAddr);
+
+                if (!multiSigAddr || multiSigAddr.trim() === '') {
+                    showStatus("Multi-signature contract address not found. Please search for a contract first.", true);
+                    return;
+                }
+
+                try {
 
 
+                    showStatus("Connecting to multi-signature contract...");
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const multiSigContract = new ethers.Contract(multiSigAddr, MULTI_SIG_ABI, provider);
 
+                    // 获取交易数量
+                    showStatus("Fetching transaction count...");
+                    const txCount = await multiSigContract.getTransactionCount();
+                    console.log("Transaction count:", txCount.toString());
+
+                    const requiredConfirmations = await multiSigContract.requiredConfirmations();
+                    console.log("Required confirmations:", requiredConfirmations.toString());
+
+                    const pendingTxDiv = document.getElementById('pendingTransactions');
+                    pendingTxDiv.innerHTML = '';
+
+                    // 如果没有交易，显示提示信息
+                    if (txCount.eq(0)) {
+                        pendingTxDiv.innerHTML = '<div class="alert alert-info">No transactions found</div>';
+                        showStatus("No transactions found on this contract");
+                        return;
+                    }
+
+                    // 创建表格
+                    showStatus("Loading transaction details...");
+                    const table = document.createElement('table');
+                    table.className = 'table table-striped';
+                    table.innerHTML = `
+            <thead>
+                <tr>
+                    <th>Index</th>
+                    <th>Recipient</th>
+                    <th>Amount</th>
+                    <th>Type</th>
+                    <th>Status</th>
+                    <th>Confirmations</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody id="txTableBody"></tbody>
+        `;
+                    pendingTxDiv.appendChild(table);
+                    const tableBody = document.getElementById('txTableBody');
+
+                    let pendingCount = 0;
+                    const tokenContract = new ethers.Contract(currentContractAddress, TOKEN_ABI, provider);
+                    const decimals = await tokenContract.decimals();
+                    const userAddress = await provider.getSigner().getAddress();
+
+                    // 循环获取每个交易的详细信息
+                    for (let i = 0; i < txCount.toNumber(); i++) {
+                        showStatus(`Loading transaction ${i + 1} of ${txCount}...`);
+
+                        try {
+                            const tx = await multiSigContract.getTransaction(i);
+                            console.log(`Transaction ${i} details:`, tx);
+
+                            // 跳过已执行的交易
+                            if (tx.executed) continue;
+
+                            pendingCount++;
+                            const row = document.createElement('tr');
+
+                            // 交易类型转换
+                            let typeText;
+                            switch (tx.txType) {
+                                case 0: typeText = "Mint"; break;
+                                case 1: typeText = "Burn"; break;
+                                case 2: typeText = "Redeem"; break;
+                                default: typeText = "Unknown";
+                            }
+
+                            // 格式化金额
+                            const amountFormatted = ethers.utils.formatUnits(tx.amount, decimals);
+
+                            // ===== 修改部分开始 =====
+                            // 检查当前用户是否已确认此提案
+                            let isConfirmed = false;
+                            try {
+                                isConfirmed = await multiSigContract.isConfirmedByAddress(i, userAddress);
+                            } catch (confirmError) {
+                                console.warn(`Couldn't check confirmation status for tx ${i}:`, confirmError);
+                                // 继续执行，默认未确认
+                            }
+                            // ===== 修改部分结束 =====
+
+                            // 创建操作按钮
+                            let actionButton = '';
+                            if (!tx.executed && !isConfirmed) {
+                                actionButton = `<button class="btn btn-sm btn-primary" onclick="confirmSpecificTx(${i})">Confirm</button>`;
+                            } else if (!tx.executed && isConfirmed) {
+                                actionButton = `<span class="badge badge-success">Confirmed</span>`;
+                            } else {
+                                actionButton = `<span class="badge badge-secondary">Executed</span>`;
+                            }
+
+                            row.innerHTML = `
+                                <td>\${i}</td>
+                                <td>\${shortenAddress(tx.to)}</td>
+                                <td>\${amountFormatted} CTT</td>
+                                <td>\${typeText}</td>
+                                <td>\${tx.executed ? '<span class="badge badge-success">Executed</span>' : '<span class="badge badge-warning">Pending</span>'}</td>
+                                <td>\${tx.numConfirmations}/\${requiredConfirmations}</td>
+                                <td>\${actionButton}</td>
+                                `;
+
+                            tableBody.appendChild(row);
+                        } catch (txError) {
+                            console.error(`Error fetching transaction ${i}:`, txError);
+                            // 继续处理下一笔交易
+                        }
+                    }
+
+                    if (pendingCount === 0) {
+                        pendingTxDiv.innerHTML = '<div class="alert alert-info">No pending transactions found</div>';
+                    }
+
+                    showStatus(`Loaded ${pendingCount} pending transactions successfully`);
+
+                } catch (error) {
+                    console.error("Error loading transactions:", error);
+                    showStatus("Failed to load transactions: " + (error.message || "Unknown error"), true);
+                }
+            }
+
+            // 为表格中的确认按钮添加功能
+            async function confirmSpecificTx(txIndex) {
+                try {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
+                    const multiSigAddr = document.getElementById('manualMultiSigAddress').value;
+                    const multiSigContract = new ethers.Contract(multiSigAddr, MULTI_SIG_ABI, signer);
+
+                    // 确认提案
+                    showStatus(`Confirming transaction #${txIndex}...`);
+                    const tx = await multiSigContract.confirmTransaction(txIndex);
+                    console.log("Confirmation transaction sent:", tx.hash);
+
+                    // 等待交易确认
+                    showStatus(`Waiting for confirmation of transaction #${txIndex}...`);
+                    await tx.wait();
+                    showStatus(`Successfully confirmed transaction #${txIndex}`);
+
+                    // 重新加载交易列表
+                    await loadPendingTransactions();
+
+                } catch (error) {
+                    console.error("Error confirming transaction:", error);
+                    showStatus("Failed to confirm transaction: " + (error.message || "Unknown error"), true);
+                }
+            }
+
+
+            async function checkProposal() {
+                const txIndex = document.getElementById('proposalId').value;
+                if (!txIndex || isNaN(parseInt(txIndex))) {
+                    alert("Please enter a valid proposal ID");
+                    return;
+                }
+
+                try {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
+                    const userAddress = await signer.getAddress();
+
+                    const multiSigContract = new ethers.Contract(multiSigContractAddress, MULTI_SIG_ABI, signer);
+                    const tokenContract = new ethers.Contract(currentContractAddress, TOKEN_ABI, provider);
+                    const decimals = await tokenContract.decimals();
+
+                    // 获取提案详情
+                    const tx = await multiSigContract.getTransaction(txIndex);
+                    const confirmationCount = tx.numConfirmations;
+                    const requiredConfirmations = tx.requiredConfirmations;
+                    const isConfirmed = await multiSigContract.isConfirmedByAddress(txIndex, userAddress);
+
+                    // 更新UI
+                    document.getElementById('displayProposalId').textContent = txIndex;
+                    document.getElementById('proposalFromAddress').textContent = tx.to;
+                    document.getElementById('proposalAmount').textContent = ethers.utils.formatUnits(tx.amount, decimals) + " CTT";
+
+                    const statusBadge = document.getElementById('proposalStatus');
+                    if (tx.executed) {
+                        statusBadge.textContent = "EXECUTED";
+                        statusBadge.className = "badge badge-success";
+                    } else if (confirmationCount.gte(requiredConfirmations)) {
+                        statusBadge.textContent = "READY TO EXECUTE";
+                        statusBadge.className = "badge badge-warning";
+                    } else {
+                        statusBadge.textContent = "PENDING";
+                        statusBadge.className = "badge badge-info";
+                    }
+
+                    document.getElementById('proposalConfirmations').textContent = confirmationCount.toString();
+                    document.getElementById('proposalRequiredConfirmations').textContent = requiredConfirmations.toString();
+
+                    const confirmBtnEl = document.getElementById('confirmProposalBtn');
+                    if (tx.executed) {
+                        document.getElementById('yourConfirmationStatus').textContent = "Proposal already executed";
+                        confirmBtnEl.disabled = true;
+                        confirmBtnEl.textContent = "Already Executed";
+                    } else if (isConfirmed) {
+                        document.getElementById('yourConfirmationStatus').textContent = "You have confirmed this proposal";
+                        confirmBtnEl.disabled = true;
+                        confirmBtnEl.textContent = "Already Confirmed";
+                    } else {
+                        document.getElementById('yourConfirmationStatus').textContent = "You have not confirmed this proposal yet";
+                        confirmBtnEl.disabled = false;
+                        confirmBtnEl.textContent = "Confirm Proposal";
+                    }
+
+                    // 显示提案详情区域
+                    document.getElementById('proposalDetails').classList.remove('d-none');
+
+                } catch (error) {
+                    console.error("Error checking proposal:", error);
+                    alert("Failed to check proposal: " + error.message);
+                }
+            }
+
+
+            async function confirmProposal() {
+                const txIndex = document.getElementById('proposalId').value;
+                if (!txIndex || isNaN(parseInt(txIndex))) {
+                    alert("Invalid proposal ID");
+                    return;
+                }
+
+                try {
+                    const provider = new ethers.providers.Web3Provider(window.ethereum);
+                    const signer = provider.getSigner();
+
+                    const multiSigContract = new ethers.Contract(multiSigContractAddress, MULTI_SIG_ABI, signer);
+
+                    // 确认提案
+                    const tx = await multiSigContract.confirmTransaction(txIndex);
+                    console.log("Confirmation transaction sent:", tx.hash);
+                    alert("Confirmation submitted! Please wait for transaction confirmation.");
+
+                    // 等待交易确认
+                    await tx.wait();
+                    console.log("Confirmation transaction confirmed");
+
+                    // 刷新提案状态
+                    await checkProposal();
+
+                } catch (error) {
+                    console.error("Error confirming proposal:", error);
+                    alert("Failed to confirm proposal: " + error.message);
+                }
+            }
         </script>
     </body>
 

@@ -347,6 +347,15 @@
 </servlet-mapping>
 
 <servlet>
+    <servlet-name>scMultiAddressServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.scMultiAddressServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>scMultiAddressServlet</servlet-name>
+    <url-pattern>/api/contract/multisig-address</url-pattern>
+</servlet-mapping>
+
+<servlet>
     <servlet-name>CTTFinancingServlet</servlet-name>
     <servlet-class>com.supplychainfinance.servlet.CTTFinancingServlet</servlet-class>
 </servlet>
@@ -383,24 +392,52 @@
     <url-pattern>/updateFinancingRecord</url-pattern>
 </servlet-mapping>
 
-    <servlet>
+<servlet>
         <servlet-name>CreateLoanRecordServlet</servlet-name>
         <servlet-class>com.supplychainfinance.servlet.CreateLoanRecordServlet</servlet-class>
-    </servlet>
+ </servlet>
 
-    <servlet-mapping>
+<servlet-mapping>
         <servlet-name>CreateLoanRecordServlet</servlet-name>
         <url-pattern>/createLoanRecord</url-pattern>
-    </servlet-mapping>
+ </servlet-mapping>
 
-    <servlet>
+<servlet>
         <servlet-name>GetLoanRecordServlet</servlet-name>
         <servlet-class>com.supplychainfinance.servlet.GetLoanRecordServlet</servlet-class>
-    </servlet>
+</servlet>
 
-    <servlet-mapping>
+ <servlet-mapping>
         <servlet-name>GetLoanRecordServlet</servlet-name>
         <url-pattern>/getLoanRecord</url-pattern>
-    </servlet-mapping>
+</servlet-mapping>
     
+    
+<servlet>
+    <servlet-name>SearchCTTLoanRecordServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.SearchCTTLoanRecordServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>SearchCTTLoanRecordServlet</servlet-name>
+    <url-pattern>/searchCTTLoanRecord</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>UpdateCTTLoanRecordServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.UpdateCTTLoanRecordServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>UpdateCTTLoanRecordServlet</servlet-name>
+    <url-pattern>/updateLoanRecord</url-pattern>
+</servlet-mapping>
+
+<servlet>
+    <servlet-name>CreateCTTBurnRecordServlet</servlet-name>
+    <servlet-class>com.supplychainfinance.servlet.CreateCTTBurnRecordServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+    <servlet-name>CreateCTTBurnRecordServlet</servlet-name>
+    <url-pattern>/createCTTBurnRecord</url-pattern>
+</servlet-mapping>  
+
 </web-app>

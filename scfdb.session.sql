@@ -1,1 +1,1 @@
-SELECT * from loanRecord
+SELECT scMultiAddr FROM scTransMultiConnection ORDER BY scConnectTime DESC LIMIT 1

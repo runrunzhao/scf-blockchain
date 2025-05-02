@@ -30,7 +30,7 @@ public class GetLoanRecordServlet extends HttpServlet {
             // 1. Get loanIssueID from request
             String loanIssueIDStr = request.getParameter("loanIssueID");
             if (loanIssueIDStr == null || loanIssueIDStr.isEmpty()) {
-                throw new IllegalArgumentException("loanIssueID 不能为空");
+                throw new IllegalArgumentException("loanIssueID not provided");
             }
 
             int loanIssueID = Integer.parseInt(loanIssueIDStr);
@@ -54,6 +54,7 @@ public class GetLoanRecordServlet extends HttpServlet {
                     loanRecordJson.addProperty("enterpriseID", rs.getString("enterpriseID"));
                     loanRecordJson.addProperty("loanAmount", rs.getDouble("loanAmount"));
                     loanRecordJson.addProperty("interestRate", rs.getDouble("interestRate"));
+                    loanRecordJson.addProperty("issueDate", rs.getString("issueDate")); // Consider formatting the date
                     loanRecordJson.addProperty("loanDueDate", rs.getString("loanDueDate")); // Consider formatting the date
                     loanRecordJson.addProperty("correspondpingTX", rs.getString("correspondpingTX"));
                     loanRecordJson.addProperty("correspondpingTXDate", rs.getString("correspondpingTXDate"));
@@ -62,7 +63,7 @@ public class GetLoanRecordServlet extends HttpServlet {
                 }
 
             } catch (SQLException e) {
-                throw new SQLException("数据库操作失败: " + e.getMessage());
+                throw new SQLException("error: " + e.getMessage());
             } finally {
                 if (rs != null) {
                     try {

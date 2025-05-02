@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enterprise Query - Supply Chain Finance</title>
+    <title>CTTLoan Query - Supply Chain Finance</title>
     <!-- Bootstrap CSS for responsive layout and styling -->
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
     <style>
@@ -170,14 +170,13 @@
                         <div class="form-row">
                             <div class="form-group col-md-6">
                                 <label for="loanAmount">loanAmount</label>
-                                <input type="text" class="form-control" id="loanAmount"
-                                    placeholder="Enter loan amount">
+                                <input type="text" class="form-control" id="loanAmount" placeholder="Enter loan amount">
                             </div>
                         </div>
                         <div class="form-row">
                             <div class="col-md-6 mb-2">
                                 <button type="button" class="btn btn-primary btn-block"
-                                    onclick="searchEnterprises()">Search</button>
+                                    onclick="searchCTTLoanRecord()">Search</button>
                             </div>
                             <div class="col-md-3 mb-2">
                                 <button type="button" class="btn btn-secondary btn-block"
@@ -211,7 +210,7 @@
                                     <th>loanIssueID</th>
                                     <th>loanAmount</th>
                                     <th>correspondpingTX</th>
-                                    <th>correspondpingTXDate</th>                                  
+                                    <th>correspondpingTXDate</th>
                                 </tr>
                             </thead>
                             <tbody id="resultsBody">
@@ -238,13 +237,12 @@
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
 
     <script>
-        // Function to search enterprises
-        // Update the searchEnterprises function error handler:
+        // Replace the existing searchCTTLoanRecord function with this one:
 
-        function searchEnterprises() {
-            const enterpriseId = document.getElementById('enterpriseId').value;
-            const enterpriseName = document.getElementById('enterpriseName').value;
-            const enterpriseType = document.getElementById('enterpriseType').value;
+        function searchCTTLoanRecord() {
+            const correspondingTX = document.getElementById('correspondpingTX').value;
+            const correspondingTXDate = document.getElementById('correspondpingTXDate').value;
+            const loanAmount = document.getElementById('loanAmount').value;
 
             // Show loading indicator
             document.getElementById('loading').style.display = 'block';
@@ -253,16 +251,16 @@
 
             // Prepare search parameters
             const searchParams = new URLSearchParams();
-            if (enterpriseId) searchParams.append('id', enterpriseId);
-            if (enterpriseName) searchParams.append('name', enterpriseName);
-            if (enterpriseType) searchParams.append('type', enterpriseType);
+            if (correspondingTX) searchParams.append('correspondingTX', correspondingTX);
+            if (correspondingTXDate) searchParams.append('correspondingTXDate', correspondingTXDate);
+            if (loanAmount) searchParams.append('loanAmount', loanAmount);
 
             // Log the search URL for debugging
-            console.log('Search URL: searchEnterprises?' + searchParams.toString());
+            console.log('Search URL: searchCTTLoanRecord?' + searchParams.toString());
 
-            // Send AJAX request to get enterprises
+            // Send AJAX request to get CTT loans
             $.ajax({
-                url: 'searchEnterprises?' + searchParams.toString(),
+                url: 'searchCTTLoanRecord?' + searchParams.toString(),
                 type: 'GET',
                 dataType: 'json',
                 success: function (data) {
@@ -274,9 +272,11 @@
 
                     // Update results table
                     if (data && data.length > 0) {
-                        renderEnterpriseTable(data);
+                        renderCTTLoanTable(data);
                     } else {
                         document.getElementById('noResults').style.display = 'block';
+                        document.getElementById('noResults').innerHTML =
+                            '<p class="text-center">No CTT loans found matching your search criteria.</p>';
                     }
                 },
                 error: function (xhr, status, error) {
@@ -291,71 +291,80 @@
                     document.getElementById('resultsBody').innerHTML = '';
                     document.getElementById('noResults').style.display = 'block';
                     document.getElementById('noResults').innerHTML =
-                        '<p class="text-danger">Error searching enterprises. Please check console for details.</p>';
+                        '<p class="text-danger">Error searching CTT loans. Please check console for details.</p>';
 
                     // Alert with simplified error message
-                    alert('Error searching enterprises. Please try again later.');
+                    alert('Error searching CTT loans. Please try again later.');
                 }
             });
         }
 
-        // Function to render enterprise table
-        function renderEnterpriseTable(enterprises) {
+        // Replace the existing renderCTTLoanTable function with this one:
+
+        function renderCTTLoanTable(loans) {
             const tbody = document.getElementById('resultsBody');
             tbody.innerHTML = '';
 
             // Log the full data for debugging
-            console.log("Enterprises data:", enterprises);
+            console.log("CTT Loans data:", loans);
 
-            enterprises.forEach(function (enterprise, index) {
+            loans.forEach(function (loan) {
                 const row = document.createElement('tr');
 
-                // Extract ID and ensure consistency
-                const id = enterprise.enterpriseID || enterprise.id || enterprise.ID || '';
-                console.log(`Enterprise ${index} ID:`, id);
-
-                // 将ID存储为行的数据属性
-                row.setAttribute('data-enterprise-id', id);
-
-                // 使用jQuery绑定双击事件以确保可靠性
-                $(row).dblclick(function () {
-                    const clickedId = $(this).attr('data-enterprise-id');
-
-                    showEnterpriseDetail(clickedId);
+                // Add double-click functionality to the row
+                row.addEventListener('dblclick', function () {
+                    showLoanDetail(loan.loanIssueID);
                 });
 
-                // Enterprise ID column
+                // Add hover style to indicate clickable row
+                row.style.cursor = 'pointer';
+
+                // loanIssueID column
                 const idCell = document.createElement('td');
-                idCell.textContent = id;
+                idCell.textContent = loan.loanIssueID || '';
                 row.appendChild(idCell);
 
-                // Name column
-                const nameCell = document.createElement('td');
-                nameCell.textContent = enterprise.enterpriseName;
-                row.appendChild(nameCell);
+                // loanAmount column
+                const amountCell = document.createElement('td');
+                amountCell.textContent = formatCurrency(loan.loanAmount);
+                row.appendChild(amountCell);
 
-                // Type column
-                const typeCell = document.createElement('td');
-                typeCell.textContent = getTypeDisplayText(enterprise.role);
-                row.appendChild(typeCell);
+                // correspondpingTX column
+                const txCell = document.createElement('td');
+                txCell.textContent = loan.correspondpingTX || '';
+                row.appendChild(txCell);
 
-                // Phone column
-                const phoneCell = document.createElement('td');
-                phoneCell.textContent = enterprise.telephone;
-                row.appendChild(phoneCell);
-
-                // Address column
-                const addressCell = document.createElement('td');
-                addressCell.textContent = enterprise.address;
-                row.appendChild(addressCell);
+                // correspondpingTXDate column
+                const dateCell = document.createElement('td');
+                dateCell.textContent = loan.correspondpingTXDate || '';
+                row.appendChild(dateCell);
 
                 tbody.appendChild(row);
             });
-
-            // 在渲染完成后添加调试信息
-            console.log("Table rendering complete, rows count:", $('#resultsBody tr').length);
         }
 
+        // Add this new function to handle navigation to issueLoan.jsp
+        function showLoanDetail(loanIssueID) {
+            if (!loanIssueID) {
+                console.error("loanIssueID is empty");
+                alert("Unable to display loan details: missing loan ID");
+                return;
+            }
+
+            console.log("Opening loan details for ID:", loanIssueID);
+
+            // Navigate to issueLoan.jsp with the loanIssueID parameter
+            window.location.href = "issueLoan.jsp?loanIssueID=" + encodeURIComponent(loanIssueID.trim());
+        }
+
+        // Helper function to format currency
+        function formatCurrency(amount) {
+            if (amount === undefined || amount === null) return '';
+            return new Intl.NumberFormat('en-US', {
+                style: 'currency',
+                currency: 'USD'
+            }).format(amount);
+        }
 
         // Helper function to get display text for enterprise type
         function getTypeDisplayText(type) {

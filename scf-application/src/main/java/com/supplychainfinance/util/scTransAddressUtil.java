@@ -23,4 +23,20 @@ public class scTransAddressUtil {
         
         return scTransAddr;
     }
+
+    public static String getLatestScMultiAddr() throws SQLException {
+        String scMultiAddr = null;
+        String sql = "SELECT scMultiAddr FROM scTransMultiConnection ORDER BY scConnectTime DESC LIMIT 1";
+        
+        try (Connection conn = DBUtil.getConnection();
+             PreparedStatement pstmt = conn.prepareStatement(sql);
+             ResultSet rs = pstmt.executeQuery()) {
+            
+            if (rs.next()) {
+                scMultiAddr = rs.getString("scMultiAddr");
+            }
+        }
+        
+        return scMultiAddr;
+    }
 }
