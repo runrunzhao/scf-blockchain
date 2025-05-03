@@ -438,6 +438,24 @@
 <servlet-mapping>
     <servlet-name>CreateCTTBurnRecordServlet</servlet-name>
     <url-pattern>/createCTTBurnRecord</url-pattern>
-</servlet-mapping>  
+</servlet-mapping> 
+
+<servlet>
+        <servlet-name>UpdateCTTBurnRecordServlet</servlet-name>
+        <servlet-class>com.supplychainfinance.servlet.UpdateCTTBurnRecordServlet</servlet-class>
+</servlet>
+ <servlet-mapping>
+        <servlet-name>UpdateCTTBurnRecordServlet</servlet-name>
+        <url-pattern>/updateCTTBurnRecord</url-pattern> 
+</servlet-mapping>
+
+<servlet>
+        <servlet-name>SearchCTTBurnRecordServlet</servlet-name>
+        <servlet-class>com.supplychainfinance.servlet.SearchCTTBurnRecordServlet</servlet-class>
+</servlet>
+<servlet-mapping>
+        <servlet-name>SearchCTTBurnRecordServlet</servlet-name>
+        <url-pattern>/searchCTTBurnRecord</url-pattern> 
+</servlet-mapping>
 
 </web-app>

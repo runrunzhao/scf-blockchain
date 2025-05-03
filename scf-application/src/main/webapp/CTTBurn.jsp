@@ -343,7 +343,7 @@
 
                             </div> <!-- End card-body -->
                         </div> <!-- End card -->
-                       
+
                 </div>
             </div>
             </form>
@@ -395,7 +395,7 @@
                 "function confirmTransaction(uint256 txIndex) returns (bool)",
                 "function executeTransaction(uint256 txIndex) returns (bool)",
                 "function getConfirmationCount(uint256 txIndex) view returns (uint256)",
-                "function isTransactionConfirmedBy(uint256 txIndex, address signer) view returns (bool)", 
+                "function isTransactionConfirmedBy(uint256 txIndex, address signer) view returns (bool)",
 
                 // 管理功能
                 "function getRequiredConfirmations() view returns (uint256)",
@@ -404,8 +404,8 @@
                 "function getSignerCount() view returns (uint256)",
 
                 // 事件
-               "event TransactionSubmitted(uint256 indexed txIndex, address indexed to, uint256 amount, uint8 txType)",
-              //  "event TransactionSubmitted(uint256 indexed txIndex, address indexed creator, address to, uint256 amount, uint8 txType)",
+                "event TransactionSubmitted(uint256 indexed txIndex, address indexed to, uint256 amount, uint8 txType)",
+                //  "event TransactionSubmitted(uint256 indexed txIndex, address indexed creator, address to, uint256 amount, uint8 txType)",
                 "event TransactionConfirmed(uint256 indexed txIndex, address indexed signer)",
                 "event TransactionExecuted(uint256 indexed txIndex, address indexed executor)"
             ];
@@ -422,7 +422,8 @@
             $(document).ready(function () {
 
                 const recordId = getParameterByName('recordId');
-
+             //   document.getElementById('correspondpingTX').value="0x02a24ce162667280cd1ad24290be472862de0eb62eb11214f24cf382a0ecee8b" ;
+              //  recordBurnOperation("400", "0x02a24ce162667280cd1ad24290be472862de0eb62eb11214f24cf382a00000");
                 document.getElementById('recordId').value = recordId;
                 if (recordId) {
                     fetchFinancingDetails(recordId);
@@ -589,14 +590,14 @@
                     console.log("From address:", fromAddress, "Amount:", amountInSmallestUnit.toString());
 
                     const feeData = await provider.getFeeData();
-                const increasedPriorityFee = feeData.maxPriorityFeePerGas ? feeData.maxPriorityFeePerGas.mul(150).div(100) : undefined;
-                const maxFee = feeData.maxFeePerGas;
+                    const increasedPriorityFee = feeData.maxPriorityFeePerGas ? feeData.maxPriorityFeePerGas.mul(150).div(100) : undefined;
+                    const maxFee = feeData.maxFeePerGas;
 
-                const overrides = {
-                    gasLimit: 800000, // Explicitly set a high limit (e.g., 800k, adjust if needed)
-                    maxPriorityFeePerGas: increasedPriorityFee,
-                    maxFeePerGas: maxFee
-                };
+                    const overrides = {
+                        gasLimit: 800000, // Explicitly set a high limit (e.g., 800k, adjust if needed)
+                        maxPriorityFeePerGas: increasedPriorityFee,
+                        maxFeePerGas: maxFee
+                    };
 
                     const tx = await multiSigContract.submitBurnTransaction(
                         fromAddress,
@@ -625,10 +626,10 @@
 
                     if (txIndex !== null) {
                         // 记录提案到数据库
-                        console.log(amountStr+":::",  tx.hash);
+                        console.log(amountStr + ":::", tx.hash);
 
 
-                      await recordBurnOperation( amountStr, tx.hash);
+                        await recordBurnOperation(amountStr, tx.hash);
 
                         // 先获取所需确认数
                         const requiredConfirmations = await multiSigContract.getRequiredConfirmations();
@@ -636,7 +637,7 @@
                         // 显示提案ID (分离 await 操作)
                         alert(`Burn proposal #${txIndex} has been created successfully. Required signatures: ${requiredConfirmations}`);
 
-                     
+
                     }
 
                 } catch (error) {
@@ -647,25 +648,67 @@
 
             }
 
-            async function recordBurnOperation( amountStr, txHash) {
-                try {
-                    const response = await fetch('/createCTTBurnRecord', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            amount: amountStr,
-                            txHash: txHash,
-                            operationDate: new Date().toISOString().split('T')[0] // Format as YYYY-MM-DD
-                        })
-                    });
+            async function recordBurnOperation(amountStr, txHash) {
+                const correspondpingTX = document.getElementById('correspondpingTX').value;
 
-                    const data = await response.json();
-                    if (data.success) {
-                        console.log("Burn operation recorded successfully");
+                if (!correspondpingTX || correspondpingTX.trim() === '') {
+                    console.error("Cannot record burn operation: 'Correspondping TX' field is empty.");
+                    return; 
+                }
+
+                try {
+
+                    const searchUrl = new URL('/searchCTTBurnRecord', window.location.origin);
+                    searchUrl.searchParams.append('correspondpingTX', correspondpingTX); // Use the input value for search
+
+                    console.log("Searching for existing burn record with correspondpingTX:" + correspondpingTX);
+                    const searchResponse = await fetch(searchUrl);
+                    const searchData = await searchResponse.json();
+
+                    if (searchResponse.ok && searchData.success && searchData.record) {
+
+                        const burnID = searchData.record.burnID;console.log("Found existing record with burnID: " + burnID + ". Updating...");
+
+                        const updateResponse = await fetch('/updateCTTBurnRecord', {
+                            method: 'PUT', 
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                burnID: burnID,
+                                execTX: txHash,
+                                operationDate: new Date().toISOString().split('T')[0]
+                            })
+                        });
+
+                        const updateData = await updateResponse.json();
+                        if (updateData.success) {
+                            console.log(`Burn record (ID: ${burnID}) updated successfully with proposal hash.`);
+                        } else {
+                            console.error(`Failed to update burn record (ID: ${burnID}):`, updateData.message);
+                        }
+
                     } else {
-                        console.error("Failed to record burn operation:", data.message);
+
+                        const response = await fetch('/createCTTBurnRecord', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                                amount: amountStr,
+                                correspondpingTX: correspondpingTX,
+                                txHash: txHash,
+                                operationDate: new Date().toISOString().split('T')[0]  
+                            })
+                        });
+
+                        const data = await response.json();
+                        if (data.success) {
+                            console.log("Burn operation recorded successfully");
+                        } else {
+                            console.error("Failed to record burn operation:", data.message);
+                        }
                     }
                 } catch (error) {
                     console.error("Error recording burn operation:", error);
@@ -961,10 +1004,10 @@
 
                         try {
                             const tx = await multiSigContract.getTransaction(i);
-                           // console.log(`Transaction ${i} details:`, tx);
+                            // console.log(`Transaction ${i} details:`, tx);
 
                             // 跳过已执行的交易
-                         if (tx.executed) continue;
+                            if (tx.executed) continue;
 
                             pendingCount++;
                             const row = document.createElement('tr');
@@ -993,7 +1036,7 @@
                                 if (isSigner) {
                                     //         console.log(`[Tx ${i}] User is signer. Attempting isConfirmedByAddress(${i}, ${userAddress})...`);
                                     // Call the function
-                                    isConfirmed = await multiSigContract.isTransactionConfirmedBy(i, userAddress); 
+                                    isConfirmed = await multiSigContract.isTransactionConfirmedBy(i, userAddress);
                                     // Log the result if successful
                                     //console.log(`[Tx ${i}] Confirmation status checked successfully: ${isConfirmed}`);
                                 } else {
@@ -1001,9 +1044,9 @@
                                     isConfirmed = false; // Explicitly set to false
                                 }
                             } catch (confirmError) {
-                                
+
                                 console.error(`[Tx ${i}] Error calling isConfirmedByAddress(${i}, ${userAddress}):`, confirmError);
-                                                     isConfirmed = false;
+                                isConfirmed = false;
                             }
 
 
@@ -1069,14 +1112,14 @@
 
                     // 确认提案
                     showStatus("Confirming transaction #" + txIndex + "...");
-                   // console.log("Calling confirmTransaction with txIndex: " + txIndex + " (Type: " + typeof txIndex + ")");
+                    // console.log("Calling confirmTransaction with txIndex: " + txIndex + " (Type: " + typeof txIndex + ")");
                     const tx = await multiSigContract.confirmTransaction(txIndex);
-                   // console.log("Confirmation transaction sent:", tx.hash);
+                    // console.log("Confirmation transaction sent:", tx.hash);
 
                     // 等待交易确认
                     showStatus("Waiting for confirmation of transaction #" + txIndex + "...");
                     await tx.wait();
-                    showStatus("Successfully confirmed transaction #" + txIndex + "..."); 
+                    showStatus("Successfully confirmed transaction #" + txIndex + "...");
 
                     // 重新加载交易列表
                     await loadPendingTransactions();

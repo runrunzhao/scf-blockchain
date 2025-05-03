@@ -2,6 +2,7 @@
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GetContractServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/QueryCTTTokensServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GetScheduledTransfersServlet.java
+/workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/SearchCTTBurnRecordServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/SearchConnectionsServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateEnterpriseServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateSCMultiAddressServlet.java
@@ -54,6 +55,7 @@
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GetContractDetailsServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/SaveScMultiServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/blockchain/connection/FabricGatewayManager.java
+/workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/UpdateCTTBurnRecordServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/GetInvoicesServlet.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/filter/AuthenticationFilter.java
 /workspaces/scf-blockchain/scf-application/src/main/java/com/supplychainfinance/servlet/SaveContractServlet.java

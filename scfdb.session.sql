@@ -1,1 +1,1 @@
-SELECT scMultiAddr FROM scTransMultiConnection ORDER BY scConnectTime DESC LIMIT 1
+SELECT *  from CTTBurnRecord

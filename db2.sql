@@ -158,6 +158,10 @@ CREATE TABLE loanRecord (
 CREATE TABLE CTTBurnRecord (
     burnID INT AUTO_INCREMENT PRIMARY KEY,
     amount DECIMAL(15, 2) NOT NULL,
+    correspondpingTX VARCHAR(72)  ,
     operationDate DATE,
     execTX VARCHAR(72)      
 );
+
+ALTER TABLE CTTBurnRecord
+ADD COLUMN correspondpingTX VARCHAR(72) NOT NULL AFTER amount;
