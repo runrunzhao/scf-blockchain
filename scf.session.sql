@@ -1,1 +1,1 @@
-SELECT * from  CTTBurnRecord
+SELECT *  from  scTransMultiConnection

@@ -1658,28 +1658,12 @@
                     document.getElementById('searchSCTransButton').addEventListener('click', searchLatestSCTransFromDB);
                     document.getElementById('SearchMultiSigAddressBtn').addEventListener('click', SearchMultiSigAddressFromDB);
                     // document.getElementById('checkSignersBtn').addEventListener('click', checkMultiSigSigners);
-                    document.getElementById('saveTokenInfoButton').addEventListener('click', saveTokenAmount);
-                    document.getElementById('mintForm').addEventListener('submit', async function (e) {
-                        e.preventDefault();
-
-                        const recipientAddress = document.getElementById('recipientAddress').value;
-                        const amount = document.getElementById('amount').value;
-
-                        if (!web3 || !web3.utils.isAddress(recipientAddress)) {
-                            showStatus("Invalid Ethereum address format", true);
-                            return;
-                        }
-
-                        if (amount <= 0) {
-                            showStatus("Amount must be greater than 0", true);
-                            return;
-                        }
-                        await mintToken(recipientAddress, amount);
-
-                    });
+                   // document.getElementById('saveTokenInfoButton').addEventListener('click', saveTokenAmount);
+ 
 
                     // Add this to your JavaScript
                     document.getElementById('confirmTxButton').addEventListener('click', async function () {
+                         console.log("Confirm TX button clicked"); 
                         const txIndex = document.getElementById('txIndexInput').value;
                         if (!txIndex || isNaN(txIndex)) {
                             showStatus("Please enter a valid transaction index", true);
@@ -1847,12 +1831,7 @@
                     // Get and update balance
                     getWalletBalance(address);
 
-                    // Check owner status and update UI accordingly
-                    const isOwner = await checkAddressOwner();
-                    if (!isOwner) {
-                        document.getElementById('saveTokenInfoButton').disabled = true;
-                        document.getElementById('generateTokenButton').disabled = true;
-                    }
+           
 
                     // Update recipient field if it exists
                     const recipientField = document.getElementById('recipientAddress');

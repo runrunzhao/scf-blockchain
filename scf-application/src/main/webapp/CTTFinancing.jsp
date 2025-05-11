@@ -252,6 +252,17 @@
                         <a class="dropdown-item" href="autoPay.jsp">AutoPay Invoice</a>
                     </div>
                 </div>
+                <!-- Loan menu -->
+                <div class="dropdown d-inline-block">
+                    <a class="dropdown-toggle" href="#" role="button" id="loanDropdown" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Loan
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="loanDropdown">
+                        <a class="dropdown-item" href="CTTLoanSearch.jsp">Search Loan</a>
+                        <a class="dropdown-item" href="issueLoan.jsp">Issue Loan</a>
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -411,8 +422,8 @@
         </div>
 
         <!-- Bootstrap JS and dependencies -->
-        <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+          <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js"></script>
 
@@ -434,7 +445,7 @@
 
 
             $(document).ready(function () {
-                // Function to extract parameters from the URL
+                $('.dropdown-toggle').dropdown();
                 function getParameterByName(name, url = window.location.href) {
                     name = name.replace(/[\[\]]/g, '\\$&');
                     var regex = new RegExp('[?&]' + name + '(=([^&#]*)|&|#|$)'),
@@ -463,7 +474,7 @@
                 }
             });
 
-            document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', async () => {
                 if (window.ethereum) {
                     window.ethereum.on('accountsChanged', (accounts) => {
                         if (accounts.length > 0) {
@@ -475,7 +486,19 @@
                     window.ethereum.on('chainChanged', () => window.location.reload());
                     window.ethereum.on('disconnect', () => resetWalletConnectionUI());
                 }
-                currentContractAddress = getLatestScTransAddr();
+                //currentContractAddress = getLatestScTransAddr();
+                try {
+                    currentContractAddress = await getLatestScTransAddr();
+                    if (currentContractAddress) {
+                        console.log("Initialized contract address:", currentContractAddress);
+                    } else {
+                        console.error("Failed to initialize contract address. CTT features may be limited.");
+                        // You might want to update the UI here to inform the user
+                    }
+                } catch (error) {
+                    console.error("Error during initialization of contract address:", error);
+                    // Handle error, perhaps update UI
+                }
                 if (currentContractAddress) {
                     console.log("Initialized contract address:", currentContractAddress);
                 } else {
@@ -764,6 +787,14 @@
 
             async function showTokenBalance() {
                 const tokenAddress = currentContractAddress; // 替换为实际代币地址
+                if (!tokenAddress) {
+                    alert("Contract address is not available. Cannot query CTT balance.");
+                    document.getElementById('tokenBalance').value = "N/A";
+                    if (document.getElementById('tokenExpiration')) { // Check if element exists
+                        document.getElementById('tokenExpiration').value = "N/A";
+                    }
+                    return;
+                }
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
                 const userAddress = await signer.getAddress();
@@ -787,7 +818,7 @@
                 const formattedBalance = parseFloat(ethers.utils.formatUnits(rawBalance, decimals)).toFixed(4);
                 console.log("CTT Balance: ", formattedBalance);
                 document.getElementById('tokenBalance').value = formattedBalance; // Changed from value to innerText
-                checkTokenExpiration();
+                await checkTokenExpiration();
             }
 
             async function checkTokenExpiration() {
@@ -1066,7 +1097,7 @@
                 // 只传递记录ID
                 const recordId = selectedRow.dataset.id;
                 window.location.href = `buyCTTonChain.jsp?recordId=${recordId}`;
-                
+
             }
 
             function sendCTT2Bank() {

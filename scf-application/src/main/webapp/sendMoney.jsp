@@ -320,6 +320,7 @@
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js"></script>
 
+
         <script>
             // Global variables
             window.web3 = undefined;
@@ -327,15 +328,42 @@
             let invoiceDetails = {};
             let currentContractAddress = null;
 
-
-            
+            // ABI
             const TOKEN_ABI = [
-                "function transfer(address to, uint256 amount) returns (bool)",
-                "function balanceOf(address owner) view returns (uint256)",
-                "function decimals() view returns (uint8)",
-                "function symbol() view returns (string)"
+                {
+                    "inputs": [
+                        { "internalType": "address", "name": "to", "type": "address" },
+                        { "internalType": "uint256", "name": "amount", "type": "uint256" }
+                    ],
+                    "name": "transfer",
+                    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        { "internalType": "address", "name": "owner", "type": "address" }
+                    ],
+                    "name": "balanceOf",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "decimals",
+                    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "expirationDate",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
             ];
-
 
             $(document).ready(function () {
                 // Function to extract parameters from the URL
@@ -367,7 +395,15 @@
                 }
             });
 
-            document.addEventListener('DOMContentLoaded', () => {
+            document.addEventListener('DOMContentLoaded', async () => {
+                currentContractAddress = await getLatestScTransAddr();
+                console.log("Current contract address:", currentContractAddress);
+                if (currentContractAddress) {
+                    console.log("Initialized contract address:", currentContractAddress);
+                } else {
+                    console.error("Failed to initialize contract address");
+                }
+
                 if (window.ethereum) {
                     window.ethereum.on('accountsChanged', (accounts) => {
                         if (accounts.length > 0) {
@@ -379,12 +415,7 @@
                     window.ethereum.on('chainChanged', () => window.location.reload());
                     window.ethereum.on('disconnect', () => resetWalletConnectionUI());
                 }
-                currentContractAddress = getLatestScTransAddr();
-                if (currentContractAddress) {
-                    console.log("Initialized contract address:", currentContractAddress);
-                } else {
-                    console.error("Failed to initialize contract address");
-                }
+
 
                 document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
                 document.getElementById('sendMoneyBtn').addEventListener('click', sendMoney); // Updated to call sendMoney function
@@ -424,20 +455,17 @@
                     alert("Invalid amount.");
                     return;
                 }
-      
+
                 try {
                     const tokenAddress = currentContractAddress; // 使用与showTokenBalance相同的地址
+                    if (!tokenAddress) {
+                        alert("Contract address not available. Please try again later.");
+                        return;
+                    }
                     const provider = new ethers.providers.Web3Provider(window.ethereum);
                     const signer = provider.getSigner();
 
-                    // 使用与showTokenBalance相同的ABI
-                    const tokenABI = [
-                        "function balanceOf(address owner) view returns (uint256)",
-                        "function decimals() view returns (uint8)",
-                        "function transfer(address to, uint256 amount) returns (bool)"
-                    ];
-
-                    const tokenContract = new ethers.Contract(tokenAddress, tokenABI, signer);
+                    const tokenContract = new ethers.Contract(tokenAddress, TOKEN_ABI, signer);
 
                     // 获取代币精度
                     const decimals = await tokenContract.decimals();
@@ -460,7 +488,13 @@
                     showTokenBalance();
                 } catch (error) {
                     console.error("Error sending transaction:", error);
-                    alert("Transaction failed: " + error.message);
+                    if (error.data && error.data.message) {
+                        alert("Transaction failed: " + error.data.message);
+                    } else if (error.reason) {
+                        alert("Transaction failed: " + error.reason);
+                    } else {
+                        alert("Transaction failed: " + error.message);
+                    }
                 }
             }
 
@@ -626,7 +660,7 @@
 
 
             async function showTokenBalance() {
-                const tokenAddress =currentContractAddress; // 替换为实际代币地址
+                const tokenAddress = currentContractAddress; // 替换为实际代币地址
                 const provider = new ethers.providers.Web3Provider(window.ethereum);
                 const signer = provider.getSigner();
                 const userAddress = await signer.getAddress();
@@ -642,9 +676,12 @@
                 }
                 const tokenABI = [
                     "function balanceOf(address owner) view returns (uint256)",
-                    "function decimals() view returns (uint8)"
+                    "function decimals() view returns (uint8)",
+                    "function expirationDate() view returns (uint256)"
                 ];
                 const tokenContract = new ethers.Contract(tokenAddress, tokenABI, provider);
+                const expiry = await tokenContract.expirationDate();
+                console.log("Token expirationDate:", expiry, "当前时间:", Math.floor(Date.now() / 1000));
                 const rawBalance = await tokenContract.balanceOf(userAddress);
                 const decimals = await tokenContract.decimals();
                 const formattedBalance = parseFloat(ethers.utils.formatUnits(rawBalance, decimals)).toFixed(4);

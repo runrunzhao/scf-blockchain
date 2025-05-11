@@ -222,6 +222,18 @@
                         <a class="dropdown-item" href="autoPay.jsp">AutoPay Invoice</a>
                     </div>
                 </div>
+                                  <!-- Loan menu -->
+                        <div class="dropdown d-inline-block">
+                            <a class="dropdown-toggle" href="#" role="button" id="loanDropdown" data-toggle="dropdown" aria-haspopup="true"
+                                aria-expanded="false">
+                                Loan
+                            </a>
+                            <div class="dropdown-menu" aria-labelledby="loanDropdown">
+                                <a class="dropdown-item" href="CTTLoanSearch.jsp">Search Loan</a>
+                                <a class="dropdown-item" href="issueLoan.jsp">Issue Loan</a>                             
+                        
+                            </div>
+                        </div>
             </div>
         </div>
 
@@ -361,7 +373,7 @@
 
         <!-- Bootstrap JS and dependencies -->
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-        <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js"></script>
 
