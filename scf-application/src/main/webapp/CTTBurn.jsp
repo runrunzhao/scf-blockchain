@@ -734,21 +734,20 @@
                     console.log("Submitting burn proposal to multi-sig contract:", multiSigContractAddress);
                     console.log("From address:", fromAddress, "Amount:", amountInSmallestUnit.toString());
 
-                    const feeData = await provider.getFeeData();
-                    const increasedPriorityFee = feeData.maxPriorityFeePerGas ? feeData.maxPriorityFeePerGas.mul(150).div(100) : undefined;
-                    const maxFee = feeData.maxFeePerGas;
+                   // const feeData = await provider.getFeeData();
+                   // const increasedPriorityFee = feeData.maxPriorityFeePerGas ? feeData.maxPriorityFeePerGas.mul(150).div(100) : undefined;
+                  //  const maxFee = feeData.maxFeePerGas;
 
-                    const safeMaxFee = increasedPriorityFee ? increasedPriorityFee.add(ethers.utils.parseUnits("1", "gwei")) : undefined;
+                  //  const safeMaxFee = increasedPriorityFee ? increasedPriorityFee.add(ethers.utils.parseUnits("1", "gwei")) : undefined;
+                  /*
                     const overrides = {
                         gasLimit: 800000,
-                        maxPriorityFeePerGas: increasedPriorityFee,
-                        maxFeePerGas: safeMaxFee
+                        
                     };
-
+                    */
                     const tx = await multiSigContract.submitBurnTransaction(
                         fromAddress,
-                        amountInSmallestUnit,
-                        overrides
+                        amountInSmallestUnit
                     );
                     console.log("Proposal transaction sent:", tx.hash);
 
@@ -769,7 +768,7 @@
                             }
                         }
                     }
-
+                /*
                     if (txIndex !== null) {
                         // 记录提案到数据库
                         console.log(amountStr + ":::", tx.hash);
@@ -785,6 +784,7 @@
 
 
                     }
+                */
                        
 
                 } catch (error) {
