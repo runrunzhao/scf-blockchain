@@ -1,1 +1,2 @@
-SELECT *  from  scTransMultiConnection
+
+select  * from  financing_records ；

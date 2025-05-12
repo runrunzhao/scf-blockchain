@@ -222,18 +222,18 @@
                         <a class="dropdown-item" href="autoPay.jsp">AutoPay Invoice</a>
                     </div>
                 </div>
-                                  <!-- Loan menu -->
-                        <div class="dropdown d-inline-block">
-                            <a class="dropdown-toggle" href="#" role="button" id="loanDropdown" data-toggle="dropdown" aria-haspopup="true"
-                                aria-expanded="false">
-                                Loan
-                            </a>
-                            <div class="dropdown-menu" aria-labelledby="loanDropdown">
-                                <a class="dropdown-item" href="CTTLoanSearch.jsp">Search Loan</a>
-                                <a class="dropdown-item" href="issueLoan.jsp">Issue Loan</a>                             
-                        
-                            </div>
-                        </div>
+                <!-- Loan menu -->
+                <div class="dropdown d-inline-block">
+                    <a class="dropdown-toggle" href="#" role="button" id="loanDropdown" data-toggle="dropdown"
+                        aria-haspopup="true" aria-expanded="false">
+                        Loan
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="loanDropdown">
+                        <a class="dropdown-item" href="CTTLoanSearch.jsp">Search Loan</a>
+                        <a class="dropdown-item" href="issueLoan.jsp">Issue Loan</a>
+
+                    </div>
+                </div>
             </div>
         </div>
 
@@ -300,7 +300,14 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="correspondpingTX">Correspondping TX:</label>
-                                    <input type="text" class="form-control" id="correspondpingTX" required>
+                                    <div class="input-group">
+                                        <input type="text" class="form-control" id="correspondpingTX" required>
+                                        <div class="input-group-append">
+                                            <button type="button" class="btn btn-info" id="searchCorTxBtn">
+                                                <i class="fas fa-search mr-1"></i> Search
+                                            </button>
+                                        </div>
+                                    </div>
                                     <small class="form-text text-muted">Transaction details for the corresponding
                                         payment.</small>
                                 </div>
@@ -311,8 +318,9 @@
                             <button type="button" class="btn btn-success btn-action" id="burnCTTBtn">
                                 <i class="fas fa-calendar-check mr-3"></i>Burn
                             </button>
-                            <a href="invoice.jsp" class="btn btn-secondary btn-action ml-4">
-                                <i class="fas fa-arrow-left mr-3"></i>Back to Invoices
+
+                            <a href="index.jsp" class="btn btn-secondary btn-action ml-4">
+                                <i class="fas fa-arrow-left mr-3"></i>Back to Home
                             </a>
                         </div>
                         <!-- 在表单下方添加这个新的卡片 -->
@@ -373,7 +381,7 @@
 
         <!-- Bootstrap JS and dependencies -->
         <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
-         <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/web3@1.3.0/dist/web3.min.js"></script>
 
@@ -385,41 +393,164 @@
             let currentContractAddress = null;
             let multiSigContractAddress = null;
 
-            // 添加在MULTI_SIG_ABI常量之前
             const TOKEN_ABI = [
-                "function balanceOf(address owner) view returns (uint256)",
-                "function decimals() view returns (uint8)",
-                "function symbol() view returns (string)"
+                {
+                    "inputs": [
+                        { "internalType": "address", "name": "owner", "type": "address" }
+                    ],
+                    "name": "balanceOf",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "decimals",
+                    "outputs": [{ "internalType": "uint8", "name": "", "type": "uint8" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "symbol",
+                    "outputs": [{ "internalType": "string", "name": "", "type": "string" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                }
             ];
 
-
             const MULTI_SIG_ABI = [
-                // 交易提交函数
-                "function submitMintTransaction(address to, uint256 amount) returns (uint256)",
-                "function submitBurnTransaction(address from, uint256 amount) returns (uint256)",
-                "function submitRedeemTransaction(address from, uint256 amount) returns (uint256)",
-
-                // 交易查询函数 - 修正为5个参数
-                "function getTransaction(uint256 txIndex) view returns (address to, uint256 amount, uint8 txType, bool executed, uint256 numConfirmations)",
-                "function getTransactionCount() view returns (uint256)",
-
-                // 确认功能
-                "function confirmTransaction(uint256 txIndex) returns (bool)",
-                "function executeTransaction(uint256 txIndex) returns (bool)",
-                "function getConfirmationCount(uint256 txIndex) view returns (uint256)",
-                "function isTransactionConfirmedBy(uint256 txIndex, address signer) view returns (bool)",
-
-                // 管理功能
-                "function getRequiredConfirmations() view returns (uint256)",
-                "function requiredConfirmations() view returns (uint256)",  // 增加这个函数，某些合约使用这个命名
-                "function isSigner(address account) view returns (bool)",
-                "function getSignerCount() view returns (uint256)",
-
-                // 事件
-                "event TransactionSubmitted(uint256 indexed txIndex, address indexed to, uint256 amount, uint8 txType)",
-                //  "event TransactionSubmitted(uint256 indexed txIndex, address indexed creator, address to, uint256 amount, uint8 txType)",
-                "event TransactionConfirmed(uint256 indexed txIndex, address indexed signer)",
-                "event TransactionExecuted(uint256 indexed txIndex, address indexed executor)"
+                {
+                    "inputs": [
+                        { "internalType": "address", "name": "to", "type": "address" },
+                        { "internalType": "uint256", "name": "amount", "type": "uint256" }
+                    ],
+                    "name": "submitMintTransaction",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        { "internalType": "address", "name": "from", "type": "address" },
+                        { "internalType": "uint256", "name": "amount", "type": "uint256" }
+                    ],
+                    "name": "submitBurnTransaction",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        { "internalType": "address", "name": "from", "type": "address" },
+                        { "internalType": "uint256", "name": "amount", "type": "uint256" }
+                    ],
+                    "name": "submitRedeemTransaction",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [{ "internalType": "uint256", "name": "txIndex", "type": "uint256" }],
+                    "name": "getTransaction",
+                    "outputs": [
+                        { "internalType": "address", "name": "to", "type": "address" },
+                        { "internalType": "uint256", "name": "amount", "type": "uint256" },
+                        { "internalType": "uint8", "name": "txType", "type": "uint8" },
+                        { "internalType": "bool", "name": "executed", "type": "bool" },
+                        { "internalType": "uint256", "name": "numConfirmations", "type": "uint256" }
+                    ],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "getTransactionCount",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [{ "internalType": "uint256", "name": "txIndex", "type": "uint256" }],
+                    "name": "confirmTransaction",
+                    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [{ "internalType": "uint256", "name": "txIndex", "type": "uint256" }],
+                    "name": "executeTransaction",
+                    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+                    "stateMutability": "nonpayable",
+                    "type": "function"
+                },
+                {
+                    "inputs": [{ "internalType": "uint256", "name": "txIndex", "type": "uint256" }],
+                    "name": "getConfirmationCount",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [
+                        { "internalType": "uint256", "name": "txIndex", "type": "uint256" },
+                        { "internalType": "address", "name": "signer", "type": "address" }
+                    ],
+                    "name": "isTransactionConfirmedBy",
+                    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "requiredConfirmations",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [{ "internalType": "address", "name": "account", "type": "address" }],
+                    "name": "isSigner",
+                    "outputs": [{ "internalType": "bool", "name": "", "type": "bool" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "inputs": [],
+                    "name": "getSignerCount",
+                    "outputs": [{ "internalType": "uint256", "name": "", "type": "uint256" }],
+                    "stateMutability": "view",
+                    "type": "function"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        { "indexed": true, "internalType": "uint256", "name": "txIndex", "type": "uint256" },
+                        { "indexed": true, "internalType": "address", "name": "to", "type": "address" },
+                        { "indexed": false, "internalType": "uint256", "name": "amount", "type": "uint256" },
+                        { "indexed": false, "internalType": "uint8", "name": "txType", "type": "uint8" }
+                    ],
+                    "name": "TransactionSubmitted",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        { "indexed": true, "internalType": "uint256", "name": "txIndex", "type": "uint256" },
+                        { "indexed": true, "internalType": "address", "name": "signer", "type": "address" }
+                    ],
+                    "name": "TransactionConfirmed",
+                    "type": "event"
+                },
+                {
+                    "anonymous": false,
+                    "inputs": [
+                        { "indexed": true, "internalType": "uint256", "name": "txIndex", "type": "uint256" },
+                        { "indexed": true, "internalType": "address", "name": "executor", "type": "address" }
+                    ],
+                    "name": "TransactionExecuted",
+                    "type": "event"
+                }
             ];
 
             function getParameterByName(name, url = window.location.href) {
@@ -434,8 +565,8 @@
             $(document).ready(function () {
 
                 const recordId = getParameterByName('recordId');
-             //   document.getElementById('correspondpingTX').value="0x02a24ce162667280cd1ad24290be472862de0eb62eb11214f24cf382a0ecee8b" ;
-              //  recordBurnOperation("400", "0x02a24ce162667280cd1ad24290be472862de0eb62eb11214f24cf382a00000");
+                //   document.getElementById('correspondpingTX').value="0x02a24ce162667280cd1ad24290be472862de0eb62eb11214f24cf382a0ecee8b" ;
+                //  recordBurnOperation("400", "0x02a24ce162667280cd1ad24290be472862de0eb62eb11214f24cf382a00000");
                 document.getElementById('recordId').value = recordId;
                 if (recordId) {
                     fetchFinancingDetails(recordId);
@@ -496,7 +627,7 @@
 
                 document.getElementById('connectWalletBtn').addEventListener('click', connectMetaMask);
                 document.getElementById('burnCTTBtn').addEventListener('click', burnCTT);
-
+                document.getElementById('searchCorTxBtn').addEventListener('click', SearchLoanRecord);
 
                 multiSigContractAddress = await getMultiSigContractAddress();
                 if (multiSigContractAddress) {
@@ -548,15 +679,17 @@
                 document.getElementById('manualMultiSigAddress').value = multiSigContractAddress;
             }
 
+            function SearchLoanRecord() {
+                // Navigate to the CTTLoanSearch.jsp page
+                window.open('CTTLoanSearch.jsp', '_blank');
+            }
 
             async function burnCTT() {
                 const fromAddress = document.getElementById('fromAddress').value;
                 const amountStr = document.getElementById('settlementAmount').value;
                 const correspondpingTX = document.getElementById('correspondpingTX').value;
                 const connectAddr = window.userAddress;
-
-                document.getElementById('correspondpingTX').value
-
+            
                 // 验证输入
                 if (!fromAddress) {
                     alert("Invalid from address. Please connect your wallet first.");
@@ -605,10 +738,11 @@
                     const increasedPriorityFee = feeData.maxPriorityFeePerGas ? feeData.maxPriorityFeePerGas.mul(150).div(100) : undefined;
                     const maxFee = feeData.maxFeePerGas;
 
+                    const safeMaxFee = increasedPriorityFee ? increasedPriorityFee.add(ethers.utils.parseUnits("1", "gwei")) : undefined;
                     const overrides = {
-                        gasLimit: 800000, // Explicitly set a high limit (e.g., 800k, adjust if needed)
+                        gasLimit: 800000,
                         maxPriorityFeePerGas: increasedPriorityFee,
-                        maxFeePerGas: maxFee
+                        maxFeePerGas: safeMaxFee
                     };
 
                     const tx = await multiSigContract.submitBurnTransaction(
@@ -644,16 +778,32 @@
                         await recordBurnOperation(amountStr, tx.hash);
 
                         // 先获取所需确认数
-                        const requiredConfirmations = await multiSigContract.getRequiredConfirmations();
+                        const requiredConfirmations = await multiSigContract.requiredConfirmations();
 
                         // 显示提案ID (分离 await 操作)
                         alert(`Burn proposal #${txIndex} has been created successfully. Required signatures: ${requiredConfirmations}`);
 
 
                     }
+                       
 
                 } catch (error) {
                     console.error("Error submitting burn proposal:", error);
+                    // 提取完整错误信息
+                    let errorMessage = "Failed to submit burn proposal";
+
+                    // 尝试提取详细错误信息
+                    if (error.error && error.error.message) {
+                        errorMessage += ": " + error.error.message;
+                    } else if (error.data && error.data.message) {
+                        errorMessage += ": " + error.data.message;
+                    } else if (error.message) {
+                        errorMessage += ": " + error.message;
+                    }
+
+                    // 在控制台显示完整错误对象
+                    console.log("Complete error object:", JSON.stringify(error, Object.getOwnPropertyNames(error)));
+
                     alert("Failed to submit burn proposal: " + error.message);
                 }
 
@@ -665,7 +815,7 @@
 
                 if (!correspondpingTX || correspondpingTX.trim() === '') {
                     console.error("Cannot record burn operation: 'Correspondping TX' field is empty.");
-                    return; 
+                    return;
                 }
 
                 try {
@@ -679,10 +829,10 @@
 
                     if (searchResponse.ok && searchData.success && searchData.record) {
 
-                        const burnID = searchData.record.burnID;console.log("Found existing record with burnID: " + burnID + ". Updating...");
+                        const burnID = searchData.record.burnID; console.log("Found existing record with burnID: " + burnID + ". Updating...");
 
                         const updateResponse = await fetch('/updateCTTBurnRecord', {
-                            method: 'PUT', 
+                            method: 'PUT',
                             headers: {
                                 'Content-Type': 'application/json'
                             },
@@ -711,7 +861,7 @@
                                 amount: amountStr,
                                 correspondpingTX: correspondpingTX,
                                 txHash: txHash,
-                                operationDate: new Date().toISOString().split('T')[0]  
+                                operationDate: new Date().toISOString().split('T')[0]
                             })
                         });
 

@@ -483,7 +483,7 @@
             async function sendMoney() {
                 const fromAddress = document.getElementById('fromAddress').value;
                 const toAddress = document.getElementById('toAddress').value;
-                const amountStr = document.getElementById('settlementAmount').value;
+                const amountStr = document.getElementById('cttAmount').value;
                 const connectAddr = window.userAddress;
                 const acceptableDateStr = document.getElementById('acceptableDate').value;
                 // Validate inputs

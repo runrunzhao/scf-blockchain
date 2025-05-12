@@ -127,7 +127,7 @@ CREATE TABLE scheduledTransfers (
 CREATE TABLE financing_records (
     id BIGINT PRIMARY KEY AUTO_INCREMENT,
     user_address VARCHAR(42) NOT NULL,
-    bank_address VARCHAR(42) NOT NULL,
+    bank_address VARCHAR(42) ,
     ctt_amount DECIMAL(18,8) NOT NULL,
     interest_rate DECIMAL(5,2) NOT NULL,
     due_date DATE NOT NULL,
